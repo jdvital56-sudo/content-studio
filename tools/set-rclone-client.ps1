@@ -25,7 +25,7 @@ if (-not $c.client_id -or -not $c.client_secret) {
 }
 
 Write-Host 'Сейчас откроется браузер: выбери свою почту и нажми «Разрешить».'
-& $rclone config create gdrive drive client_id $c.client_id client_secret $c.client_secret scope drive.file --config $conf
+& $rclone config create gdrive drive client_id $c.client_id client_secret $c.client_secret scope drive.file --config $conf --no-output
 Remove-Item $json.FullName -Force
 Write-Host 'Файл с ключом из Загрузок удалён.'
 
