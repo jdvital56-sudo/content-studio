@@ -104,8 +104,8 @@ kbd{background:var(--panel2);border:1px solid var(--line);border-radius:4px;padd
   <a>Банк хуков</a>
   <a id="navsk">Навыки</a>
   <h6>Каналы</h6>
-  <a>Паспорта</a>
-  <a>Новый канал +</a>
+  <a id="navpp">Паспорта</a>
+  <a id="newch">Новый канал +</a>
   <h6>Завод</h6>
   <a>Агенты</a>
   <a>Архив на Диске</a>
@@ -153,6 +153,12 @@ kbd{background:var(--panel2);border:1px solid var(--line);border-radius:4px;padd
   <div id="usk" style="display:grid;grid-template-columns:1fr 1fr;gap:4px;font-size:13px"></div>
   <p style="font-size:12px;color:var(--warn)">Только свои ролики или ролики клиента с его разрешением. Чужие ролики конкурентов не загружаем: авторское право и блокировки аккаунтов.</p>
   <div style="display:flex;gap:8px;justify-content:flex-end"><button class="btn" id="ux">Отмена</button><button class="btn go" id="ug">Запустить</button></div>
+</div></div>
+<div class="modal" id="pmodal"><div class="mbox" style="width:680px;max-height:90vh;overflow:auto">
+  <h3 id="ptitle">Новый канал: паспорт</h3>
+  <div class="bar2" style="margin:4px 0 2px"><span id="pbar" style="width:0%"></span></div>
+  <div id="pstep" style="font-size:12px;color:var(--muted);margin-bottom:6px"></div>
+  <div id="pbody"></div>
 </div></div>
 <div class="modal" id="smodal"><div class="mbox" style="width:640px;max-height:86vh;overflow:auto">
   <h3>Навыки завода</h3>
@@ -215,6 +221,25 @@ let skc='km';
 function skills(){ $('#skch').innerHTML=Object.entries(CH).map(([k,v])=>`<button class="tab ${skc===k?'on':''}" data-sk="${k}">${v.n}</button>`).join('');
   $('#skl').innerHTML=SK.map(g=>`<h4 style="margin:12px 0 4px">${g[0]}</h4>`+g[1].map(s=>`<label style="display:flex;gap:8px;align-items:center;margin:3px 0;color:var(--text);font-size:13px"><input type="checkbox" ${s[2].includes(skc)?'checked':''}> ${s[1]} ${s[2].includes(skc)?'<span class="pill s-wait">Продюсер</span>':''}</label>`).join('')).join('')}
 function usk(){const c=$('#uch').value;$('#usk').innerHTML=SK.flatMap(g=>g[1]).filter(s=>s[2].includes(c)||s[0]==='watch').map(s=>`<label style="color:var(--text);display:flex;gap:6px"><input type="checkbox" ${s[2].includes(c)?'checked':''}> ${s[1]}</label>`).join('')}
+const PS=[
+['Название и ниша','Как называется канал и о чём он?','Одна фраза: для кого и какую пользу даёт. Например: «упражнения и привычки для женщин, без обещаний «−10 кг за 30 дней»».'],
+['Вид (стиль)','Какой визуальный стиль? Цвета, шрифт, как появляется текст.','Один акцентный цвет и один шрифт. Тогда ролики узнаются сразу, а шаблон делается кодом бесплатно. Логотип только накладываем настоящим файлом, нейросеть буквы ломает.'],
+['Кто в кадре','Ведущая, герой, мультяшный персонаж или только графика?','На старте графика + голос. Живое видео автора добавляем, когда он снимет себя на телефон. Платный аватар только с письменным согласием человека.'],
+['Голос и текст','Структура ролика, длина, манера речи.','Хук в первые 2 секунды → одна польза → товар или тема ясно → призыв. Длина = озвучка, 1,75 слова в секунду: 30 с не больше 45 слов. Добавь 10–20 живых фраз автора.'],
+['Звук','Музыка, громкость, звуки.','Голос на 6 дБ громче музыки, итог −14 LUFS. Чужая музыка только со свободной лицензией, строка в описании.'],
+['Язык и формат','Язык роликов, длина, площадки.','Один язык на канал, пока он не растёт. Длинное видео плюс 3–5 коротких из него.'],
+['Аккаунты','В какие аккаунты завод готовит ролики первый месяц?','Не больше 2–3 площадок сразу. Основной аккаунт выбирай по живой аудитории, а не по порядку создания.'],
+['Куда ведём (деньги)','Что делает зритель после ролика?','Слово в директ или ссылка с меткой UTM по площадке. Тогда видно, какой ролик принёс заявку.'],
+['Нельзя','Запретные темы, слова, лица, обещания.','Выпиши то, за что может быть стыдно или блокировка: обещания результата, «до/после», чужие лица без согласия, выдуманные цифры.']];
+let pi=0,pa=[],pbase=null;
+function pstart(){pi=0;pa=PS.map(()=>'');pbase=null;pstepRender();$('#pmodal').classList.add('on')}
+function pstepRender(){
+  if(pi>=PS.length){const done=pa.filter(x=>x.trim()).length,pct=Math.round(done/PS.length*100);
+    $('#pbar').style.width=pct+'%';$('#pstep').textContent='Готово · заполнено '+pct+'%';
+    $('#pbody').innerHTML=`<div class="script" style="white-space:pre-wrap;font-size:12px">${'# Паспорт канала: '+(pa[0].split('.')[0]||'новый')+'\n\n'+PS.map((s,i)=>'## '+(i+1)+'. '+s[0]+'\n'+(pa[i]||'ОТКРЫТО: ещё не заполнено')).join('\n\n')}</div><p style="font-size:12px;color:var(--muted)">Сохранится как файл channels/название.md. Пустые пункты видны на стене. Пока паспорт не заполнен, канал не получает ночных сценариев.</p><div style="display:flex;gap:8px;justify-content:flex-end"><button class="btn" data-p="back">Назад</button><button class="btn go" data-p="save">Сохранить паспорт</button></div>`;return}
+  const s=PS[pi];$('#pbar').style.width=Math.round(pi/PS.length*100)+'%';$('#pstep').textContent='Шаг '+(pi+1)+' из '+PS.length+' · '+s[0];
+  $('#pbody').innerHTML=`<p style="margin:6px 0;font-size:15px">${s[1]}</p><div class="script"><b>Совет:</b> ${s[2]} <button class="btn" data-p="adv" style="margin-top:6px;padding:4px 8px">Взять совет как ответ</button></div><textarea id="pans" rows="4" style="width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:8px;color:var(--text);font:inherit" placeholder="Твой ответ. Можно пропустить и вернуться позже.">${pa[pi]}</textarea><div style="display:flex;gap:8px;justify-content:space-between;margin-top:10px"><button class="btn" data-p="back">${pi?'Назад':'Закрыть'}</button><div style="display:flex;gap:8px"><button class="btn" data-p="skip">Пропустить</button><button class="btn go" data-p="next">Дальше</button></div></div>`}
+function ppick(){ $('#pbody').innerHTML=''; }
 let mode='ed';
 const STEPS=['Сценарий','Озвучка','Графика','Рендер','Проверка','Ждёт тебя'];
 const TRACKS={
@@ -247,6 +272,13 @@ document.addEventListener('click',e=>{
   if(e.target.closest('#upl')){usk();$('#umodal').classList.add('on');return}
   if(e.target.closest('#ux')){$('#umodal').classList.remove('on');return}
   if(e.target.closest('#ug')){const mo=$('#umode').value,c=$('#uch').value,nm=$('#uname').textContent||'видео клиента';const add=mo==='u'?[['вариант A: другой хук','вариант B: другая нарезка','вариант C: субтитры и музыка']]:mo==='s'?[Array.from({length:6},(_,i)=>'момент '+(i+1)+': сильный отрезок')]:[Array.from({length:3},(_,i)=>'похожий ролик '+(i+1)+' по паспорту')];add[0].forEach(t=>R.push({id:R.length+1,ch:c,st:'draft',title:t,sub:'Из файла: '+nm,len:0,q:'nnnn'}));$('#umodal').classList.remove('on');all();return}
+  if(e.target.closest('#newch')){pstart();return}
+  if(e.target.closest('#navpp')){pstart();pa=['Kosta Method: упражнения и привычки.','KM Editorial: бумага, одно золото, Montserrat, всё на сетке.','Графика и мультяшная Таня 1–2 раза; позже живое видео Тетяны.','','','Английский; рилсы 30 с.','Instagram @kosta_method, TikTok, YouTube Shorts.','Слово BOTTLE в директ.','«−10 кг за 30 дней», «до/после», выдуманные цифры.'];pbase=1;pstepRender();return}
+  const pp=e.target.closest('[data-p]'); if(pp){const a=pp.dataset.p,t=$('#pans');if(t)pa[pi]=t.value;
+    if(a==='adv'){pa[pi]=PS[pi][2];pstepRender();return}
+    if(a==='next'||a==='skip'){pi++;pstepRender();return}
+    if(a==='back'){if(pi===0){$('#pmodal').classList.remove('on')}else{pi--;pstepRender()}return}
+    if(a==='save'){$('#pmodal').classList.remove('on');return}}
   if(e.target.closest('#navsk')){skills();$('#smodal').classList.add('on');return}
   if(e.target.closest('#sx')){$('#smodal').classList.remove('on');return}
   const sk=e.target.closest('[data-sk]'); if(sk){skc=sk.dataset.sk;skills();return}
