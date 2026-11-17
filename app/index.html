@@ -207,7 +207,7 @@ function grid(){ const L=list(); $('#grid').innerHTML=L.map((r,i)=>`<div class="
 function det(){ const r=R.find(x=>x.id===sel); if(!r){$('#det').innerHTML='';return}
   const bad=r.q.includes('x'),canOk=!bad&&r.q.indexOf('n')<0&&r.st!=='pub';
   const names=['Формат 1080×1920','Громкость −14 LUFS','Субтитры = речь (до 3%)','Безопасные зоны, нет чёрных кадров'];
-  $('#det').innerHTML=`<h4>Выбрано · ${CH[r.ch].n}</h4>${poster(r)}<h3>${r.title}</h3><p>${r.sub}</p>
+  $('#det').innerHTML=`<h4>Выбрано · ${CH[r.ch].n}</h4>${r.video?`<video src="/api/reels/${r.id}/video" controls playsinline style="width:100%;border-radius:10px;max-height:420px;background:#000"></video>`:poster(r)}<h3>${r.title}</h3><p>${r.sub}</p>
   <div class="script"><b>Хук (2 с):</b> ${r.title}<br><b>Призыв:</b> ${r.ch==='km'?'напиши слово BOTTLE в директ':r.ch==='wi'?'полный ролик на канале':'смотри полный фильм'}</div>
   <ul class="chk">${[...r.q].map((x,i)=>`<li><span class="${x==='o'?'o':x==='x'?'b':'p'}">${x==='o'?'✓':x==='x'?'✕':'…'}</span>${names[i]}</li>`).join('')}</ul>
   <div class="btns"><button class="btn main ${canOk?'':'off'}">${canOk?'Одобрить (A)':'Одобрить недоступно: проверка не пройдена'}</button><button class="btn">Переделать (R)</button><button class="btn">Пакет для публикации</button><button class="btn" id="unik" style="grid-column:1/3">Уникализатор ×3: другие хуки и нарезка для A/B</button></div>`}
@@ -296,7 +296,7 @@ document.addEventListener('keydown',e=>{
   if(e.key.toLowerCase()==='a'||e.key.toLowerCase()==='ф'){const r=R.find(x=>x.id===sel);if(r&&r.st==='wait'&&!r.q.includes('x')&&r.q.indexOf('n')<0){r.st='ok';save(r.id,'ok');all()}}
   if(e.key.toLowerCase()==='r'||e.key.toLowerCase()==='к'){const r=R.find(x=>x.id===sel);if(r&&r.st!=='pub'){r.st='draft';r.q='nnnn';save(r.id,'draft');all()}}
 });
-function load(){return fetch('/api/reels').then(r=>r.ok?r.json():Promise.reject()).then(rows=>{live=true;R=rows.map(x=>({id:x.id,ch:x.channel,st:x.status,title:x.title,sub:x.sub,len:x.length_s,q:x.checks}));if(!R.find(x=>x.id===sel))sel=R.length?R[0].id:0;all();const d=document.querySelector('.demo');if(d)d.textContent='Подключена настоящая база (SQLite). Статусы сохраняются. Движков пока нет, ролики примерные.'}).catch(()=>{})}
+function load(){return fetch('/api/reels').then(r=>r.ok?r.json():Promise.reject()).then(rows=>{live=true;R=rows.map(x=>({id:x.id,ch:x.channel,st:x.status,title:x.title,sub:x.sub,len:x.length_s,q:x.checks,video:!!x.job_dir}));if(!R.find(x=>x.id===sel))sel=R.length?R[0].id:0;all();const d=document.querySelector('.demo');if(d)d.textContent='Подключена настоящая база (SQLite). Статусы сохраняются. Движков пока нет, ролики примерные.'}).catch(()=>{})}
 function save(id,status){if(!live)return;fetch('/api/reels/'+id,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({status})})}
 document.addEventListener('keyup',()=>{});
 document.addEventListener('change',e=>{

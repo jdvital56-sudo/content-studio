@@ -68,6 +68,13 @@ createServer(async (req, res) => {
       log(id, 'owner', 'status', b.status);
       return send(res, 200, { ok: true });
     }
+    const v = url.pathname.match(/^\/api\/reels\/(\d+)\/video$/);
+    if (v) {
+      const row = db.prepare('SELECT job_dir FROM reels WHERE id=?').get(+v[1]);
+      const media = join(root, 'trials', 'reels', 'final');
+      if (!row?.job_dir || !normalize(row.job_dir).startsWith(media)) return send(res, 404, { error: 'no video' });
+      return send(res, 200, await readFile(row.job_dir), 'video/mp4');
+    }
     if (url.pathname === '/api/events') return send(res, 200, db.prepare('SELECT * FROM events ORDER BY id DESC LIMIT 100').all());
     // static files from app/
     const rel = url.pathname === '/' ? 'index.html' : normalize(url.pathname).replace(/^([\\/]|\.\.)+/, '');

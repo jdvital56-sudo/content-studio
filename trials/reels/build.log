@@ -1,0 +1,19 @@
+=== km_missed_workout_en 01:16:10
+[out#0/rawvideo @ 000001b7bcc21ac0] Terminating thread with return code -32 (Broken pipe)
+OK C:\Users\Вадим\projects\heroine-pose-library\out\km_missed_workout_en.mp4 15.8s
+OK voice 6 | unresolved: 0
+[out#0/rawvideo @ 000001b7bcc21ac0] Error writing trailer: Broken pipe
+[out#0/rawvideo @ 000001b7bcc21ac0] Error closing file: Broken pipe
+=== km_plan_tonight_en 01:22:11
+[out#0/rawvideo @ 00000293dc1e2b80] Terminating thread with return code -32 (Broken pipe)
+[out#0/rawvideo @ 00000293dc1e2b80] Error writing trailer: Broken pipe
+[out#0/rawvideo @ 00000293dc1e2b80] Error closing file: Broken pipe
+OK C:\Users\Вадим\projects\heroine-pose-library\out\km_plan_tonight_en.mp4 13.8s
+OK voice 5 | unresolved: 0
+=== km_boring_days_en 01:27:10
+[out#0/rawvideo @ 000001c617491800] Terminating thread with return code -32 (Broken pipe)
+OK C:\Users\Вадим\projects\heroine-pose-library\out\km_boring_days_en.mp4 16.9s
+[out#0/rawvideo @ 000001c617491800] Error writing trailer: Broken pipe
+[out#0/rawvideo @ 000001c617491800] Error closing file: Broken pipe
+OK voice 6 | unresolved: 0
+РєРѕРЅРµС† 01:33:20

@@ -1,0 +1,30 @@
+=== km_missed_workout_en 01:34:16
+[out#0/rawvideo @ 00000294f38a26c0] Error muxing a packet
+[out#0/rawvideo @ 0000026c34253a80] Error muxing a packet
+[out#0/rawvideo @ 00000193c5932f00] Error muxing a packet
+[out#0/rawvideo @ 0000022503c92240] Error muxing a packet
+[out#0/rawvideo @ 000001bcd4cc08c0] Error muxing a packet
+[out#0/rawvideo @ 0000027f01ba4000] Error muxing a packet
+OK C:\Users\Вадим\projects\heroine-pose-library\out\km_missed_workout_en.mp4 15.8s
+OK voice 6 | unresolved: 0
+Input Integrated:    -13.9 LUFS
+=== km_plan_tonight_en 01:36:56
+[out#0/rawvideo @ 000001c2f2bf10c0] Error muxing a packet
+[out#0/rawvideo @ 0000024450f464c0] Error muxing a packet
+[out#0/rawvideo @ 000002289ba94a80] Error muxing a packet
+[out#0/rawvideo @ 000001df1ea12380] Error muxing a packet
+[out#0/rawvideo @ 00000221a9611500] Error muxing a packet
+OK C:\Users\Вадим\projects\heroine-pose-library\out\km_plan_tonight_en.mp4 13.8s
+OK voice 5 | unresolved: 0
+Input Integrated:    -14.5 LUFS
+=== km_boring_days_en 01:38:41
+[out#0/rawvideo @ 000001d975191280] Error muxing a packet
+[out#0/rawvideo @ 000002536e6f1780] Error muxing a packet
+[out#0/rawvideo @ 0000011d0e2e4200] Error muxing a packet
+[out#0/rawvideo @ 0000019597143680] Error muxing a packet
+[out#0/rawvideo @ 000002a7bf193ac0] Error muxing a packet
+[out#0/rawvideo @ 0000024281342cc0] Error muxing a packet
+OK C:\Users\Вадим\projects\heroine-pose-library\out\km_boring_days_en.mp4 16.9s
+OK voice 6 | unresolved: 0
+Input Integrated:    -13.9 LUFS
+РєРѕРЅРµС† 01:41:13
