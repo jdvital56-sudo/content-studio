@@ -89,6 +89,7 @@ kbd{background:var(--panel2);border:1px solid var(--line);border-radius:4px;padd
   <div class="logo">CONTENT <b>STUDIO</b></div>
   <div class="tabs" id="tabs"></div>
   <button class="btn go" id="newtopic" style="padding:7px 12px">Тема → ролики</button>
+  <button class="btn" id="upl" style="padding:7px 12px">Загрузить видео</button>
   <input class="search" placeholder="Поиск по хуку и теме">
   <span class="chip">Диск C: <i>47 ГБ</i></span>
   <span class="chip">Рендер: <i>свободен</i></span>
@@ -101,6 +102,7 @@ kbd{background:var(--panel2);border:1px solid var(--line);border-radius:4px;padd
   <a>Ждёт тебя <em>5</em></a>
   <a>Ночная очередь</a>
   <a>Банк хуков</a>
+  <a id="navsk">Навыки</a>
   <h6>Каналы</h6>
   <a>Паспорта</a>
   <a>Новый канал +</a>
@@ -139,6 +141,26 @@ kbd{background:var(--panel2);border:1px solid var(--line);border-radius:4px;padd
   <div id="edbody"></div>
 </footer>
 
+<div class="modal" id="umodal"><div class="mbox" style="width:560px">
+  <h3>Загрузить видео</h3>
+  <label for="ufile" id="drop" style="border:2px dashed var(--line);border-radius:12px;padding:22px;text-align:center;color:var(--muted);cursor:pointer;margin:0">Перетащи сюда ролик клиента или сырое видео, либо нажми и выбери файл<br><small id="uname"></small></label>
+  <input type="file" id="ufile" accept="video/*" style="display:none">
+  <label>Что сделать</label>
+  <select id="umode"><option value="u">Уникализировать: 3 творческих варианта (другой хук, нарезка, субтитры)</option><option value="s">Нарезать на рилсы: найти сильные моменты и собрать 5–10 коротких</option><option value="l">Сделать похожие: взять приём и снять новые ролики по паспорту канала</option></select>
+  <label>Канал (оформление и правила из паспорта)</label>
+  <select id="uch"><option value="km">Kosta Method</option><option value="wi">What if</option><option value="hi">Исторический</option></select>
+  <label>Навыки (рекомендует Продюсер, можно снять галочки)</label>
+  <div id="usk" style="display:grid;grid-template-columns:1fr 1fr;gap:4px;font-size:13px"></div>
+  <p style="font-size:12px;color:var(--warn)">Только свои ролики или ролики клиента с его разрешением. Чужие ролики конкурентов не загружаем: авторское право и блокировки аккаунтов.</p>
+  <div style="display:flex;gap:8px;justify-content:flex-end"><button class="btn" id="ux">Отмена</button><button class="btn go" id="ug">Запустить</button></div>
+</div></div>
+<div class="modal" id="smodal"><div class="mbox" style="width:640px;max-height:86vh;overflow:auto">
+  <h3>Навыки завода</h3>
+  <p style="font-size:12px;color:var(--muted);margin:0 0 6px">Навыки привязаны к паспорту канала: завод включает их сам. Здесь можно добавить или убрать вручную. Метка «Продюсер» значит, что навык рекомендован для канала.</p>
+  <div class="tabs" id="skch" style="margin:8px 0"></div>
+  <div id="skl"></div>
+  <div style="display:flex;justify-content:flex-end;margin-top:10px"><button class="btn go" id="sx">Готово</button></div>
+</div></div>
 <div class="modal" id="modal"><div class="mbox">
   <h3>Тема → ролики</h3>
   <label>Тема или идея</label><input id="mt" placeholder="например: привычка тренироваться без мотивации">
@@ -182,6 +204,17 @@ function det(){ const r=R.find(x=>x.id===sel); if(!r){$('#det').innerHTML='';ret
   <div class="script"><b>Хук (2 с):</b> ${r.title}<br><b>Призыв:</b> ${r.ch==='km'?'напиши слово BOTTLE в директ':r.ch==='wi'?'полный ролик на канале':'смотри полный фильм'}</div>
   <ul class="chk">${[...r.q].map((x,i)=>`<li><span class="${x==='o'?'o':x==='x'?'b':'p'}">${x==='o'?'✓':x==='x'?'✕':'…'}</span>${names[i]}</li>`).join('')}</ul>
   <div class="btns"><button class="btn main ${canOk?'':'off'}">${canOk?'Одобрить (A)':'Одобрить недоступно: проверка не пройдена'}</button><button class="btn">Переделать (R)</button><button class="btn">Пакет для публикации</button><button class="btn" id="unik" style="grid-column:1/3">Уникализатор ×3: другие хуки и нарезка для A/B</button></div>`}
+const SK=[
+['Хуки и сценарий',[['youtube','Хуки, SEO и структура YouTube',['km','wi','hi']],['cartoon','Мультяшные ролики без слов',['km']],['science','Научные и исторические факты, без выдумок',['wi','hi']],['humanizer','Живой язык текста (без «ИИ-тона»)',['km','wi','hi']]]],
+['Нарезка и монтаж',[['recut','Нарезка говорящей головы: паузы, дубли, субтитры',['km']],['arcads','15 стилей монтажа (кинетика, стекло, неон…)',['km']],['caps','Субтитры в стиле канала',['km','wi','hi']],['effects','51 эффект: шторка, нож, наезды',['km','hi']],['sfx','Настоящие звуки на щелчки',['km','wi']]]],
+['Визуал площадок',[['ig','Instagram Reels: безопасные зоны, подпись, хэштеги',['km']],['tt','TikTok: хук за 2 с, тренд-звук',['km','wi']],['yt','YouTube Shorts и длинные: обложка, главы',['wi','hi']],['x','Telegram, Threads, X: посты и цитаты',[]]]],
+['Исторические',[['cine','Стена улик + карта + реальные фото',['hi']],['map','Анимированная карта (Османы)',['hi']],['pd','Фото из общественного достояния с лицензиями',['hi','wi']]]],
+['Генерация',[['reel','reel-factory: героиня и фоны',['km']],['stick','Стикмены 3D',['wi']],['doodle','Дудл-ролики',[]]]],
+['Разведка',[['trend','Радар трендов (last30days)',['km','wi','hi']],['watch','Разбор чужого ролика как редактор (только для анализа)',['km','wi','hi']]]]];
+let skc='km';
+function skills(){ $('#skch').innerHTML=Object.entries(CH).map(([k,v])=>`<button class="tab ${skc===k?'on':''}" data-sk="${k}">${v.n}</button>`).join('');
+  $('#skl').innerHTML=SK.map(g=>`<h4 style="margin:12px 0 4px">${g[0]}</h4>`+g[1].map(s=>`<label style="display:flex;gap:8px;align-items:center;margin:3px 0;color:var(--text);font-size:13px"><input type="checkbox" ${s[2].includes(skc)?'checked':''}> ${s[1]} ${s[2].includes(skc)?'<span class="pill s-wait">Продюсер</span>':''}</label>`).join('')).join('')}
+function usk(){const c=$('#uch').value;$('#usk').innerHTML=SK.flatMap(g=>g[1]).filter(s=>s[2].includes(c)||s[0]==='watch').map(s=>`<label style="color:var(--text);display:flex;gap:6px"><input type="checkbox" ${s[2].includes(c)?'checked':''}> ${s[1]}</label>`).join('')}
 let mode='ed';
 const STEPS=['Сценарий','Озвучка','Графика','Рендер','Проверка','Ждёт тебя'];
 const TRACKS={
@@ -211,6 +244,12 @@ document.addEventListener('click',e=>{
   const t=e.target.closest('.tab'); if(t){ch=t.dataset.k;all();return}
   const m=e.target.closest('[data-m]'); if(m){mode=m.dataset.m;document.querySelectorAll('[data-m]').forEach(x=>x.classList.toggle('on',x===m));ed();return}
   if(e.target.closest('#newtopic')){$('#modal').classList.add('on');return}
+  if(e.target.closest('#upl')){usk();$('#umodal').classList.add('on');return}
+  if(e.target.closest('#ux')){$('#umodal').classList.remove('on');return}
+  if(e.target.closest('#ug')){const mo=$('#umode').value,c=$('#uch').value,nm=$('#uname').textContent||'видео клиента';const add=mo==='u'?[['вариант A: другой хук','вариант B: другая нарезка','вариант C: субтитры и музыка']]:mo==='s'?[Array.from({length:6},(_,i)=>'момент '+(i+1)+': сильный отрезок')]:[Array.from({length:3},(_,i)=>'похожий ролик '+(i+1)+' по паспорту')];add[0].forEach(t=>R.push({id:R.length+1,ch:c,st:'draft',title:t,sub:'Из файла: '+nm,len:0,q:'nnnn'}));$('#umodal').classList.remove('on');all();return}
+  if(e.target.closest('#navsk')){skills();$('#smodal').classList.add('on');return}
+  if(e.target.closest('#sx')){$('#smodal').classList.remove('on');return}
+  const sk=e.target.closest('[data-sk]'); if(sk){skc=sk.dataset.sk;skills();return}
   if(e.target.closest('#mx')){$('#modal').classList.remove('on');return}
   if(e.target.closest('#mg')){const t=$('#mt').value||'Новая тема',c=$('#mc').value,n=+$('#mn').value;for(let i=0;i<n;i++)R.push({id:R.length+1,ch:c,st:'draft',title:t+' · сценарий '+(i+1),sub:'Пишется ночью',len:0,q:'nnnn'});$('#modal').classList.remove('on');all();return}
   if(e.target.closest('#unik')){const b=R.find(x=>x.id===sel);['A','B','C'].forEach((v,i)=>R.push({id:R.length+1,ch:b.ch,st:'draft',title:b.title+' · вариант '+v,sub:['другой хук','другая нарезка','другие субтитры и музыка'][i],len:0,q:'nnnn'}));all();return}
@@ -223,6 +262,10 @@ document.addEventListener('keydown',e=>{
   if(e.key>='1'&&e.key<='9'){const r=list()[+e.key-1];if(r){sel=r.id;grid();det()}}
   if(e.key.toLowerCase()==='a'||e.key.toLowerCase()==='ф'){const r=R.find(x=>x.id===sel);if(r&&r.st==='wait'&&!r.q.includes('x')&&r.q.indexOf('n')<0){r.st='ok';all()}}
   if(e.key.toLowerCase()==='r'||e.key.toLowerCase()==='к'){const r=R.find(x=>x.id===sel);if(r&&r.st!=='pub'){r.st='draft';r.q='nnnn';all()}}
+});
+document.addEventListener('change',e=>{
+  if(e.target.id==='ufile'&&e.target.files[0]){$('#uname').textContent=e.target.files[0].name}
+  if(e.target.id==='uch')usk();
 });
 all();
 </script>
