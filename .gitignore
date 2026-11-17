@@ -1,0 +1,27 @@
+# media and renders never go into git
+*.mp4
+*.mov
+*.webm
+*.wav
+*.mp3
+*.m4a
+*.png
+*.jpg
+*.jpeg
+*.webp
+media/
+renders/
+storage/
+
+# data and secrets
+*.db
+*.sqlite
+.env
+*.key
+secrets/
+
+# tooling
+.venv/
+__pycache__/
+node_modules/
+dist/
