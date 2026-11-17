@@ -25,3 +25,5 @@ secrets/
 __pycache__/
 node_modules/
 dist/
+data/
+data-server.log

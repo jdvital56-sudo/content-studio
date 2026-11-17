@@ -179,7 +179,8 @@ kbd{background:var(--panel2);border:1px solid var(--line);border-radius:4px;padd
 <script>
 const CH={km:{n:'Kosta Method',c:'km',b:'KM · СЕРИЯ'},wi:{n:'What if',c:'wi',b:'WHAT IF'},hi:{n:'Исторический',c:'hi',b:'ИМПЕРИИ'}};
 const ST={draft:['Черновик','s-draft'],render:['Рендерится','s-render'],check:['Проверка','s-check'],wait:['Ждёт тебя','s-wait'],ok:['Одобрен','s-ok'],pub:['Опубликован','s-pub'],bad:['Брак','s-bad']};
-const R=[
+let live=false;
+let R=[
 ['km','wait','Discipline is a decision you make once','Pick the workout time tonight, not tomorrow morning.',31,'oooo'],
 ['km','wait','Your bottle is a reminder, not an accessory','Fill it before you leave. Finish it before you sit.',29,'oooo'],
 ['km','render','3 minutes that keep the streak alive','Short counts. Do the small version today.',0,'nnnn'],
@@ -292,14 +293,18 @@ document.addEventListener('click',e=>{
 document.addEventListener('keydown',e=>{
   if(/input/i.test(e.target.tagName))return;
   if(e.key>='1'&&e.key<='9'){const r=list()[+e.key-1];if(r){sel=r.id;grid();det()}}
-  if(e.key.toLowerCase()==='a'||e.key.toLowerCase()==='ф'){const r=R.find(x=>x.id===sel);if(r&&r.st==='wait'&&!r.q.includes('x')&&r.q.indexOf('n')<0){r.st='ok';all()}}
-  if(e.key.toLowerCase()==='r'||e.key.toLowerCase()==='к'){const r=R.find(x=>x.id===sel);if(r&&r.st!=='pub'){r.st='draft';r.q='nnnn';all()}}
+  if(e.key.toLowerCase()==='a'||e.key.toLowerCase()==='ф'){const r=R.find(x=>x.id===sel);if(r&&r.st==='wait'&&!r.q.includes('x')&&r.q.indexOf('n')<0){r.st='ok';save(r.id,'ok');all()}}
+  if(e.key.toLowerCase()==='r'||e.key.toLowerCase()==='к'){const r=R.find(x=>x.id===sel);if(r&&r.st!=='pub'){r.st='draft';r.q='nnnn';save(r.id,'draft');all()}}
 });
+function load(){return fetch('/api/reels').then(r=>r.ok?r.json():Promise.reject()).then(rows=>{live=true;R=rows.map(x=>({id:x.id,ch:x.channel,st:x.status,title:x.title,sub:x.sub,len:x.length_s,q:x.checks}));if(!R.find(x=>x.id===sel))sel=R.length?R[0].id:0;all();const d=document.querySelector('.demo');if(d)d.textContent='Подключена настоящая база (SQLite). Статусы сохраняются. Движков пока нет, ролики примерные.'}).catch(()=>{})}
+function save(id,status){if(!live)return;fetch('/api/reels/'+id,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({status})})}
+document.addEventListener('keyup',()=>{});
 document.addEventListener('change',e=>{
   if(e.target.id==='ufile'&&e.target.files[0]){$('#uname').textContent=e.target.files[0].name}
   if(e.target.id==='uch')usk();
 });
 all();
+load();
 </script>
 </body>
 </html>
