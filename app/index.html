@@ -62,9 +62,23 @@ aside h4{margin:0 0 8px;font-size:12px;text-transform:uppercase;letter-spacing:1
 .ag{display:flex;gap:10px;align-items:center;padding:8px;border:1px solid var(--line);border-radius:10px;margin-bottom:6px;background:var(--panel2)}
 .av{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-weight:700;color:#1d1d1f}
 .ag small{color:var(--muted);display:block;font-size:12px}
-.bar{grid-area:bar;border-top:1px solid var(--line);background:var(--panel);padding:8px 16px;display:flex;gap:14px;align-items:center;overflow:auto}
-.bar h5{margin:0;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);white-space:nowrap}
-.tl{display:flex;gap:4px;flex:1;min-width:360px}.seg{height:22px;border-radius:5px;font-size:11px;display:grid;place-items:center;color:#06210f;font-weight:600}
+.bar{grid-area:bar;border-top:1px solid var(--line);background:var(--panel);padding:8px 16px;display:flex;flex-direction:column;gap:6px;overflow:auto;max-height:245px}
+.edh{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.steps{display:flex;gap:4px;align-items:center;font-size:12px;color:var(--muted);flex-wrap:wrap}
+.steps b{padding:2px 8px;border-radius:999px;background:var(--panel2);font-weight:500}.steps b.d{color:var(--ok)}.steps b.c{background:#1d3558;color:var(--blue)}
+.tr{display:grid;grid-template-columns:96px 1fr;gap:8px;align-items:center;margin:2px 0;position:relative}
+.tr>span{font-size:11px;color:var(--muted);text-align:right}
+.lane{display:flex;gap:2px;height:20px}
+.seg{border-radius:4px;font-size:10px;display:grid;place-items:center;color:#10131a;font-weight:600;overflow:hidden;white-space:nowrap;padding:0 3px}
+.wave{display:flex;align-items:center;gap:1px;height:20px;background:var(--panel2);border-radius:4px;padding:0 3px;overflow:hidden}.wave i{flex:1;background:var(--gold);min-width:1px;border-radius:1px;opacity:.85}
+.ruler{display:flex;font-size:10px;color:var(--muted)}.ruler span{flex:1;border-left:1px solid var(--line);padding-left:3px}
+.play{position:absolute;top:-2px;bottom:-2px;width:2px;background:var(--bad);z-index:3;pointer-events:none}
+.prog{position:absolute;left:0;right:0;bottom:0;background:rgba(14,16,19,.82);padding:5px 8px;font-size:11px;color:var(--text)}.prog div{height:4px;background:var(--line);border-radius:2px;margin-top:3px}.prog div span{display:block;height:100%;background:var(--blue);border-radius:2px}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;place-items:center;z-index:9}.modal.on{display:grid}
+.mbox{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;width:420px;max-width:92vw}.mbox h3{margin:0 0 10px}
+.mbox label{display:block;font-size:12px;color:var(--muted);margin:10px 0 3px}.mbox input,.mbox select{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:8px;color:var(--text)}
+.go{background:var(--gold);color:#1d1d1f;border:0;font-weight:700}
+.tl{display:flex;gap:4px;flex:1;min-width:360px}#edbody{position:relative}
 .hint{font-size:12px;color:var(--muted);white-space:nowrap}
 kbd{background:var(--panel2);border:1px solid var(--line);border-radius:4px;padding:0 5px;font-size:11px}
 @media (max-width:900px){body{grid-template-columns:1fr;grid-template-areas:"top" "demo" "wall" "bar";}nav,aside{display:none}.search{display:none}.tabs{overflow:auto}}
@@ -74,6 +88,7 @@ kbd{background:var(--panel2);border:1px solid var(--line);border-radius:4px;padd
 <header class="top">
   <div class="logo">CONTENT <b>STUDIO</b></div>
   <div class="tabs" id="tabs"></div>
+  <button class="btn go" id="newtopic" style="padding:7px 12px">Тема → ролики</button>
   <input class="search" placeholder="Поиск по хуку и теме">
   <span class="chip">Диск C: <i>47 ГБ</i></span>
   <span class="chip">Рендер: <i>свободен</i></span>
@@ -116,10 +131,22 @@ kbd{background:var(--panel2);border:1px solid var(--line);border-radius:4px;padd
 </aside>
 
 <footer class="bar">
-  <h5>Сегодня ночью</h5>
-  <div class="tl" id="tl"></div>
-  <span class="hint"><kbd>1</kbd>–<kbd>9</kbd> выбрать · <kbd>A</kbd> одобрить · <kbd>R</kbd> переделать · <kbd>Пробел</kbd> смотреть</span>
+  <div class="edh">
+    <button class="f on" data-m="ed">Сборка ролика</button><button class="f" data-m="night">Ночная очередь</button>
+    <div class="steps" id="steps"></div>
+    <span class="hint" style="margin-left:auto"><kbd>1</kbd>–<kbd>9</kbd> выбрать · <kbd>A</kbd> одобрить · <kbd>R</kbd> переделать</span>
+  </div>
+  <div id="edbody"></div>
 </footer>
+
+<div class="modal" id="modal"><div class="mbox">
+  <h3>Тема → ролики</h3>
+  <label>Тема или идея</label><input id="mt" placeholder="например: привычка тренироваться без мотивации">
+  <label>Канал</label><select id="mc"><option value="km">Kosta Method (по паспорту)</option><option value="wi">What if</option><option value="hi">Исторический</option></select>
+  <label>Сколько сценариев</label><select id="mn"><option>5</option><option selected>10</option><option>20</option></select>
+  <p style="font-size:12px;color:var(--muted)">Сценарии пишутся ночью по паспорту канала. Критик отсеивает слабые. Утром они на стене в «Ждёт тебя».</p>
+  <div style="display:flex;gap:8px;justify-content:flex-end"><button class="btn" id="mx">Отмена</button><button class="btn go" id="mg">Запустить ночью</button></div>
+</div></div>
 
 <script>
 const CH={km:{n:'Kosta Method',c:'km',b:'KM · СЕРИЯ'},wi:{n:'What if',c:'wi',b:'WHAT IF'},hi:{n:'Исторический',c:'hi',b:'ИМПЕРИИ'}};
@@ -144,7 +171,8 @@ function fmt(s){return s?Math.floor(s/60)+':'+String(s%60).padStart(2,'0'):'—'
 function tabs(){ $('#tabs').innerHTML=[['all','Все каналы'],...Object.entries(CH).map(([k,v])=>[k,v.n])].map(([k,n])=>`<button class="tab ${ch===k?'on':''}" data-k="${k}">${n}</button>`).join('')}
 function filters(){ $('#filters').innerHTML=[['all','Все'],...Object.entries(ST).map(([k,v])=>[k,v[0]])].map(([k,n])=>{const c=R.filter(r=>(ch==='all'||r.ch===ch)&&(k==='all'||r.st===k)).length;return `<button class="f ${st===k?'on':''}" data-k="${k}">${n} ${c}</button>`}).join('')}
 function list(){return R.filter(r=>(ch==='all'||r.ch===ch)&&(st==='all'||r.st===st))}
-function poster(r){const c=CH[r.ch];return `<div class="poster ${c.c}"><div class="brand">${c.b} ${r.id}</div><div class="t">${r.title}</div></div>`}
+const PR={3:[62,'Озвучка готова, рендер'],12:[35,'Графика карты'],7:[88,'Проверка качества']};
+function poster(r){const c=CH[r.ch],p=PR[r.id];return `<div class="poster ${c.c}"><div class="brand">${c.b} ${r.id}</div><div class="t">${r.title}</div>${(r.st==='render'||r.st==='check')&&p?`<div class="prog">${p[1]} ${p[0]}%<div><span style="width:${p[0]}%"></span></div></div>`:''}</div>`}
 function dots(q){return `<span class="dots">${[...q].map(x=>`<span class="dot ${x==='x'?'x':x==='n'?'n':''}"></span>`).join('')}</span>`}
 function grid(){ const L=list(); $('#grid').innerHTML=L.map((r,i)=>`<div class="card ${r.id===sel?'sel':''}" data-id="${r.id}"><span class="num">${i+1}</span>${poster(r)}<div class="meta"><span class="pill ${ST[r.st][1]}">${ST[r.st][0]}</span>${dots(r.q)}<span>${fmt(r.len)}</span></div></div>`).join('')||'<p style="color:var(--muted)">Здесь пока пусто.</p>'}
 function det(){ const r=R.find(x=>x.id===sel); if(!r){$('#det').innerHTML='';return}
@@ -153,12 +181,39 @@ function det(){ const r=R.find(x=>x.id===sel); if(!r){$('#det').innerHTML='';ret
   $('#det').innerHTML=`<h4>Выбрано · ${CH[r.ch].n}</h4>${poster(r)}<h3>${r.title}</h3><p>${r.sub}</p>
   <div class="script"><b>Хук (2 с):</b> ${r.title}<br><b>Призыв:</b> ${r.ch==='km'?'напиши слово BOTTLE в директ':r.ch==='wi'?'полный ролик на канале':'смотри полный фильм'}</div>
   <ul class="chk">${[...r.q].map((x,i)=>`<li><span class="${x==='o'?'o':x==='x'?'b':'p'}">${x==='o'?'✓':x==='x'?'✕':'…'}</span>${names[i]}</li>`).join('')}</ul>
-  <div class="btns"><button class="btn main ${canOk?'':'off'}">${canOk?'Одобрить (A)':'Одобрить недоступно: проверка не пройдена'}</button><button class="btn">Переделать (R)</button><button class="btn">Пакет для публикации</button></div>`}
-function tl(){ const seg=[['Сценарии',22,'#8fd0a8'],['Озвучка',14,'#c9ab7c'],['Рендер',38,'#5aa2ff'],['Проверка',10,'#a58bff'],['Утро: ждёт тебя',16,'#e8b04a']];
-  $('#tl').innerHTML=seg.map(s=>`<div class="seg" style="flex:${s[1]};background:${s[2]}">${s[0]}</div>`).join('')}
+  <div class="btns"><button class="btn main ${canOk?'':'off'}">${canOk?'Одобрить (A)':'Одобрить недоступно: проверка не пройдена'}</button><button class="btn">Переделать (R)</button><button class="btn">Пакет для публикации</button><button class="btn" id="unik" style="grid-column:1/3">Уникализатор ×3: другие хуки и нарезка для A/B</button></div>`}
+let mode='ed';
+const STEPS=['Сценарий','Озвучка','Графика','Рендер','Проверка','Ждёт тебя'];
+const TRACKS={
+ km:[['Видео',[['Таня: камео',2,'#f0c987'],['Графика KM',4,'#c9ab7c'],['Товар в кадре',3,'#e8dcc4'],['Призыв',2,'#f0c987']]],['Графика',[['Сетка',2,'#a58bff'],['Цифра',3,'#a58bff'],['Подпись',5,'#a58bff']]]],
+ wi:[['Сцены',[['Герой А',4,'#5aa2ff'],['Герой Б',3,'#5aa2ff'],['Счётчик',2,'#8fd0a8'],['Герой А',4,'#5aa2ff']]],['Фото',[['Фото 1',2,'#e8b04a'],['Фото 2',2,'#e8b04a'],['Фото 3',2,'#e8b04a'],['Фото 4',2,'#e8b04a'],['Фото 5',2,'#e8b04a']]]],
+ hi:[['Карта',[['Старт',3,'#7fc4c9'],['Армии',4,'#7fc4c9'],['Осада (ночь)',4,'#3f7f86'],['Итог',3,'#7fc4c9']]],['Фото PD',[['Портрет',3,'#e8b04a'],['Документ',3,'#e8b04a'],['Гравюра',3,'#e8b04a']]]]};
+function wave(n){let h='';for(let i=0;i<n;i++)h+=`<i style="height:${20+Math.abs(Math.sin(i*1.7)*70)+((i*37)%15)}%"></i>`;return h}
+function ed(){
+  const r=R.find(x=>x.id===sel); if(!r){$('#edbody').innerHTML='';return}
+  const si={draft:0,render:3,check:4,wait:5,ok:5,pub:5,bad:4}[r.st];
+  $('#steps').innerHTML=STEPS.map((s,i)=>`<b class="${i<si||(i===si&&r.st!=='render'&&r.st!=='draft')?'d':i===si?'c':''}">${i<si||(i===si&&(r.st==='wait'||r.st==='ok'||r.st==='pub'))?'✓ ':''}${s}</b>`).join('→');
+  if(mode==='night'){ $('#edbody').innerHTML='<div class="tl">'+[['Сценарии',22,'#8fd0a8'],['Озвучка',14,'#c9ab7c'],['Рендер',38,'#5aa2ff'],['Проверка',10,'#a58bff'],['Утро: ждёт тебя',16,'#e8b04a']].map(s=>`<div class="seg" style="flex:${s[1]};background:${s[2]};height:26px">${s[0]}</div>`).join('')+'</div>';return}
+  const T=r.len>0?Math.min(r.len,60):30, tracks=TRACKS[r.ch];
+  const ticks=Array.from({length:6},(_,i)=>`<span>${Math.round(T/6*i)}с</span>`).join('');
+  const lane=a=>`<div class="lane">${a.map(s=>`<div class="seg" style="flex:${s[1]};background:${s[2]}">${s[0]}</div>`).join('')}</div>`;
+  $('#edbody').innerHTML=`<div class="tr"><span></span><div class="ruler">${ticks}</div></div>`
+   +tracks.map(t=>`<div class="tr"><span>${t[0]}</span>${lane(t[1])}</div>`).join('')
+   +`<div class="tr"><span>Голос</span><div class="wave">${wave(120)}</div></div>`
+   +`<div class="tr"><span>Субтитры</span>${lane([['Discipline',2,'#e8e8e8'],['is a',1,'#e8e8e8'],['decision',2,'#c9ab7c'],['you make',2,'#e8e8e8'],['once',2,'#c9ab7c'],['Pick the time',3,'#e8e8e8'],['tonight',2,'#c9ab7c']])}</div>`
+   +`<div class="tr"><span>Музыка</span><div class="wave" style="opacity:.55">${wave(60)}</div></div>`
+   +`<div class="tr"><span>Звуки</span>${lane([['клик',1,'#8fd0a8'],['',3,'transparent'],['клик',1,'#8fd0a8'],['',4,'transparent'],['клик',1,'#8fd0a8'],['',3,'transparent'],['клик',1,'#8fd0a8']])}</div>`
+   +`<div class="play" style="left:calc(104px + (100% - 104px) * .38)"></div>`;
+}
+function tl(){ed()}
 function all(){tabs();filters();grid();det();tl()}
 document.addEventListener('click',e=>{
   const t=e.target.closest('.tab'); if(t){ch=t.dataset.k;all();return}
+  const m=e.target.closest('[data-m]'); if(m){mode=m.dataset.m;document.querySelectorAll('[data-m]').forEach(x=>x.classList.toggle('on',x===m));ed();return}
+  if(e.target.closest('#newtopic')){$('#modal').classList.add('on');return}
+  if(e.target.closest('#mx')){$('#modal').classList.remove('on');return}
+  if(e.target.closest('#mg')){const t=$('#mt').value||'Новая тема',c=$('#mc').value,n=+$('#mn').value;for(let i=0;i<n;i++)R.push({id:R.length+1,ch:c,st:'draft',title:t+' · сценарий '+(i+1),sub:'Пишется ночью',len:0,q:'nnnn'});$('#modal').classList.remove('on');all();return}
+  if(e.target.closest('#unik')){const b=R.find(x=>x.id===sel);['A','B','C'].forEach((v,i)=>R.push({id:R.length+1,ch:b.ch,st:'draft',title:b.title+' · вариант '+v,sub:['другой хук','другая нарезка','другие субтитры и музыка'][i],len:0,q:'nnnn'}));all();return}
   const f=e.target.closest('#filters .f'); if(f){st=f.dataset.k;all();return}
   const s=e.target.closest('.sz .f'); if(s){document.querySelectorAll('.sz .f').forEach(x=>x.classList.remove('on'));s.classList.add('on');document.documentElement.style.setProperty('--w',s.dataset.w+'px');return}
   const c=e.target.closest('.card'); if(c){sel=+c.dataset.id;grid();det()}
