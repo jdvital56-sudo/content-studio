@@ -14,8 +14,8 @@ Nothing is built yet. Read in this order: [DECISIONS.md](DECISIONS.md) (what the
   - stickmen (Remotion): `C:\Users\Вадим\projects\stickman-video` (read `SCRIPT-RULES.md`)
   - documentaries: `C:\Users\Вадим\projects\yt-factory\studio`
   - arcads-cut: `C:\src\arcads-cut` (needs `ARCADS_CYR=1`, `ARCADS_FIT=1`)
-- **Media never goes into git** (mp4, wav, images, renders). Finished videos go to Backblaze B2.
-- **Secrets** (B2 key, Telegram token, Claude token) are entered by the owner himself into files outside git, never through chat.
+- **Media never goes into git** (mp4, wav, images, renders). Finished videos go to the owner's Google Drive (folder `content-studio`, via rclone). The factory's share is capped at 200 GB because Gmail and Photos share that space.
+- **Secrets** (rclone Google token, Telegram token, Claude token) are entered by the owner himself into files outside git, never through chat.
 - The web app listens on `127.0.0.1` only. Phone access later through Tailscale, not by opening ports.
 - Scripts are written with `claude -p` on the owner's subscription, not an API key and not DeepSeek. The token lives in one place so it can be swapped for the factory's own account.
 - No metadata spoofing, no duplicate-hiding, no account farms ("uniqualizer" = honest A/B variants).
