@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Content Studio</title>
+<style>
+:root{
+  --bg:#0e1013; --panel:#161a20; --panel2:#1c2129; --line:#262d38; --text:#e8ebf0; --muted:#8a93a3;
+  --gold:#c9ab7c; --ok:#4cc38a; --warn:#e8b04a; --bad:#e5655f; --blue:#5aa2ff; --violet:#a58bff;
+}
+*{box-sizing:border-box} html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--text);font:14px/1.4 "Segoe UI",system-ui,sans-serif;display:grid;
+  grid-template-rows:auto auto 1fr auto;grid-template-columns:200px 1fr 320px;
+  grid-template-areas:"top top top" "demo demo demo" "nav wall side" "bar bar bar";overflow:hidden}
+button{font:inherit;color:inherit;cursor:pointer}
+.top{grid-area:top;display:flex;align-items:center;gap:16px;padding:10px 16px;border-bottom:1px solid var(--line);background:var(--panel)}
+.logo{font-weight:700;letter-spacing:.3px} .logo b{color:var(--gold)}
+.tabs{display:flex;gap:6px}
+.tab{padding:6px 12px;border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--muted)}
+.tab.on{background:var(--gold);color:#1d1d1f;border-color:var(--gold);font-weight:600}
+.search{margin-left:auto;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:7px 10px;color:var(--text);width:220px}
+.chip{font-size:12px;padding:4px 9px;border-radius:999px;background:var(--panel2);border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.chip i{font-style:normal;color:var(--ok)}
+.demo{grid-area:demo;background:#2a2312;color:#e9d9b0;font-size:12px;padding:5px 16px;border-bottom:1px solid #4a3d1c}
+nav{grid-area:nav;border-right:1px solid var(--line);padding:12px 8px;background:var(--panel);display:flex;flex-direction:column;gap:2px}
+nav a{display:flex;justify-content:space-between;padding:9px 10px;border-radius:8px;color:var(--muted);text-decoration:none;cursor:pointer}
+nav a.on{background:var(--panel2);color:var(--text)} nav a em{font-style:normal;background:var(--bad);color:#fff;border-radius:999px;padding:0 7px;font-size:12px}
+nav h6{margin:14px 10px 4px;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted)}
+.pp{margin:6px 10px;font-size:12px;color:var(--muted)} .bar2{height:6px;background:var(--line);border-radius:3px;margin-top:3px;overflow:hidden}.bar2 span{display:block;height:100%;background:var(--gold)}
+.wall{grid-area:wall;overflow:auto;padding:14px 16px}
+.tools{display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap}
+.f{padding:5px 11px;border-radius:8px;border:1px solid var(--line);background:transparent;color:var(--muted);font-size:13px}
+.f.on{background:var(--panel2);color:var(--text);border-color:#3a4454}
+.sz{margin-left:auto;display:flex;gap:4px}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(var(--w,150px),1fr))}
+.card{position:relative;border:2px solid transparent;border-radius:12px;background:var(--panel);overflow:hidden;cursor:pointer}
+.card:hover{border-color:#3a4454}.card.sel{border-color:var(--gold)}
+.poster{aspect-ratio:9/16;display:flex;flex-direction:column;justify-content:flex-end;padding:10px;position:relative}
+.poster .t{font-weight:700;font-size:14px;line-height:1.15;text-shadow:0 1px 6px rgba(0,0,0,.35)}
+.poster .brand{position:absolute;top:8px;left:10px;right:10px;font-size:10px;letter-spacing:1px;text-transform:uppercase;opacity:.75}
+.km{background:linear-gradient(#faf7f2,#efe6d6);color:#1d1d1f;background-image:linear-gradient(#e7dccb 1px,transparent 1px),linear-gradient(90deg,#e7dccb 1px,transparent 1px);background-size:100% 28px,28px 100%;background-color:#faf7f2}
+.km .t{color:#8a6c3f;text-shadow:none}
+.wi{background:linear-gradient(160deg,#16335c,#0d1b33);color:#fff}
+.hi{background:linear-gradient(160deg,#3f7f86,#c9b48a);color:#1d1d1f}
+.num{position:absolute;top:8px;right:8px;background:rgba(14,16,19,.85);color:var(--text);border-radius:6px;padding:1px 7px;font-weight:700;font-size:13px;z-index:2}
+.meta{display:flex;justify-content:space-between;align-items:center;padding:7px 9px;font-size:12px;color:var(--muted)}
+.pill{padding:2px 8px;border-radius:999px;font-size:11px;font-weight:600}
+.s-draft{background:#2b313c;color:var(--muted)}.s-render{background:#1d3558;color:var(--blue)}.s-check{background:#2f2a4d;color:var(--violet)}
+.s-wait{background:#4a3a14;color:var(--warn)}.s-ok{background:#16382a;color:var(--ok)}.s-pub{background:#16382a;color:#8fe3b8}.s-bad{background:#4a1d1b;color:var(--bad)}
+.dots{display:flex;gap:3px}.dot{width:7px;height:7px;border-radius:50%;background:var(--ok)}.dot.x{background:var(--bad)}.dot.n{background:#3a4454}
+aside{grid-area:side;border-left:1px solid var(--line);background:var(--panel);overflow:auto;padding:12px}
+aside h4{margin:0 0 8px;font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--muted)}
+.det .poster{border-radius:10px;max-height:300px;aspect-ratio:9/12}
+.det h3{margin:10px 0 2px;font-size:15px}.det p{margin:4px 0;color:var(--muted);font-size:13px}
+.script{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:13px;margin:8px 0}
+.chk{list-style:none;padding:0;margin:8px 0;font-size:13px}.chk li{display:flex;gap:8px;padding:2px 0}.chk .o{color:var(--ok)}.chk .b{color:var(--bad)}.chk .p{color:var(--muted)}
+.btns{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px}
+.btn{padding:9px;border-radius:8px;border:1px solid var(--line);background:var(--panel2)}
+.btn.main{background:var(--ok);color:#06210f;border-color:var(--ok);font-weight:700;grid-column:1/3}
+.btn.off{opacity:.45;cursor:not-allowed}
+.ag{display:flex;gap:10px;align-items:center;padding:8px;border:1px solid var(--line);border-radius:10px;margin-bottom:6px;background:var(--panel2)}
+.av{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-weight:700;color:#1d1d1f}
+.ag small{color:var(--muted);display:block;font-size:12px}
+.bar{grid-area:bar;border-top:1px solid var(--line);background:var(--panel);padding:8px 16px;display:flex;gap:14px;align-items:center;overflow:auto}
+.bar h5{margin:0;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);white-space:nowrap}
+.tl{display:flex;gap:4px;flex:1;min-width:360px}.seg{height:22px;border-radius:5px;font-size:11px;display:grid;place-items:center;color:#06210f;font-weight:600}
+.hint{font-size:12px;color:var(--muted);white-space:nowrap}
+kbd{background:var(--panel2);border:1px solid var(--line);border-radius:4px;padding:0 5px;font-size:11px}
+@media (max-width:900px){body{grid-template-columns:1fr;grid-template-areas:"top" "demo" "wall" "bar";}nav,aside{display:none}.search{display:none}.tabs{overflow:auto}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="logo">CONTENT <b>STUDIO</b></div>
+  <div class="tabs" id="tabs"></div>
+  <input class="search" placeholder="Поиск по хуку и теме">
+  <span class="chip">Диск C: <i>47 ГБ</i></span>
+  <span class="chip">Рендер: <i>свободен</i></span>
+  <span class="chip">Лимит Claude: <i>12%</i></span>
+</header>
+<div class="demo">Макет для оценки внешнего вида. Ролики и цифры на стене примерные, настоящих движков здесь пока нет.</div>
+
+<nav>
+  <a class="on">Монтажная стена</a>
+  <a>Ждёт тебя <em>5</em></a>
+  <a>Ночная очередь</a>
+  <a>Банк хуков</a>
+  <h6>Каналы</h6>
+  <a>Паспорта</a>
+  <a>Новый канал +</a>
+  <h6>Завод</h6>
+  <a>Агенты</a>
+  <a>Архив на Диске</a>
+  <a>Корзина (30 дней)</a>
+  <div class="pp">Паспорт Kosta Method<div class="bar2"><span style="width:88%"></span></div>88% заполнен</div>
+  <div class="pp">Паспорт What if<div class="bar2"><span style="width:92%"></span></div>92% заполнен</div>
+  <div class="pp">Паспорт Исторический<div class="bar2"><span style="width:90%"></span></div>90% заполнен</div>
+</nav>
+
+<main class="wall">
+  <div class="tools">
+    <div id="filters" style="display:flex;gap:6px;flex-wrap:wrap"></div>
+    <div class="sz"><button class="f" data-w="110">S</button><button class="f on" data-w="150">M</button><button class="f" data-w="210">L</button></div>
+  </div>
+  <div class="grid" id="grid"></div>
+</main>
+
+<aside>
+  <div class="det" id="det"></div>
+  <h4 style="margin-top:18px">Агенты</h4>
+  <div class="ag"><div class="av" style="background:var(--gold)">П</div><div>Продюсер<small>распределяет задачи, ждёт тебя</small></div></div>
+  <div class="ag"><div class="av" style="background:#8fd0a8">С</div><div>Сценарист<small>пишет 10 сценариев ночью</small></div></div>
+  <div class="ag"><div class="av" style="background:#a58bff">К</div><div>Критик<small>ГОТОВ / НЕ ГОТОВ с причиной</small></div></div>
+  <div class="ag"><div class="av" style="background:#5aa2ff">У</div><div>Упаковщик<small>подписи, хэштеги, обложки</small></div></div>
+</aside>
+
+<footer class="bar">
+  <h5>Сегодня ночью</h5>
+  <div class="tl" id="tl"></div>
+  <span class="hint"><kbd>1</kbd>–<kbd>9</kbd> выбрать · <kbd>A</kbd> одобрить · <kbd>R</kbd> переделать · <kbd>Пробел</kbd> смотреть</span>
+</footer>
+
+<script>
+const CH={km:{n:'Kosta Method',c:'km',b:'KM · СЕРИЯ'},wi:{n:'What if',c:'wi',b:'WHAT IF'},hi:{n:'Исторический',c:'hi',b:'ИМПЕРИИ'}};
+const ST={draft:['Черновик','s-draft'],render:['Рендерится','s-render'],check:['Проверка','s-check'],wait:['Ждёт тебя','s-wait'],ok:['Одобрен','s-ok'],pub:['Опубликован','s-pub'],bad:['Брак','s-bad']};
+const R=[
+['km','wait','Discipline is a decision you make once','Pick the workout time tonight, not tomorrow morning.',31,'oooo'],
+['km','wait','Your bottle is a reminder, not an accessory','Fill it before you leave. Finish it before you sit.',29,'oooo'],
+['km','render','3 minutes that keep the streak alive','Short counts. Do the small version today.',0,'nnnn'],
+['km','bad','Socks that stay put during squats','Little details, fewer excuses.',33,'ooxo'],
+['km','ok','Stronger you starts with a plan','Write tomorrow’s workout before you sleep.',30,'oooo'],
+['wi','wait','What if you noticed everything?','Episode 4 · 7:12',432,'oooo'],
+['wi','check','What if you had a settings menu?','Episode 3 · 7:07',427,'ooon'],
+['wi','draft','What if the Moon vanished tonight?','Тема выбрана, сценарий пишется',0,'nnnn'],
+['hi','wait','The empire that ruled three seas','Османы · фильм v5 · 11:56',716,'oooo'],
+['hi','pub','Short 1: The siege of Constantinople','Османы · Short · 0:48',48,'oooo'],
+['hi','ok','Short 2: Why the janissaries mattered','Османы · Short · 0:52',52,'oooo'],
+['hi','render','Short 3: The map in 60 seconds','Османы · Short',0,'nnnn'],
+].map((r,i)=>({id:i+1,ch:r[0],st:r[1],title:r[2],sub:r[3],len:r[4],q:r[5]}));
+let ch='all',st='all',sel=1;
+const $=s=>document.querySelector(s);
+function fmt(s){return s?Math.floor(s/60)+':'+String(s%60).padStart(2,'0'):'—'}
+function tabs(){ $('#tabs').innerHTML=[['all','Все каналы'],...Object.entries(CH).map(([k,v])=>[k,v.n])].map(([k,n])=>`<button class="tab ${ch===k?'on':''}" data-k="${k}">${n}</button>`).join('')}
+function filters(){ $('#filters').innerHTML=[['all','Все'],...Object.entries(ST).map(([k,v])=>[k,v[0]])].map(([k,n])=>{const c=R.filter(r=>(ch==='all'||r.ch===ch)&&(k==='all'||r.st===k)).length;return `<button class="f ${st===k?'on':''}" data-k="${k}">${n} ${c}</button>`}).join('')}
+function list(){return R.filter(r=>(ch==='all'||r.ch===ch)&&(st==='all'||r.st===st))}
+function poster(r){const c=CH[r.ch];return `<div class="poster ${c.c}"><div class="brand">${c.b} ${r.id}</div><div class="t">${r.title}</div></div>`}
+function dots(q){return `<span class="dots">${[...q].map(x=>`<span class="dot ${x==='x'?'x':x==='n'?'n':''}"></span>`).join('')}</span>`}
+function grid(){ const L=list(); $('#grid').innerHTML=L.map((r,i)=>`<div class="card ${r.id===sel?'sel':''}" data-id="${r.id}"><span class="num">${i+1}</span>${poster(r)}<div class="meta"><span class="pill ${ST[r.st][1]}">${ST[r.st][0]}</span>${dots(r.q)}<span>${fmt(r.len)}</span></div></div>`).join('')||'<p style="color:var(--muted)">Здесь пока пусто.</p>'}
+function det(){ const r=R.find(x=>x.id===sel); if(!r){$('#det').innerHTML='';return}
+  const bad=r.q.includes('x'),canOk=!bad&&r.q.indexOf('n')<0&&r.st!=='pub';
+  const names=['Формат 1080×1920','Громкость −14 LUFS','Субтитры = речь (до 3%)','Безопасные зоны, нет чёрных кадров'];
+  $('#det').innerHTML=`<h4>Выбрано · ${CH[r.ch].n}</h4>${poster(r)}<h3>${r.title}</h3><p>${r.sub}</p>
+  <div class="script"><b>Хук (2 с):</b> ${r.title}<br><b>Призыв:</b> ${r.ch==='km'?'напиши слово BOTTLE в директ':r.ch==='wi'?'полный ролик на канале':'смотри полный фильм'}</div>
+  <ul class="chk">${[...r.q].map((x,i)=>`<li><span class="${x==='o'?'o':x==='x'?'b':'p'}">${x==='o'?'✓':x==='x'?'✕':'…'}</span>${names[i]}</li>`).join('')}</ul>
+  <div class="btns"><button class="btn main ${canOk?'':'off'}">${canOk?'Одобрить (A)':'Одобрить недоступно: проверка не пройдена'}</button><button class="btn">Переделать (R)</button><button class="btn">Пакет для публикации</button></div>`}
+function tl(){ const seg=[['Сценарии',22,'#8fd0a8'],['Озвучка',14,'#c9ab7c'],['Рендер',38,'#5aa2ff'],['Проверка',10,'#a58bff'],['Утро: ждёт тебя',16,'#e8b04a']];
+  $('#tl').innerHTML=seg.map(s=>`<div class="seg" style="flex:${s[1]};background:${s[2]}">${s[0]}</div>`).join('')}
+function all(){tabs();filters();grid();det();tl()}
+document.addEventListener('click',e=>{
+  const t=e.target.closest('.tab'); if(t){ch=t.dataset.k;all();return}
+  const f=e.target.closest('#filters .f'); if(f){st=f.dataset.k;all();return}
+  const s=e.target.closest('.sz .f'); if(s){document.querySelectorAll('.sz .f').forEach(x=>x.classList.remove('on'));s.classList.add('on');document.documentElement.style.setProperty('--w',s.dataset.w+'px');return}
+  const c=e.target.closest('.card'); if(c){sel=+c.dataset.id;grid();det()}
+});
+document.addEventListener('keydown',e=>{
+  if(/input/i.test(e.target.tagName))return;
+  if(e.key>='1'&&e.key<='9'){const r=list()[+e.key-1];if(r){sel=r.id;grid();det()}}
+  if(e.key.toLowerCase()==='a'||e.key.toLowerCase()==='ф'){const r=R.find(x=>x.id===sel);if(r&&r.st==='wait'&&!r.q.includes('x')&&r.q.indexOf('n')<0){r.st='ok';all()}}
+  if(e.key.toLowerCase()==='r'||e.key.toLowerCase()==='к'){const r=R.find(x=>x.id===sel);if(r&&r.st!=='pub'){r.st='draft';r.q='nnnn';all()}}
+});
+all();
+</script>
+</body>
+</html>
