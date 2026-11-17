@@ -27,3 +27,5 @@ node_modules/
 dist/
 data/
 data-server.log
+trials/*.json
+trials/*.err
