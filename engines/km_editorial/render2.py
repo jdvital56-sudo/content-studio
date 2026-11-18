@@ -130,7 +130,8 @@ def main(spec_path):
                 if hgt <= 640: break
         u.update(font=fnt, lay=lay, h=hgt, size=size)
         if u['stock']:  # frames of the stock clip for the whole line
-            clip = glob.glob(os.path.join(HP, 'library', 'stock', u['stock'] + '*.mp4'))[0]
+            clip = u['stock'] if os.path.isabs(u['stock']) else glob.glob(os.path.join(HP, 'library', 'stock', u['stock'] + '*.mp4'))[0]
+            u['clip'] = clip
             fd = os.path.join(tmp, f'l{u["i"]}'); os.makedirs(fd)
             subprocess.run(['ffmpeg', '-v', 'error', '-stream_loop', '-1', '-i', clip, '-t', f'{u["dur"] + 0.3:.2f}', '-vf', f'fps={FPS},scale=980:790:force_original_aspect_ratio=increase,crop=980:790', '-q:v', '3', os.path.join(fd, '%04d.jpg')], check=True)
             u['fd'] = fd
@@ -223,7 +224,13 @@ def main(spec_path):
     pipe.stdin.close(); pipe.wait()
     final = os.path.join(out_dir, 'final.mp4')
     subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', os.path.join(out_dir, 'raw.mp4'), '-c:v', 'copy', '-af', 'loudnorm=I=-14:TP=-1.5', '-c:a', 'aac', '-b:a', '192k', final], check=True)
-    lic = [dict(file=os.path.basename(g), license='Pexels License', source='pexels.com') for u in units if u['stock'] for g in glob.glob(os.path.join(HP, 'library', 'stock', u['stock'] + '*.mp4'))]
+    lic = []
+    for u in units:
+        if not u['stock']: continue
+        side = u['clip'] + '.json'; page = 'pexels.com'
+        try: page = json.load(open(side, encoding='utf-8')).get('page', page)
+        except Exception: pass
+        lic.append(dict(file=os.path.basename(u['clip']), license='Pexels License (free to use)', source=page))
     json.dump(dict(duration_s=round(total, 2), engine='km_editorial v2', licenses=lic + [dict(file='tania pose library', license='own brand asset', source='heroine-pose-library')]), open(os.path.join(out_dir, 'meta.json'), 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
     shutil.rmtree(tmp, ignore_errors=True); print('OK', final, round(total, 1), 's')
 

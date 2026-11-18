@@ -3,12 +3,15 @@
 # usage: bash tools/write-scripts-v2.sh <channel passport> <research file> <outdir> [count]
 P="$1"; R="$2"; O="$3"; N="${4:-14}"; T="$5"; S="$6"   # T = optional topic focus, S = the owner's own script style rules
 mkdir -p "$O"
+# plain variables: special characters inside ${x:+...} break the heredoc in this bash
+TL=""; [ -n "$T" ] && TL="Topic focus - every script must be about this: $T"
+SL=""; [ -n "$S" ] && SL="Owner script style rules - follow them, they override your defaults: $S"
 {
 cat "$P"; echo; echo "=== RESEARCH ==="; cat "$R"; echo
 cat <<EOF
 === TASK (Scriptwriter) ===
-${T:+Topic focus (all scripts must be about this): $T}
-${S:+Owner's script style rules (follow them, they override your defaults): $S}
+$TL
+$SL
 Current channel goal: grow followers. Do NOT advertise products and do NOT use product keywords for direct messages. The call to action is follow, save or share.
 You are the head scriptwriter of a short-video factory. Write $N DIFFERENT candidate reel scripts for this channel in English.
 Rules:

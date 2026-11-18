@@ -149,6 +149,20 @@ createServer(async (req, res) => {
       });
       return send(res, 202, { started: true });
     }
+    // Director: script draft -> finished reel (tools/build-reel.py). Progress lines "STEP ..." are shown on the wall.
+    const bm = url.pathname.match(/^\/api\/reels\/(\d+)\/build$/);
+    if (bm && req.method === 'POST') {
+      const id = +bm[1], key = 'build' + id;
+      if (jobs.get(key)?.state === 'running') return send(res, 409, { error: 'already running' });
+      const row = db.prepare('SELECT script FROM reels WHERE id=?').get(id);
+      if (!row?.script) return send(res, 400, { error: 'no script' });
+      jobs.set(key, { state: 'running', note: 'Режиссёр начинает', since: Date.now() });
+      const p = spawn('python', [join(root, 'tools', 'build-reel.py'), String(id)], { cwd: root, env: { ...process.env, PYTHONIOENCODING: 'utf-8' } });
+      let buf = ''; const onData = d => { buf += d; let i; while ((i = buf.indexOf('\n')) >= 0) { const l = buf.slice(0, i).trim(); buf = buf.slice(i + 1); if (l.startsWith('STEP ')) jobs.set(key, { state: 'running', note: l.slice(5) }); else if (l.startsWith('ERROR')) jobs.set(key, { state: 'error', note: l.slice(6) }); } };
+      p.stdout.on('data', onData); p.stderr.on('data', () => {});
+      p.on('close', c => { if (jobs.get(key)?.state !== 'error') jobs.set(key, c === 0 ? { state: 'done', note: 'Готово' } : { state: 'error', note: 'Сборка не удалась' }); });
+      return send(res, 202, { started: true });
+    }
     const dl = url.pathname.match(/^\/api\/reels\/(\d+)$/);
     if (dl && req.method === 'DELETE') {
       const id = +dl[1];

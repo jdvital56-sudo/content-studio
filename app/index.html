@@ -4,92 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Content Studio</title>
-<style>
-:root{
-  --bg:#0e1013; --panel:#161a20; --panel2:#1c2129; --line:#262d38; --text:#e8ebf0; --muted:#8a93a3;
-  --gold:#c9ab7c; --ok:#4cc38a; --warn:#e8b04a; --bad:#e5655f; --blue:#5aa2ff; --violet:#a58bff;
-}
-*{box-sizing:border-box} html,body{margin:0;height:100%}
-body{background:var(--bg);color:var(--text);font:14px/1.4 "Segoe UI",system-ui,sans-serif;display:grid;
-  grid-template-rows:auto auto 1fr auto;grid-template-columns:200px 1fr 320px;
-  grid-template-areas:"top top top" "demo demo demo" "nav wall side" "bar bar bar";overflow:hidden}
-button{font:inherit;color:inherit;cursor:pointer}
-.top{grid-area:top;display:flex;align-items:center;gap:16px;padding:10px 16px;border-bottom:1px solid var(--line);background:var(--panel)}
-.logo{font-weight:700;letter-spacing:.3px} .logo b{color:var(--gold)}
-.tabs{display:flex;gap:6px}
-.tab{padding:6px 12px;border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--muted)}
-.tab.on{background:var(--gold);color:#1d1d1f;border-color:var(--gold);font-weight:600}
-.search{margin-left:auto;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:7px 10px;color:var(--text);width:220px}
-.chip{font-size:12px;padding:4px 9px;border-radius:999px;background:var(--panel2);border:1px solid var(--line);color:var(--muted);white-space:nowrap}
-.chip i{font-style:normal;color:var(--ok)}
-.demo{grid-area:demo;background:#2a2312;color:#e9d9b0;font-size:12px;padding:5px 16px;border-bottom:1px solid #4a3d1c}
-nav{grid-area:nav;border-right:1px solid var(--line);padding:12px 8px;background:var(--panel);display:flex;flex-direction:column;gap:2px}
-nav a{display:flex;justify-content:space-between;padding:9px 10px;border-radius:8px;color:var(--muted);text-decoration:none;cursor:pointer}
-nav a.on{background:var(--panel2);color:var(--text)} nav a em{font-style:normal;background:var(--bad);color:#fff;border-radius:999px;padding:0 7px;font-size:12px}
-nav h6{margin:14px 10px 4px;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted)}
-.pp{margin:6px 10px;font-size:12px;color:var(--muted)} .bar2{height:6px;background:var(--line);border-radius:3px;margin-top:3px;overflow:hidden}.bar2 span{display:block;height:100%;background:var(--gold)}
-.wall{grid-area:wall;overflow:auto;padding:14px 16px}
-.tools{display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap}
-.f{padding:5px 11px;border-radius:8px;border:1px solid var(--line);background:transparent;color:var(--muted);font-size:13px}
-.f.on{background:var(--panel2);color:var(--text);border-color:#3a4454}
-.sz{margin-left:auto;display:flex;gap:4px}
-.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(var(--w,150px),1fr))}
-.card{position:relative;border:2px solid transparent;border-radius:12px;background:var(--panel);overflow:hidden;cursor:pointer}
-.card:hover{border-color:#3a4454}.card.sel{border-color:var(--gold)}
-.poster{aspect-ratio:9/16;display:flex;flex-direction:column;justify-content:flex-end;padding:10px;position:relative}
-.poster .t{font-weight:700;font-size:14px;line-height:1.15;text-shadow:0 1px 6px rgba(0,0,0,.35)}
-.poster .brand{position:absolute;top:8px;left:10px;right:10px;font-size:10px;letter-spacing:1px;text-transform:uppercase;opacity:.75}
-.km{background:linear-gradient(#faf7f2,#efe6d6);color:#1d1d1f;background-image:linear-gradient(#e7dccb 1px,transparent 1px),linear-gradient(90deg,#e7dccb 1px,transparent 1px);background-size:100% 28px,28px 100%;background-color:#faf7f2}
-.km .t{color:#8a6c3f;text-shadow:none}
-.wi{background:linear-gradient(160deg,#16335c,#0d1b33);color:#fff}
-.hi{background:linear-gradient(160deg,#3f7f86,#c9b48a);color:#1d1d1f}
-.num{position:absolute;top:8px;right:8px;background:rgba(14,16,19,.85);color:var(--text);border-radius:6px;padding:1px 7px;font-weight:700;font-size:13px;z-index:2}
-.meta{display:flex;justify-content:space-between;align-items:center;padding:7px 9px;font-size:12px;color:var(--muted)}
-.pill{padding:2px 8px;border-radius:999px;font-size:11px;font-weight:600}
-.s-draft{background:#2b313c;color:var(--muted)}.s-render{background:#1d3558;color:var(--blue)}.s-check{background:#2f2a4d;color:var(--violet)}
-.s-wait{background:#4a3a14;color:var(--warn)}.s-ok{background:#16382a;color:var(--ok)}.s-pub{background:#16382a;color:#8fe3b8}.s-bad{background:#4a1d1b;color:var(--bad)}
-.dots{display:flex;gap:3px}.dot{width:7px;height:7px;border-radius:50%;background:var(--ok)}.dot.x{background:var(--bad)}.dot.n{background:#3a4454}
-aside{grid-area:side;border-left:1px solid var(--line);background:var(--panel);overflow:auto;padding:12px}
-aside h4{margin:0 0 8px;font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--muted)}
-.det .poster{border-radius:10px;max-height:300px;aspect-ratio:9/12}
-.det h3{margin:10px 0 2px;font-size:15px}.det p{margin:4px 0;color:var(--muted);font-size:13px}
-.script{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:13px;margin:8px 0}
-.chk{list-style:none;padding:0;margin:8px 0;font-size:13px}.chk li{display:flex;gap:8px;padding:2px 0}.chk .o{color:var(--ok)}.chk .b{color:var(--bad)}.chk .p{color:var(--muted)}
-.btns{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px}
-.btn{padding:9px;border-radius:8px;border:1px solid var(--line);background:var(--panel2)}
-.btn.main{background:var(--ok);color:#06210f;border-color:var(--ok);font-weight:700;grid-column:1/3}
-.btn.off{opacity:.45;cursor:not-allowed}
-.ag{display:flex;gap:10px;align-items:center;padding:8px;border:1px solid var(--line);border-radius:10px;margin-bottom:6px;background:var(--panel2)}
-.av{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-weight:700;color:#1d1d1f}
-.ag small{color:var(--muted);display:block;font-size:12px}
-.bar{grid-area:bar;border-top:1px solid var(--line);background:var(--panel);padding:8px 16px;display:flex;flex-direction:column;gap:6px;overflow:auto;max-height:245px}
-.edh{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
-.steps{display:flex;gap:4px;align-items:center;font-size:12px;color:var(--muted);flex-wrap:wrap}
-.steps b{padding:2px 8px;border-radius:999px;background:var(--panel2);font-weight:500}.steps b.d{color:var(--ok)}.steps b.c{background:#1d3558;color:var(--blue)}
-.tr{display:grid;grid-template-columns:96px 1fr;gap:8px;align-items:center;margin:2px 0;position:relative}
-.tr>span{font-size:11px;color:var(--muted);text-align:right}
-.lane{display:flex;gap:2px;height:20px}
-.seg{border-radius:4px;font-size:10px;display:grid;place-items:center;color:#10131a;font-weight:600;overflow:hidden;white-space:nowrap;padding:0 3px}
-.wave{display:flex;align-items:center;gap:1px;height:20px;background:var(--panel2);border-radius:4px;padding:0 3px;overflow:hidden}.wave i{flex:1;background:var(--gold);min-width:1px;border-radius:1px;opacity:.85}
-.ruler{display:flex;font-size:10px;color:var(--muted)}.ruler span{flex:1;border-left:1px solid var(--line);padding-left:3px}
-.play{position:absolute;top:-2px;bottom:-2px;width:2px;background:var(--bad);z-index:3;pointer-events:none}
-.prog{position:absolute;left:0;right:0;bottom:0;background:rgba(14,16,19,.82);padding:5px 8px;font-size:11px;color:var(--text)}.prog div{height:4px;background:var(--line);border-radius:2px;margin-top:3px}.prog div span{display:block;height:100%;background:var(--blue);border-radius:2px}
-details{border:1px solid var(--line);border-radius:12px;background:var(--panel);margin:8px 0;padding:0 12px}
-details>summary{cursor:pointer;padding:12px 0;font-weight:600;list-style:none}details>summary::before{content:"▸ ";color:var(--gold)}details[open]>summary::before{content:"▾ "}
-details>div{padding-bottom:12px}
-.stylepill{position:absolute;left:8px;bottom:8px;z-index:2;background:rgba(14,16,19,.82);color:var(--gold);border:1px solid var(--gold);border-radius:999px;padding:2px 9px;font-size:11px;font-weight:600}
-.poster{position:relative}
-.playbtn{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:48px;height:48px;border-radius:50%;border:0;background:rgba(14,16,19,.7);color:#fff;font-size:18px;z-index:2}
-.card:hover .playbtn{background:var(--gold);color:#1d1d1f}
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;place-items:center;z-index:9}.modal.on{display:grid}
-.mbox{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;width:420px;max-width:92vw}.mbox h3{margin:0 0 10px}
-.mbox label{display:block;font-size:12px;color:var(--muted);margin:10px 0 3px}.mbox input,.mbox select{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:8px;color:var(--text)}
-.go{background:var(--gold);color:#1d1d1f;border:0;font-weight:700}
-.tl{display:flex;gap:4px;flex:1;min-width:360px}#edbody{position:relative}
-.hint{font-size:12px;color:var(--muted);white-space:nowrap}
-kbd{background:var(--panel2);border:1px solid var(--line);border-radius:4px;padding:0 5px;font-size:11px}
-@media (max-width:900px){body{grid-template-columns:1fr;grid-template-areas:"top" "demo" "wall" "bar";}nav,aside{display:none}.search{display:none}.tabs{overflow:auto}}
-</style>
+<link rel="stylesheet" href="/apple.css">
+<script src="/i18n.js" defer></script>
 </head>
 <body>
 <header class="top">
@@ -105,24 +21,28 @@ kbd{background:var(--panel2);border:1px solid var(--line);border-radius:4px;padd
 <div class="demo">Макет для оценки внешнего вида. Ролики и цифры на стене примерные, настоящих движков здесь пока нет.</div>
 
 <nav>
-  <a class="on" id="navwall">Монтажная стена</a>
-  <a id="navwait">Ждёт тебя <em id="waitn">0</em></a>
-  <a id="navnight">Ночная очередь</a>
-  <a id="navhooks">Банк хуков</a>
-  <a id="navpub">Публикация</a>
-  <a id="navlib">Мои видео (материал)</a>
-  <a id="navsk">Навыки</a>
-  <a id="navcl" style="font-size:12px">Вид клиента (демо)</a>
+  <h6>Производство</h6>
+  <a class="on" id="navwall"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="2"/><rect x="14" y="3" width="7" height="5" rx="2"/><rect x="14" y="12" width="7" height="9" rx="2"/><rect x="3" y="16" width="7" height="5" rx="2"/></svg>Монтажная стена</a>
+  <a id="navwait"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Ждёт тебя <em id="waitn">0</em></a>
+  <a id="navlib"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M10 9.5v5l4.5-2.5z"/></svg>Мои видео</a>
+  <a id="navhooks"><svg viewBox="0 0 24 24"><path d="M13 3L5 14h6l-1 7 8-11h-6z"/></svg>Банк хуков</a>
+  <a id="navnight"><svg viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z"/></svg>Ночная очередь</a>
   <h6>Каналы</h6>
-  <a id="navpp">Паспорта</a>
-  <a id="newch">Новый канал +</a>
+  <a id="navpp"><svg viewBox="0 0 24 24"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5"/></svg>Паспорта</a>
+  <a id="newch"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>Новый канал</a>
+  <h6>Выпуск</h6>
+  <a id="navpub"><svg viewBox="0 0 24 24"><path d="M21 3L10 14"/><path d="M21 3l-7 18-4-7-7-4z"/></svg>Публикация</a>
+  <a id="navarc"><svg viewBox="0 0 24 24"><path d="M7 18a4 4 0 0 1-.5-8A6 6 0 0 1 18 9.5a4 4 0 0 1-.5 8.5z"/></svg>Архив на Диске</a>
   <h6>Завод</h6>
-  <a id="navag">Агенты</a>
-  <a id="navarc">Архив на Диске</a>
-  <a id="navtrash">Корзина <em id="trashn" style="background:var(--line)">0</em></a>
-  <div class="pp">Паспорт Kosta Method<div class="bar2"><span style="width:88%"></span></div>88% заполнен</div>
-  <div class="pp">Паспорт What if<div class="bar2"><span style="width:92%"></span></div>92% заполнен</div>
-  <div class="pp">Паспорт Исторический<div class="bar2"><span style="width:90%"></span></div>90% заполнен</div>
+  <a id="navsk"><svg viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/></svg>Навыки</a>
+  <a id="navag"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M3 20a6 6 0 0 1 12 0"/><path d="M16 5a3.5 3.5 0 0 1 0 7M18 20a6 6 0 0 0-3-5"/></svg>Агенты</a>
+  <a id="navtrash"><svg viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>Корзина <em id="trashn" style="background:var(--fill);color:var(--muted)">0</em></a>
+  <h6>Заполнение паспортов</h6>
+  <div class="pp">Kosta Method<div class="bar2"><span style="width:88%"></span></div>88%</div>
+  <div class="pp">What if<div class="bar2"><span style="width:92%"></span></div>92%</div>
+  <div class="pp">Исторический<div class="bar2"><span style="width:90%"></span></div>90%</div>
+  <a id="navcl" style="margin-top:auto;font-size:13px;color:var(--muted)"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Вид клиента (демо)</a>
+  <a id="themebtn" style="font-size:13px;color:var(--muted)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><span id="themelbl">Тема: авто</span></a>
 </nav>
 
 <main class="wall">
@@ -144,7 +64,7 @@ kbd{background:var(--panel2);border:1px solid var(--line);border-radius:4px;padd
 
 <footer class="bar">
   <div class="edh">
-    <button class="f on" data-m="ed">Сборка ролика</button><button class="f" data-m="night">Ночная очередь</button>
+    <button class="f on" data-m="ed">Сборка ролика</button><button class="f" data-m="night">Ночная очередь</button><button class="f" id="bartog">Показать схему ролика</button>
     <div class="steps" id="steps"></div>
     <span class="hint" style="margin-left:auto"><kbd>1</kbd>–<kbd>9</kbd> выбрать · <kbd>A</kbd> одобрить · <kbd>R</kbd> переделать</span>
   </div>
@@ -173,24 +93,16 @@ kbd{background:var(--panel2);border:1px solid var(--line);border-radius:4px;padd
   <p style="font-size:12px;color:var(--muted)">Навык попадёт в список. Чтобы завод умел его применять, Claude подключает его движок: скажи, и я это сделаю.</p>
   <div style="display:flex;gap:8px;justify-content:flex-end"><button class="btn" id="cx">Отмена</button><button class="btn go" id="cs">Добавить</button></div></div></div>
 <div class="modal" id="player"><div style="position:relative;height:92vh;aspect-ratio:9/16;max-width:94vw"><video id="pvid" controls playsinline style="width:100%;height:100%;background:#000;border-radius:12px"></video><button class="btn" id="plx" style="position:absolute;top:8px;right:8px">Закрыть ✕</button></div></div>
-<div class="modal" id="umodal"><div class="mbox" style="width:560px">
+<div class="modal" id="umodal"><div class="mbox" style="width:520px">
   <h3>Загрузить видео</h3>
-  <label for="ufile" id="drop" style="border:2px dashed var(--line);border-radius:12px;padding:22px;text-align:center;color:var(--muted);cursor:pointer;margin:0">Перетащи сюда ролик клиента или сырое видео, либо нажми и выбери файл<br><small id="uname"></small></label>
-  <input type="file" id="ufile" accept="video/*" style="display:none">
-  <label>Что сделать</label>
-  <select id="umode"><option value="u">Уникализировать: 3 творческих варианта (другой хук, нарезка, субтитры)</option><option value="s">Нарезать на рилсы: найти сильные моменты и собрать 5–10 коротких</option><option value="l">Сделать похожие: взять приём и снять новые ролики по паспорту канала</option></select>
-  <label>Канал (оформление и правила из паспорта)</label>
+  <p style="color:var(--muted);font-size:13px">Свои съёмки или ролики клиента. Можно выбрать сразу несколько файлов.</p>
+  <label class="f1" style="display:block">Канал</label>
   <select id="uch"><option value="km">Kosta Method</option><option value="wi">What if</option><option value="hi">Исторический</option></select>
-  <label>Навыки (рекомендует Продюсер, можно снять галочки)</label>
-  <div id="usk" style="display:grid;grid-template-columns:1fr 1fr;gap:4px;font-size:13px"></div>
-  <p style="font-size:12px;color:var(--warn)">Только свои ролики или ролики клиента с его разрешением. Чужие ролики конкурентов не загружаем: авторское право и блокировки аккаунтов.</p>
-  <div style="display:flex;gap:8px;justify-content:flex-end"><button class="btn" id="ux">Отмена</button><button class="btn go" id="ug">Запустить</button></div>
-</div></div>
-<div class="modal" id="pmodal"><div class="mbox" style="width:680px;max-height:90vh;overflow:auto">
-  <h3 id="ptitle">Новый канал: паспорт</h3>
-  <div class="bar2" style="margin:4px 0 2px"><span id="pbar" style="width:0%"></span></div>
-  <div id="pstep" style="font-size:12px;color:var(--muted);margin-bottom:6px"></div>
-  <div id="pbody"></div>
+  <div id="ulist" style="margin:12px 0;display:grid;gap:6px"></div>
+  <input type="file" id="ufile" accept="video/*" multiple style="display:none">
+  <button class="btn" id="upick" style="width:100%">Выбрать файлы…</button>
+  <p style="font-size:12px;color:var(--warn);margin-top:12px">Только свои ролики или ролики клиента с его разрешением. Чужие ролики конкурентов не загружаем: авторское право и блокировки аккаунтов.</p>
+  <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px"><button class="btn" id="ux">Закрыть</button><button class="btn go" id="ug">Загрузить</button></div>
 </div></div>
 <div class="modal" id="smodal"><div class="mbox" style="width:640px;max-height:86vh;overflow:auto">
   <h3>Навыки завода</h3>
@@ -247,7 +159,7 @@ function det(){ const r=R.find(x=>x.id===sel); if(!r){$('#det').innerHTML='';ret
   <div class="script"><b>Хук (2 с):</b> ${r.title}<br><b>Призыв:</b> ${r.ch==='km'?'напиши слово '+(((r.sub||'').match(/DM (\w+)/)||[])[1]||'BOTTLE')+' в директ':r.ch==='wi'?'полный ролик на канале':'смотри полный фильм'}</div>
   <ul class="chk">${[...r.q].map((x,i)=>`<li><span class="${x==='o'?'o':x==='x'?'b':'p'}">${x==='o'?'✓':x==='x'?'✕':'…'}</span>${names[i]}</li>`).join('')}</ul>
   ${r.script?`<div class="script"><b>Сценарий (${r.script.hook_type||''}):</b><br>${r.script.spoken}<br><small style="color:var(--muted)">Почему зацепит: ${r.script.why||'—'}</small></div>`:''}
-  <div class="btns"><button class="btn main ${canOk||r.st==='draft'?'':'off'}" id="bok" ${r.script&&!r.video?'disabled':''}>${r.script&&!r.video?'Сценарий готов. Сборка по сценарию: следующий шаг':canOk?'Одобрить (A)':'Одобрить недоступно: проверка не пройдена'}</button><button class="btn" id="bredo">Переделать (R)</button><button class="btn" id="bdel" style="color:var(--bad)">${r.st==='trash'?'Восстановить':'Удалить'}</button>${r.st==='trash'?'<button class="btn" id="bhard" style="grid-column:1/3;color:var(--bad)">Удалить навсегда (файл остаётся на диске)</button>':''}<button class="btn" id="bpack" style="grid-column:1/3">Пакет для ручной публикации</button>${r.video?'<button class="btn" id="fxopen" style="grid-column:1/3">Добавить эффекты в этот ролик…</button>':''}<button class="btn" id="unik" style="grid-column:1/3">Уникализатор ×3: другие хуки и нарезка для A/B</button></div>`}
+  <div class="btns"><button class="btn main ${canOk||r.st==='draft'?'':'off'}" id="${r.script&&!r.video?'bbuild':'bok'}">${r.script&&!r.video?'Собрать ролик по сценарию (около 5 минут)':canOk?'Одобрить (A)':'Одобрить недоступно: проверка не пройдена'}</button><button class="btn" id="bredo">Переделать (R)</button><button class="btn" id="bdel" style="color:var(--bad)">${r.st==='trash'?'Восстановить':'Удалить'}</button>${r.st==='trash'?'<button class="btn" id="bhard" style="grid-column:1/3;color:var(--bad)">Удалить навсегда (файл остаётся на диске)</button>':''}<button class="btn" id="bpack" style="grid-column:1/3">Пакет для ручной публикации</button>${r.video?'<button class="btn" id="fxopen" style="grid-column:1/3">Добавить эффекты в этот ролик…</button>':''}<button class="btn" id="unik" style="grid-column:1/3">Уникализатор ×3: другие хуки и нарезка для A/B</button></div>`}
 const SK=[
 ['Хуки и сценарий',[['youtube','Хуки, SEO и структура YouTube',['km','wi','hi']],['cartoon','Мультяшные ролики без слов',['km']],['science','Научные и исторические факты, без выдумок',['wi','hi']],['humanizer','Живой язык текста (без «ИИ-тона»)',['km','wi','hi']]]],
 ['Нарезка и монтаж',[['recut','Нарезка говорящей головы: паузы, дубли, субтитры',['km']],['arcads','15 стилей монтажа (кинетика, стекло, неон…)',['km']],['caps','Субтитры в стиле канала',['km','wi','hi']],['effects','51 эффект: шторка, нож, наезды',['km','hi']],['sfx','Настоящие звуки на щелчки',['km','wi']]]],
@@ -381,6 +293,24 @@ function chRender(){const b=$('#chbody');
  if(chStep===2)b.innerHTML=`<p style="font-size:13px;color:var(--muted)">Шаг 3 из 3. Что будет дальше.</p><div class="script">1) 4 варианта персонажа на выбор ≈ <b>$0,16</b>.<br>2) Набор из 10 ключевых поз со ртом ≈ <b>$1,2</b>, полный набор из 57 поз ≈ <b>$6,8</b>.<br>3) Расходы идут с <b>твоего собственного ключа</b> сервиса картинок, платформа деньги клиента не держит.</div><p style="font-size:12px;color:var(--warn)">Генерация подключается при первом клиенте. Сейчас заявка сохраняется, и ничего не тратится.</p><div style="display:flex;justify-content:space-between;margin-top:12px"><button class="btn" data-ch="1">Назад</button><button class="btn go" data-ch="save">Сохранить заявку</button></div>`}
 function styleOf(r){const s=r.sub||'';if(s.includes('KM Editorial'))return 'KM Editorial · Таня';if(s.includes('Вариант Б'))return 'Сток + плашки';if(r.ch==='hi')return 'Анимированная карта';if(r.ch==='wi')return 'Стикмены 3D';return 'KM Editorial'}
 let clientMode=false;
+// ---- multi-file upload: choose several files, they go one after another with their own progress
+let UFILES=[],UPLOADING=false;
+function mb(n){return n>=1048576?(n/1048576).toFixed(n>=1.05e8?0:1)+' МБ':Math.max(1,Math.round(n/1024))+' КБ'}
+function ulist(){$('#ulist').innerHTML=UFILES.length?UFILES.map((f,i)=>`<div class="ag" style="margin:0;padding:8px 12px;align-items:center"><div><b style="font-size:13px;word-break:break-all">${f.name}</b><small id="up${i}">${mb(f.size)} · ждёт</small></div></div>`).join(''):'<p style="color:var(--muted);font-size:13px;margin:0">Файлы не выбраны.</p>';
+  $('#upick').textContent=UFILES.length?'Выбрать другие файлы…':'Выбрать файлы…'}
+function uploadOne(f,i,ch){return new Promise(ok=>{const x=new XMLHttpRequest();x.open('POST','/api/library?channel='+ch+'&name='+encodeURIComponent(f.name));const el=$('#up'+i);
+  x.upload.onprogress=ev=>{if(ev.lengthComputable&&el)el.textContent=mb(f.size)+' · '+Math.round(ev.loaded/ev.total*100)+'%'};
+  x.onload=()=>{if(el)el.innerHTML=x.status===201?'<span style="color:var(--ok)">загружено</span>':'<span style="color:var(--bad)">не видеофайл или ошибка</span>';ok(x.status===201)};
+  x.onerror=()=>{if(el)el.innerHTML='<span style="color:var(--bad)">нет связи с сервером</span>';ok(false)};x.send(f)})}
+async function uploadAll(){UPLOADING=true;$('#ug').disabled=true;const ch=$('#uch').value;let done=0;
+  for(let i=0;i<UFILES.length;i++){$('#ug').textContent='Загружаю '+(i+1)+' из '+UFILES.length+'…';if(await uploadOne(UFILES[i],i,ch))done++}
+  UPLOADING=false;$('#ug').disabled=false;$('#ug').textContent='Загрузить';UFILES=[];$('#ufile').value='';
+  if(done){view='lib';libView();setTimeout(()=>{$('#umodal').classList.remove('on')},900)}}
+// ---- theme: auto / light / dark
+function themeNext(){let t='auto';try{t=localStorage.getItem('theme')||'auto'}catch{}const n={auto:'light',light:'dark',dark:'auto'}[t];try{localStorage.setItem('theme',n)}catch{}themeApply()}
+function themeApply(){let t='auto';try{t=localStorage.getItem('theme')||'auto'}catch{}const r=document.documentElement;if(t==='auto')r.removeAttribute('data-theme');else r.setAttribute('data-theme',t);const l=$('#themelbl');if(l)l.textContent='Тема: '+{auto:'авто',light:'светлая',dark:'тёмная'}[t]}
+themeApply();
+
 const gm=(t,h)=>{$('#gt').textContent=t;$('#gb').innerHTML=h;$('#gmodal').classList.add('on')};
 let PUB={auto:false,accounts:{}};
 function pollTopic(){const t=setInterval(async()=>{const j=(await fetch('/api/jobs').then(x=>x.json())).topic;const c=$('#jobchip');if(c&&j)c.innerHTML='Задачи: <i>'+(j.state==='running'?'пишу сценарии…':j.note)+'</i>';if(!j||j.state==='running')return;clearInterval(t);await load();if(j.state==='done'){st='draft';all()}else alert(j.note)},4000);const c=$('#jobchip');if(c)c.innerHTML='Задачи: <i>пишу сценарии…</i>'}
@@ -485,13 +415,12 @@ document.addEventListener('click',e=>{
   const t=e.target.closest('.tab'); if(t&&t.dataset.k!==undefined){ch=t.dataset.k;all();return}
   const m=e.target.closest('[data-m]'); if(m){mode=m.dataset.m;document.querySelectorAll('[data-m]').forEach(x=>x.classList.toggle('on',x===m));ed();return}
   if(e.target.closest('#newtopic')){$('#modal').classList.add('on');return}
-  if(e.target.closest('#upl')){usk();$('#umodal').classList.add('on');return}
+  if(e.target.closest('#upl')){UFILES=[];ulist();$('#umodal').classList.add('on');return}
   if(e.target.closest('#ux')){$('#umodal').classList.remove('on');return}
-  if(e.target.closest('#ug')){const f=$('#ufile').files[0];if(!f){alert('Сначала выбери видеофайл.');return}
-    const ch=$('#uch').value,x=new XMLHttpRequest();x.open('POST','/api/library?channel='+ch+'&name='+encodeURIComponent(f.name));
-    $('#ug').textContent='Загружаю 0%…';x.upload.onprogress=ev=>{if(ev.lengthComputable)$('#ug').textContent='Загружаю '+Math.round(ev.loaded/ev.total*100)+'%…'};
-    x.onload=()=>{$('#ug').textContent='Запустить';$('#umodal').classList.remove('on');$('#ufile').value='';$('#uname').textContent='';if(x.status===201){view='lib';libView()}else alert('Не загрузилось: нужен видеофайл (mp4, mov, webm).')};
-    x.onerror=()=>{$('#ug').textContent='Запустить';alert('Нет связи с сервером.')};x.send(f);return}
+  if(e.target.closest('#bartog')){const b=document.querySelector('footer.bar');b.classList.toggle('open');$('#bartog').textContent=b.classList.contains('open')?'Скрыть схему':'Показать схему ролика';return}
+  if(e.target.closest('#upick')){$('#ufile').click();return}
+  if(e.target.closest('#themebtn')){themeNext();return}
+  if(e.target.closest('#ug')){if(!UFILES.length){alert('Сначала выбери видеофайлы.');return}if(UPLOADING)return;uploadAll();return}
   if(e.target.closest('#newch')){pstart();return}
   if(e.target.closest('#navpp')){pstart();pa=['Kosta Method: упражнения и привычки.','KM Editorial: бумага, одно золото, Montserrat, всё на сетке.','Графика и мультяшная Таня 1–2 раза; позже живое видео Тетяны.','','','Английский; рилсы 30 с.','Instagram @kosta_method, TikTok, YouTube Shorts.','Слово BOTTLE в директ.','«−10 кг за 30 дней», «до/после», выдуманные цифры.'];pbase=1;pstepRender();return}
   const pp=e.target.closest('[data-p]'); if(pp){const a=pp.dataset.p,t=$('#pans');if(t)pa[pi]=t.value;
@@ -505,6 +434,8 @@ document.addEventListener('click',e=>{
   if(e.target.closest('#plx')||e.target.id==='player'){closePlayer();return}
   // --- real buttons of the reel card
   const act=(s)=>{const r=R.find(x=>x.id===sel);if(!r)return null;return r};
+  if(e.target.closest('#bbuild')){const r=act();if(!r||!live)return;fetch('/api/reels/'+r.id+'/build',{method:'POST'}).then(x=>{if(x.status===409){alert('Этот ролик уже собирается.');return}
+    r.st='render';all();const t=setInterval(async()=>{const j=(await fetch('/api/jobs').then(y=>y.json()))['build'+r.id];const c=$('#jobchip');if(c&&j)c.innerHTML='Задачи: <i>'+j.note+'</i>';if(!j||j.state==='running')return;clearInterval(t);await load();if(j.state==='error')alert('Сборка не удалась: '+j.note)},4000)});return}
   if(e.target.closest('#bok')){const r=act();if(r&&!(r.script&&!r.video)&&r.st!=='ok'){r.st='ok';save(r.id,'ok');all();counters()}return}
   if(e.target.closest('#bredo')){const r=act();if(r){r.st='draft';save(r.id,'draft');all();counters()}return}
   if(e.target.closest('#bdel')){const r=act();if(!r)return;
@@ -523,7 +454,7 @@ document.addEventListener('click',e=>{
   if(e.target.closest('#navhooks')){hooksModal();return}
   if(e.target.closest('#navpub')){pubView();return}
   if(e.target.closest('#navlib')||e.target.closest('#upl2')&&false){libView();return}
-  if(e.target.closest('#upl2')){usk();$('#umodal').classList.add('on');return}
+  if(e.target.closest('#upl2')){UFILES=[];ulist();$('#umodal').classList.add('on');return}
   if(e.target.closest('#navag')){gm('Агенты',`${[['Продюсер','распределяет задачи, держит очередь'],['Писатель','пишет сценарии по паспорту, тренду и твоему стилю (работает: «Тема → ролики»)'],['Критик','оценивает сценарии по пяти критериям и переписывает слабые (работает)'],['Упаковщик','подпись и хэштеги (простая версия работает в «Пакете»)'],['Режиссёр','по сценарию выбирает позы, сток и эффекты и собирает ролик (следующий шаг, сейчас вручную)']].map(a=>`<div class="ag"><div><b>${a[0]}</b><small>${a[1]}</small></div></div>`).join('')}`);return}
   if(e.target.closest('#navarc')){gm('Архив на Диске','<p>Готовые ролики копируются в Google Drive через rclone (подключение проверено: запись и чтение работают). Автокопия по расписанию и правило «удалять через 60 дней» ещё не включены.</p><p style="font-size:13px;color:var(--muted)">Сейчас архив делается вручную.</p>');return}
   if(e.target.closest('#gx')){$('#gmodal').classList.remove('on');return}
@@ -572,7 +503,7 @@ document.addEventListener('keydown',e=>{
   if(e.key.toLowerCase()==='a'||e.key.toLowerCase()==='ф'){const r=R.find(x=>x.id===sel);if(r&&r.st==='wait'&&!r.q.includes('x')&&r.q.indexOf('n')<0){r.st='ok';save(r.id,'ok');all()}}
   if(e.key.toLowerCase()==='r'||e.key.toLowerCase()==='к'){const r=R.find(x=>x.id===sel);if(r&&r.st!=='pub'){r.st='draft';r.q='nnnn';save(r.id,'draft');all()}}
 });
-function load(){return fetch('/api/reels').then(r=>r.ok?r.json():Promise.reject()).then(rows=>{live=true;R=rows.map(x=>({id:x.id,ch:x.channel,st:x.status,title:x.title,sub:x.sub,len:x.length_s,q:x.checks,video:!!x.job_dir,script:x.script?JSON.parse(x.script):null}));counters();if(!R.find(x=>x.id===sel))sel=R.length?R[0].id:0;all();const d=document.querySelector('.demo');if(d)d.textContent='Подключена настоящая база (SQLite). Статусы сохраняются. Движков пока нет, ролики примерные.'}).catch(()=>{})}
+function load(){return fetch('/api/reels').then(r=>r.ok?r.json():Promise.reject()).then(rows=>{live=true;R=rows.map(x=>({id:x.id,ch:x.channel,st:x.status,title:x.title,sub:x.sub,len:x.length_s,q:x.checks,video:!!x.job_dir,script:x.script?JSON.parse(x.script):null}));counters();if(!R.find(x=>x.id===sel))sel=R.length?R[0].id:0;all();const d=document.querySelector('.demo');if(d)d.textContent='Все данные хранятся на этом компьютере.'}).catch(()=>{})}
 function save(id,status){if(!live)return;fetch('/api/reels/'+id,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({status})})}
 // New reels appear on their own: re-read the base every 8 s, unless something is open or a video is playing.
 setInterval(()=>{if(!live||view!=='wall'||document.querySelector('.modal.on'))return;if([...document.querySelectorAll('video')].some(v=>!v.paused&&!v.muted))return;fetch('/api/reels').then(r=>r.json()).then(rows=>{if(rows.length!==R.length)load()}).catch(()=>{})},8000);
@@ -581,8 +512,8 @@ document.addEventListener('change',e=>{
   if(e.target.name==='pmode'||e.target.name==='pmouth'){const p=PRES[fxc]||(PRES[fxc]={mode:'cameo',mouth:'calm'});p[e.target.name==='pmode'?'mode':'mouth']=e.target.value;if(live)fetch('/api/settings/presence',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(PRES)});return}
   if(e.target.id==='fxall'){fxall=e.target.checked;openFx();return}
   if(e.target.id==='chf'&&e.target.files[0]){$('#chn').textContent=e.target.files[0].name}
-  if(e.target.id==='ufile'&&e.target.files[0]){$('#uname').textContent=e.target.files[0].name}
-  if(e.target.id==='uch')usk();
+  if(e.target.id==='ufile'){UFILES=[...e.target.files];ulist()}
+
 });
 all();
 load();
