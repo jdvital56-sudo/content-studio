@@ -216,7 +216,7 @@ const $=s=>document.querySelector(s);
 function fmt(s){return s?Math.floor(s/60)+':'+String(s%60).padStart(2,'0'):'—'}
 function tabs(){ $('#tabs').innerHTML=[['all','Все каналы'],...Object.entries(CH).map(([k,v])=>[k,v.n])].map(([k,n])=>`<button class="tab ${ch===k?'on':''}" data-k="${k}">${n}</button>`).join('')}
 function filters(){ $('#filters').innerHTML=[['all','Все'],...Object.entries(ST).map(([k,v])=>[k,v[0]])].map(([k,n])=>{const c=R.filter(r=>(ch==='all'||r.ch===ch)&&(k==='all'||r.st===k)).length;return `<button class="f ${st===k?'on':''}" data-k="${k}">${n} ${c}</button>`}).join('')}
-function list(){return R.filter(r=>(ch==='all'||r.ch===ch)&&(st==='all'||r.st===st))}
+function list(){return R.filter(r=>(ch==='all'||r.ch===ch)&&(st==='all'||r.st===st)).sort((a,b)=>b.id-a.id)} // newest first
 const PR={3:[62,'Озвучка готова, рендер'],12:[35,'Графика карты'],7:[88,'Проверка качества']};
 function poster(r){const c=CH[r.ch],p=PR[r.id];if(r.video)return `<div class="poster" style="padding:0;background:#000"><video class="pv" src="/api/reels/${r.id}/video#t=0.8" muted loop playsinline preload="metadata" style="width:100%;height:100%;object-fit:cover"></video><button class="playbtn" data-play="${r.id}" title="Смотреть со звуком">▶</button></div>`;return `<div class="poster ${c.c}"><div class="brand">${c.b} ${r.id}</div><div class="t">${r.title}</div>${(r.st==='render'||r.st==='check')&&p?`<div class="prog">${p[1]} ${p[0]}%<div><span style="width:${p[0]}%"></span></div></div>`:''}</div>`}
 function dots(q){return `<span class="dots">${[...q].map(x=>`<span class="dot ${x==='x'?'x':x==='n'?'n':''}"></span>`).join('')}</span>`}
@@ -405,6 +405,8 @@ document.addEventListener('keydown',e=>{
 });
 function load(){return fetch('/api/reels').then(r=>r.ok?r.json():Promise.reject()).then(rows=>{live=true;R=rows.map(x=>({id:x.id,ch:x.channel,st:x.status,title:x.title,sub:x.sub,len:x.length_s,q:x.checks,video:!!x.job_dir}));if(!R.find(x=>x.id===sel))sel=R.length?R[0].id:0;all();const d=document.querySelector('.demo');if(d)d.textContent='Подключена настоящая база (SQLite). Статусы сохраняются. Движков пока нет, ролики примерные.'}).catch(()=>{})}
 function save(id,status){if(!live)return;fetch('/api/reels/'+id,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({status})})}
+// New reels appear on their own: re-read the base every 8 s, unless something is open or a video is playing.
+setInterval(()=>{if(!live||view!=='wall'||document.querySelector('.modal.on'))return;if([...document.querySelectorAll('video')].some(v=>!v.paused&&!v.muted))return;fetch('/api/reels').then(r=>r.json()).then(rows=>{if(rows.length!==R.length)load()}).catch(()=>{})},8000);
 document.addEventListener('keyup',()=>{});
 document.addEventListener('change',e=>{
   if(e.target.id==='fxall'){fxall=e.target.checked;openFx();return}
