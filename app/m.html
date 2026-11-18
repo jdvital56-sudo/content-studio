@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<title>Content Studio · телефон</title>
+<link rel="stylesheet" href="/apple.css">
+<script src="/i18n.js" defer></script>
+<style>
+  /* Phone feed: one reel per screen. Swipe right = approve, left = redo, up = next. Buttons do the same. */
+  html,body{height:100%;margin:0;background:#000;overflow:hidden;display:block;touch-action:none;-webkit-user-select:none;user-select:none}
+  .top2{position:fixed;top:0;left:0;right:0;z-index:5;display:flex;justify-content:space-between;align-items:center;padding:calc(env(safe-area-inset-top) + 10px) 16px 10px;color:#fff;font-weight:600;background:linear-gradient(rgba(0,0,0,.55),transparent)}
+  .top2 small{color:rgba(255,255,255,.7);display:inline}
+  #stage{position:fixed;inset:0;display:grid;place-items:center}
+  .cardm{position:absolute;inset:0;will-change:transform}
+  .cardm video{width:100%;height:100%;object-fit:cover;background:#000}
+  .badge{position:absolute;top:30%;padding:10px 18px;border-radius:14px;font-size:24px;font-weight:800;border:3px solid;opacity:0;transform:rotate(-8deg)}
+  .b-ok{left:24px;color:#32d74b;border-color:#32d74b}.b-redo{right:24px;color:#ffb340;border-color:#ffb340;transform:rotate(8deg)}
+  .info{position:absolute;left:0;right:0;bottom:0;padding:16px 16px calc(env(safe-area-inset-bottom) + 96px);color:#fff;background:linear-gradient(transparent,rgba(0,0,0,.75))}
+  .info b{font-size:17px;display:block}.info span{font-size:13px;color:rgba(255,255,255,.75)}
+  .acts{position:fixed;left:0;right:0;bottom:calc(env(safe-area-inset-bottom) + 18px);display:flex;justify-content:center;gap:18px;z-index:6}
+  .acts button{width:64px;height:64px;border-radius:50%;border:0;font-size:24px;color:#fff;background:rgba(255,255,255,.16);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);transition:transform .12s}
+  .acts button:active{transform:scale(.9)}
+  #ok{background:#32d74b;color:#062} #redo{background:rgba(255,179,64,.9);color:#3a2400}
+  .empty{color:#fff;text-align:center;padding:24px;font-size:17px;line-height:1.5}
+  @media (prefers-reduced-motion:reduce){.cardm{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="top2"><span>Ждёт тебя <small id="cnt"></small></span><a href="/" style="color:#fff;font-size:13px;text-decoration:none">Полная версия ›</a></div>
+<div id="stage"></div>
+<div class="acts"><button id="redo" title="Переделать">↺</button><button id="del" title="В корзину">✕</button><button id="next" title="Следующий">↓</button><button id="ok" title="Одобрить">✓</button></div>
+<script>
+let Q=[],i=0;
+const $=s=>document.querySelector(s), stage=$('#stage');
+async function load(){Q=(await fetch('/api/reels').then(r=>r.json())).filter(r=>r.status==='wait'&&r.job_dir);i=0;show()}
+function show(){stage.innerHTML='';$('#cnt').textContent=Q.length?(i+1)+' из '+Q.length:'';
+  if(i>=Q.length){stage.innerHTML='<div class="empty">Всё просмотрено ✓<br><small style="color:rgba(255,255,255,.6)">Новые ролики появятся здесь сами</small></div>';return}
+  const r=Q[i],c=document.createElement('div');c.className='cardm';
+  c.innerHTML=`<video src="/api/reels/${r.id}/video" autoplay loop playsinline></video><div class="badge b-ok">ОДОБРИТЬ</div><div class="badge b-redo">ПЕРЕДЕЛАТЬ</div><div class="info"><b>${r.title}</b><span>${r.sub||''}</span></div>`;
+  stage.appendChild(c);const v=c.querySelector('video');v.muted=false;v.play().catch(()=>{v.muted=true;v.play().catch(()=>{})});drag(c)}
+function fly(c,dx,dy,done){c.style.transition='transform .32s cubic-bezier(.2,.8,.2,1),opacity .32s';c.style.transform=`translate(${dx}px,${dy}px) rotate(${dx/20}deg)`;c.style.opacity='0';setTimeout(done,300)}
+async function act(kind){const r=Q[i];if(!r)return;const c=stage.querySelector('.cardm');
+  if(kind==='ok'){fetch('/api/reels/'+r.id,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:'ok'})});fly(c,innerWidth*1.2,0,()=>{i++;show()})}
+  if(kind==='redo'){fetch('/api/reels/'+r.id,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:'draft'})});fly(c,-innerWidth*1.2,0,()=>{i++;show()})}
+  if(kind==='del'){if(!confirm('Убрать в корзину? Можно восстановить на компьютере.'))return;fetch('/api/reels/'+r.id,{method:'DELETE'});fly(c,0,innerHeight,()=>{i++;show()})}
+  if(kind==='next'){fly(c,0,-innerHeight,()=>{i++;show()})}}
+// 1:1 drag that follows the finger from where it grabbed; release decides by distance or by flick speed
+function drag(c){let x0=0,y0=0,dx=0,dy=0,t0=0,on=false;const bo=c.querySelector('.b-ok'),br=c.querySelector('.b-redo');
+  c.addEventListener('pointerdown',e=>{on=true;x0=e.clientX;y0=e.clientY;t0=performance.now();c.setPointerCapture(e.pointerId);c.style.transition='none'});
+  c.addEventListener('pointermove',e=>{if(!on)return;dx=e.clientX-x0;dy=e.clientY-y0;c.style.transform=`translate(${dx}px,${Math.min(0,dy)}px) rotate(${dx/24}deg)`;bo.style.opacity=Math.max(0,Math.min(1,dx/120));br.style.opacity=Math.max(0,Math.min(1,-dx/120))});
+  c.addEventListener('pointerup',()=>{if(!on)return;on=false;const dt=Math.max(1,performance.now()-t0),vx=dx/dt,vy=dy/dt;
+    if(dx>110||vx>0.6)return act('ok');if(dx<-110||vx<-0.6)return act('redo');if(dy<-140||vy<-0.6)return act('next');
+    c.style.transition='transform .35s cubic-bezier(.2,.8,.2,1)';c.style.transform='none';bo.style.opacity=0;br.style.opacity=0;dx=dy=0})}
+$('#ok').onclick=()=>act('ok');$('#redo').onclick=()=>act('redo');$('#del').onclick=()=>act('del');$('#next').onclick=()=>act('next');
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight')act('ok');if(e.key==='ArrowLeft')act('redo');if(e.key==='ArrowDown'||e.key==='ArrowUp')act('next')});
+load();
+</script>
+</body>
+</html>

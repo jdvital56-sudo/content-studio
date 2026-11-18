@@ -227,10 +227,10 @@ def main(spec_path):
     lic = []
     for u in units:
         if not u['stock']: continue
-        side = u['clip'] + '.json'; page = 'pexels.com'
-        try: page = json.load(open(side, encoding='utf-8')).get('page', page)
+        side = u['clip'] + '.json'; page = 'pexels.com'; lname = 'Pexels License (free to use)'
+        try: j = json.load(open(side, encoding='utf-8')); page = j.get('page', page); lname = j.get('license', lname)
         except Exception: pass
-        lic.append(dict(file=os.path.basename(u['clip']), license='Pexels License (free to use)', source=page))
+        lic.append(dict(file=os.path.basename(u['clip']), license=lname, source=page))
     json.dump(dict(duration_s=round(total, 2), engine='km_editorial v2', licenses=lic + [dict(file='tania pose library', license='own brand asset', source='heroine-pose-library')]), open(os.path.join(out_dir, 'meta.json'), 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
     shutil.rmtree(tmp, ignore_errors=True); print('OK', final, round(total, 1), 's')
 

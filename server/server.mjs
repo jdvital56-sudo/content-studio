@@ -116,6 +116,12 @@ createServer(async (req, res) => {
       const s = db.prepare('SELECT value FROM settings WHERE key=?').get(st[1]);
       return send(res, 200, s ? JSON.parse(s.value) : (['skills', 'scriptstyle', 'publish', 'presence', 'slots'].includes(st[1]) ? {} : []));
     }
+    // Pixabay: second free stock source. The owner pastes his own API key; it never leaves the server.
+    if (url.pathname === '/api/pixabay') {
+      if (req.method === 'PUT') { const b = await readBody(req); db.prepare("INSERT OR REPLACE INTO settings(key,value) VALUES('pixabay',?)").run(JSON.stringify({ key: String(b.key || '').trim() })); log(null, 'owner', 'pixabay', 'key saved'); return send(res, 200, { ok: true }); }
+      let k = ''; try { k = JSON.parse(db.prepare("SELECT value FROM settings WHERE key='pixabay'").get()?.value || '{}').key || ''; } catch {}
+      return send(res, 200, { hasKey: !!k });
+    }
     if (url.pathname === '/api/telegram') {
       if (req.method === 'PUT') { const b = await readBody(req); const cur = tgConf();
         const v = { token: b.token ? String(b.token).trim() : cur.token, chat: String(b.chat ?? cur.chat ?? '').trim(), off: !!b.off };

@@ -43,6 +43,7 @@
   <div class="pp">Kosta Method<div class="bar2"><span style="width:88%"></span></div>88%</div>
   <div class="pp">What if<div class="bar2"><span style="width:92%"></span></div>92%</div>
   <div class="pp">Исторический<div class="bar2"><span style="width:90%"></span></div>90%</div>
+  <a href="/m.html" style="font-size:13px;color:var(--muted)"><svg viewBox="0 0 24 24"><rect x="7" y="2" width="10" height="20" rx="3"/><path d="M11 18h2"/></svg>Версия для телефона</a>
   <a id="navcl" style="margin-top:auto;font-size:13px;color:var(--muted)"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Вид клиента (демо)</a>
 </nav>
 
@@ -275,7 +276,7 @@ function accordionize(){
   const intro=head.filter(n=>n.tagName==='H2'||n.tagName==='P'); const rest=head.filter(n=>!intro.includes(n));
   intro.forEach(n=>out.push(n));
   if(rest.length)out.push(mk('fx','Эффекты: '+(CATALOG.length||51)+' шт., с видеопревью',rest));
-  const keys={'Другие навыки':'skills','Образы Тани':'outfits','Свой персонаж':'character','Стиль сценария':'style','Присутствие героя и рот':'presence'};
+  const keys={'Другие навыки':'skills','Образы Тани':'outfits','Свой персонаж':'character','Стиль сценария':'style','Присутствие героя и рот':'presence','Источники стока':'stocksrc'};
   while(i<kids.length){const h=kids[i];i++;const body=[];while(i<kids.length&&kids[i].tagName!=='H3'){body.push(kids[i]);i++}
     const btn=h.querySelector('button');const title=h.textContent.replace(btn?btn.textContent:'','').trim();
     const k=Object.keys(keys).find(x=>title.startsWith(x))||title; out.push(mk(keys[k]||k,title,body,btn))}
@@ -380,6 +381,11 @@ function presenceView(){const p=PRES[fxc]||{mode:'cameo',mouth:'calm'};
  ${radio('pmouth','calm','Спокойный (по умолчанию)','Рот открывается не шире среднего, не отвлекает от текста.')}
  ${radio('pmouth','normal','Обычный','Рот открывается шире на ударных слогах.')}`}
 fetch('/api/settings/presence').then(r=>r.ok?r.json():{}).then(s=>{PRES=s||{}}).catch(()=>{});
+let PIX={hasKey:false};fetch('/api/pixabay').then(r=>r.json()).then(j=>{PIX=j}).catch(()=>{});
+function stockView(){return `<h3 style="margin-top:16px">Источники стока</h3><p style="color:var(--muted);margin:0 0 8px;font-size:13px">Режиссёр сначала ищет кадры на Pexels, а если подходящего нет (Claude смотрит каждый кадр), берёт с Pixabay. Оба бесплатные для коммерческого использования, автор и ссылка записываются в данные ролика.</p>
+ <div class="ag"><div><b>Pexels</b><small>подключён (ключ из yt-factory)</small></div></div>
+ <div class="ag" style="flex-direction:column;gap:8px"><div><b>Pixabay ${PIX.hasKey?'· подключён':'· не подключён'}</b><small>Ключ бесплатный: зарегистрируйся на pixabay.com, открой pixabay.com/api/docs, ключ будет там на странице. Вставь его сюда сам, в чат не присылай.</small></div>
+ <input id="pixkey" type="password" placeholder="${PIX.hasKey?'ключ сохранён (вставь новый, чтобы заменить)':'ключ API Pixabay'}" style="background:var(--surface2);border:0;border-radius:10px;padding:9px 12px;color:var(--text);font:inherit;width:100%"><div><button class="btn go" id="pixsave">Сохранить ключ</button> <small id="pixmsg" style="display:inline;color:var(--ok)"></small></div></div>`}
 let SSTYLE={};
 fetch('/api/settings/scriptstyle').then(r=>r.ok?r.json():{}).then(s=>{SSTYLE=s||{}}).catch(()=>{});
 let CATALOG=[],fxf='all';
@@ -398,7 +404,7 @@ function skillsView(){
     <div class="tabs" style="margin-bottom:12px">${[['all','Все '+CATALOG.length],['stock','Подходят для стока'],['face','Нужен человек в кадре'],['img','Нужны свои картинки']].map(([k,n])=>`<button class="tab ${fxf===k?'on':''}" data-fxf="${k}">${n}</button>`).join('')}</div>
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:8px">${shown.map((f,i)=>`<div class="ag" style="align-items:flex-start"><input type="checkbox" data-fx="${f.id}" ${on.includes(f.id)?'checked':''} ${f.face?'disabled':''} style="margin-top:3px">${f.status==='ok'?`<video src="/previews/${f.id}.mp4" muted loop playsinline preload="metadata" onmouseover="this.play()" onmouseout="this.pause()" style="width:64px;height:114px;object-fit:cover;border-radius:8px;background:#000"></video>`:`<div style="width:64px;height:114px;border-radius:8px;background:var(--panel);display:grid;place-items:center;font-size:10px;color:var(--muted);text-align:center">${f.status==='fail'?'нет превью':'рендер…'}</div>`}<div><b>${f.ru}</b><small>${f.desc}</small><span class="pill ${f.face?'s-draft':'s-ok'}" style="display:inline-block;margin-top:4px">${f.face?'нужен человек в кадре':f.images?'нужны свои картинки':'работает на стоке'}</span> <span class="pill ${CST[f.status][1]}" style="display:inline-block;margin-top:4px">${CST[f.status][0]}</span></div></div>`).join('')}</div>
     <h3 style="margin-top:16px">Другие навыки <button class="btn" id="cadd" style="padding:3px 10px;margin-left:8px">+ Добавить свой</button></h3>
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px">${SKILLS2.map(s=>`<div class="ag" style="align-items:flex-start"><div><b>${s[0]}</b><small>${s[1]}</small><span class="pill ${TAG[s[2]][1]}" style="display:inline-block;margin-top:4px">${TAG[s[2]][0]}</span></div></div>`).join('')}${CUST.map(s=>`<div class="ag" style="align-items:flex-start"><div><b>${s.n}</b><small>${s.d||'без описания'}</small><span class="pill s-draft" style="display:inline-block;margin-top:4px">твой навык · ${s.c==='all'?'все каналы':CH[s.c].n} · движок пока не подключён</span></div></div>`).join('')}</div>`+outfitsView()+presenceView()+charView()+styleView();
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px">${SKILLS2.map(s=>`<div class="ag" style="align-items:flex-start"><div><b>${s[0]}</b><small>${s[1]}</small><span class="pill ${TAG[s[2]][1]}" style="display:inline-block;margin-top:4px">${TAG[s[2]][0]}</span></div></div>`).join('')}${CUST.map(s=>`<div class="ag" style="align-items:flex-start"><div><b>${s.n}</b><small>${s.d||'без описания'}</small><span class="pill s-draft" style="display:inline-block;margin-top:4px">твой навык · ${s.c==='all'?'все каналы':CH[s.c].n} · движок пока не подключён</span></div></div>`).join('')}</div>`+outfitsView()+presenceView()+charView()+styleView()+stockView();
     accordionize(); return}
   $('#grid').innerHTML=`<h2 style="margin:0 0 4px">Навыки и эффекты</h2><p style="color:var(--muted);margin:0 0 10px">Включённые эффекты Продюсер ставит в каждый новый ролик канала сам, на подходящие слова. Выбор сохраняется.</p>
   <div class="tabs" style="margin-bottom:12px">${Object.entries(CH).map(([k,v])=>`<button class="tab ${fxc===k?'on':''}" data-fxc="${k}">${v.n}</button>`).join('')}</div>
@@ -481,6 +487,7 @@ document.addEventListener('click',e=>{
   if(e.target.closest('#navtrash')){showWall('navtrash','trash');return}
   if(e.target.closest('#navnight')){gm('Ночная очередь','<p>Очередь задач на ночь: сценарии, озвучка и рендер, чтобы днём компьютер был свободен.</p><p style="color:var(--warn);font-size:13px">Расписание ночных запусков пока не подключено: сейчас «Тема → ролики» выполняется сразу. Включим вместе с автозапуском стены (tools\\install-autostart.cmd).</p>');return}
   if(e.target.closest('#navhooks')){hooksModal();return}
+  if(e.target.closest('#pixsave')){fetch('/api/pixabay',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({key:$('#pixkey').value})}).then(()=>{PIX.hasKey=!!$('#pixkey').value;$('#pixkey').value='';$('#pixmsg').textContent='Сохранено'});return}
   if(e.target.closest('#navcal')){calView();return}
   if(e.target.closest('#calauto')){fetch('/api/plan/auto',{method:'POST'}).then(r=>r.json()).then(()=>calView());return}
   const up=e.target.closest('[data-unplan]'); if(up){fetch('/api/plan/'+up.dataset.unplan,{method:'DELETE'}).then(()=>calView());return}

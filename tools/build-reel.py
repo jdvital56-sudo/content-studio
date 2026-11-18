@@ -33,6 +33,24 @@ def poses():
     return ids
 
 
+def pixabay(query, pick):
+    """Second free source (Pixabay Content License: commercial use, no attribution required). Key from the app settings."""
+    try: key = json.loads(db.execute("SELECT value FROM settings WHERE key='pixabay'").fetchone()[0]).get('key')
+    except Exception: key = None
+    if not key: return None
+    import urllib.parse
+    r = subprocess.run(['curl', '-s', '-m', '20', f"https://pixabay.com/api/videos/?key={key}&q={urllib.parse.quote(query)}&per_page=10&safesearch=true"], capture_output=True, text=True, encoding='utf-8')
+    hits = (json.loads(r.stdout or '{}').get('hits') or [])
+    if pick >= len(hits): return None
+    h = hits[pick]; v = h['videos'].get('large') or h['videos'].get('medium')
+    if not v or not v.get('url'): return None
+    out = os.path.join(HP, 'library', 'stock', f"pixabay_{h['id']}.mp4")
+    if not os.path.exists(out):
+        subprocess.run(['curl', '-s', '-L', '-m', '120', '-o', out, v['url']], check=True)
+        json.dump({'query': query, 'pixabay_id': h['id'], 'page': h.get('pageURL'), 'author': h.get('user'), 'license': 'Pixabay Content License'}, open(out + '.json', 'w', encoding='utf-8'), ensure_ascii=False)
+    return out
+
+
 def stock_ok(path, line=''):
     from PIL import Image, ImageStat, ImageFilter
     os.makedirs(CAL, exist_ok=True); jpg = os.path.join(CAL, f'q{rid}.jpg')
@@ -131,6 +149,10 @@ Output ONLY JSON: {{"lines":[{{"say":"...","gold":["..."],"pose":"...","stock_qu
             try: p = stock.fetch(q, 6, pick)
             except Exception as e: continue
             if stock_ok(p, l['say']): l['stock'] = p; break
+        if not l['stock']:  # Pexels had nothing good: try Pixabay
+            for pick in range(3):
+                p = pixabay(q, pick)
+                if p and stock_ok(p, l['say']): l['stock'] = p; log('stock', f'Pixabay: {q}'); break
         if not l['stock']: log('stock', f'не нашёл годный кадр: {q}')
     spec = dict(name=slug, brand=f'KM  ·  HABITS  ·  {rid:02d}', presence=presence, mouth=mouth, lines=spec_lines,
                 voice_dir=os.path.join(HP, 'voice', slug), audio=os.path.join(ROOT, 'trials', 'reels', 'fx', slug + '.m4a'))
