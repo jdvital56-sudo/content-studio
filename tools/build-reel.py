@@ -33,12 +33,23 @@ def poses():
     return ids
 
 
-def stock_ok(path):
+def stock_ok(path, line=''):
     from PIL import Image, ImageStat, ImageFilter
     os.makedirs(CAL, exist_ok=True); jpg = os.path.join(CAL, f'q{rid}.jpg')
     run(['ffmpeg', '-v', 'error', '-y', '-ss', '1.5', '-i', path, '-frames:v', '1', '-vf', 'scale=360:-1', jpg])
     im = Image.open(jpg).convert('L'); m = ImageStat.Stat(im).mean[0]; ed = ImageStat.Stat(im.filter(ImageFilter.FIND_EDGES)).stddev[0]
-    return 45 <= m <= 220 and ed >= 20  # not too dark/bright, not a blurry close-up (calibrated on our bad clips 18.11)
+    if not (45 <= m <= 220 and ed >= 20): return False  # too dark/bright or a blurry close-up (calibrated on our bad clips 18.11)
+    if not line: return True
+    # second check with eyes: Claude looks at the frame and says whether it fits the spoken line
+    q = (f'Look at the image file {jpg}. It is a stock video frame for a short fitness reel. The voice-over says: "{line}". '
+         'Answer YES if the frame clearly fits this line and looks like a pleasant, natural scene; answer NO if it does not fit, '
+         'shows something else, is a weird close-up, or shows text on screen. Reply with one word: YES or NO.')
+    try:
+        r = subprocess.run(['claude', '-p', '--allowedTools', 'Read', '--output-format', 'json'], input=q, capture_output=True, text=True, encoding='utf-8', env=env, timeout=120)
+        ans = json.loads(r.stdout).get('result', '').strip().upper()
+        return not ans.startswith('NO')
+    except Exception:
+        return True  # if the check itself fails, keep the technical check result
 
 
 try:
@@ -64,8 +75,11 @@ try:
         vdur = float(json.loads(run(['ffprobe', '-v', 'error', '-show_entries', 'format=duration', '-of', 'json', vpath]))['format']['duration'])
         beats = script.get('beats') or [[c] for c in (script.get('captions') or [script['hook']])]
         beats = [b if isinstance(b, list) else [b] for b in beats][:5]
-        dur = max(12.0, min(20.0, 3.6 * len(beats) + 1)); start = max(0.0, min(vdur * 0.2, vdur - dur - 0.5))
+        dur = max(12.0, min(20.0, 3.6 * len(beats) + 1))
         if vdur < 8: raise RuntimeError('видео слишком короткое для ролика')
+        # Cutting one long video into several reels: every new reel takes the next segment of the same clip.
+        n_used = used.count(vid); span = max(0.0, vdur - dur - 0.5)
+        start = 0.0 if span == 0 else (n_used * dur) % (span + 0.001)  # 0-19 s, then 19-38 s, then it wraps
         dur = min(dur, vdur - start); per = dur / len(beats); B = []
         for i, b in enumerate(beats):
             lines = []
@@ -116,7 +130,7 @@ Output ONLY JSON: {{"lines":[{{"say":"...","gold":["..."],"pose":"...","stock_qu
         for pick in range(4):
             try: p = stock.fetch(q, 6, pick)
             except Exception as e: continue
-            if stock_ok(p): l['stock'] = p; break
+            if stock_ok(p, l['say']): l['stock'] = p; break
         if not l['stock']: log('stock', f'не нашёл годный кадр: {q}')
     spec = dict(name=slug, brand=f'KM  ·  HABITS  ·  {rid:02d}', presence=presence, mouth=mouth, lines=spec_lines,
                 voice_dir=os.path.join(HP, 'voice', slug), audio=os.path.join(ROOT, 'trials', 'reels', 'fx', slug + '.m4a'))
