@@ -115,6 +115,7 @@
   <h3>Тема → ролики</h3>
   <label>Тема или идея</label><input id="mt" placeholder="например: привычка тренироваться без мотивации">
   <label>Канал</label><select id="mc"><option value="km">Kosta Method (по паспорту)</option><option value="wi">What if</option><option value="hi">Исторический</option></select>
+  <label>Формат роликов</label><select id="mf"><option value="mix">Смесь: каждого формата понемногу (рекомендую)</option><option value="text">Текст по живому видео (из «Мои видео»)</option><option value="tania">Таня с голосом и эффектами</option><option value="stock">Сток и графика, без героини</option></select>
   <label>Сколько сценариев</label><select id="mn"><option>5</option><option selected>10</option><option>20</option></select>
   <label>Когда</label><select id="mw"><option value="now">Сейчас, днём (10 сценариев ≈ 1 минута, сборка ≈ 6 минут на ролик)</option><option value="night">Ночью (компьютер свободен днём, лимит Claude тратится ночью)</option></select>
   <p style="font-size:12px;color:var(--muted)">Сценарии пишутся по паспорту канала, Критик отсеивает слабые, готовые ролики приходят на стену в «Ждёт тебя». Ночь нужна только чтобы не занимать компьютер и лимит днём, обязательной она не является.</p>
@@ -487,7 +488,7 @@ document.addEventListener('click',e=>{
   if(e.target.closest('#mx')){$('#modal').classList.remove('on');return}
   if(e.target.closest('#mg')){const t=$('#mt').value.trim();if(!t){alert('Напиши тему или идею.');return}
     if(!live){alert('Нет связи с сервером.');return}
-    fetch('/api/topic',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({topic:t,channel:$('#mc').value,count:+$('#mn').value})}).then(r=>{
+    fetch('/api/topic',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({topic:t,channel:$('#mc').value,count:+$('#mn').value,format:$('#mf').value})}).then(r=>{
       if(r.status===409){alert('Писатель уже работает, подожди.');return}
       $('#modal').classList.remove('on');$('#mt').value='';pollTopic()});return}
   if(e.target.closest('#unik')){const b=R.find(x=>x.id===sel);['A','B','C'].forEach((v,i)=>R.push({id:R.length+1,ch:b.ch,st:'draft',title:b.title+' · вариант '+v,sub:['другой хук','другая нарезка','другие субтитры и музыка'][i],len:0,q:'nnnn'}));all();return}

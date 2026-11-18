@@ -1,17 +1,24 @@
 #!/bin/bash
 # Scriptwriter v2 -> Critic. Passport + research + hook formulas in, scored scripts out. Uses `claude -p` (subscription).
 # usage: bash tools/write-scripts-v2.sh <channel passport> <research file> <outdir> [count]
-P="$1"; R="$2"; O="$3"; N="${4:-14}"; T="$5"; S="$6"   # T = optional topic focus, S = the owner's own script style rules
+P="$1"; R="$2"; O="$3"; N="${4:-14}"; T="$5"; S="$6"; F="${7:-mix}"   # T = topic focus, S = owner's style rules, F = format: mix|text|tania|stock
 mkdir -p "$O"
 # plain variables: special characters inside ${x:+...} break the heredoc in this bash
 TL=""; [ -n "$T" ] && TL="Topic focus - every script must be about this: $T"
 SL=""; [ -n "$S" ] && SL="Owner script style rules - follow them, they override your defaults: $S"
+# Formats. "text" follows the owner's reference reels (18.11): no voice-over, a real person training on camera, 3-5 typed lines, a question at the end.
+FT="FORMAT text: NO voice-over. Write 3 to 5 on-screen text beats for a real workout clip, each beat 1 to 3 short lines (max 6 words per line). Beat 1 is a callout hook to a narrow audience plus a pain (example pattern: Women over 30: / are you STILL / rushing your reps?). The last beat is a question that invites comments or a save. Put the beats in the field beats as a list of lists of strings, and put all beat lines joined with spaces into spoken."
+FV="FORMAT tania: voice-over spoken by the host Tania (cartoon) with effects, max 45 words, as described below."
+FS="FORMAT stock: voice-over over stock footage and graphics, the host is not shown, max 45 words."
+case "$F" in text) FL="$FT Every script uses FORMAT text.";; tania) FL="$FV Every script uses FORMAT tania.";; stock) FL="$FS Every script uses FORMAT stock.";; *) FL="Mix the formats: about half FORMAT text, a quarter FORMAT tania, a quarter FORMAT stock. $FT $FV $FS";; esac
 {
 cat "$P"; echo; echo "=== RESEARCH ==="; cat "$R"; echo
 cat <<EOF
 === TASK (Scriptwriter) ===
 $TL
 $SL
+$FL
+Each item must have a field "format" with the value text, tania or stock.
 Current channel goal: grow followers. Do NOT advertise products and do NOT use product keywords for direct messages. The call to action is follow, save or share.
 You are the head scriptwriter of a short-video factory. Write $N DIFFERENT candidate reel scripts for this channel in English.
 Rules:

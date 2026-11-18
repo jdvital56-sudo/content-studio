@@ -49,6 +49,39 @@ try:
     sett = {k: json.loads(v) for k, v in db.execute("SELECT key,value FROM settings WHERE key IN ('presence')")}
     pres = (sett.get('presence', {}).get(ch) or {}); presence, mouth = pres.get('mode', 'cameo'), pres.get('mouth', 'calm')
     slug = f'reel{rid}'
+    fmt = script.get('format', 'tania')
+    if fmt == 'stock': presence = 'off'
+    if fmt == 'text':
+        # Text over the owner's own footage (format of the reference reels): no voice, typed lines, the person trains on camera.
+        step('Беру твоё видео из «Мои видео»')
+        lib = os.path.join(ROOT, 'media', 'library', ch)
+        vids = sorted([f for f in os.listdir(lib) if f.lower().endswith(('.mp4', '.mov', '.m4v', '.webm'))]) if os.path.isdir(lib) else []
+        if not vids: raise RuntimeError('в «Мои видео» нет роликов этого канала: загрузи тренировку')
+        used = [r[0] for r in db.execute("SELECT note FROM events WHERE action='textreel'")]
+        vid = min(vids, key=lambda v: used.count(v))  # the least used clip first
+        vpath = os.path.join(lib, vid)
+        vdur = float(json.loads(run(['ffprobe', '-v', 'error', '-show_entries', 'format=duration', '-of', 'json', vpath]))['format']['duration'])
+        beats = script.get('beats') or [[c] for c in (script.get('captions') or [script['hook']])]
+        beats = [b if isinstance(b, list) else [b] for b in beats][:5]
+        dur = max(12.0, min(20.0, 3.6 * len(beats) + 1)); start = max(0.0, min(vdur * 0.2, vdur - dur - 0.5))
+        if vdur < 8: raise RuntimeError('видео слишком короткое для ролика')
+        dur = min(dur, vdur - start); per = dur / len(beats); B = []
+        for i, b in enumerate(beats):
+            lines = []
+            for j, tx in enumerate(b):
+                size = 74 if tx.rstrip().endswith(':') or len(tx) > 22 else (118 if len(tx) <= 14 else 96)
+                lines.append(dict(text=tx, size=size, delay=round(0.5 * j, 2), gold=(j == len(b) - 1 and i in (1, len(beats) - 1))))
+            B.append(dict(t=round(i * per + 0.3, 2), end=round((i + 1) * per - 0.05, 2), lines=lines))
+        spec = dict(name=slug, video=vpath, start=round(start, 2), dur=round(dur, 2), beats=B)
+        sp = os.path.join(ENG, 'specs', slug + '.text.json'); json.dump(spec, open(sp, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
+        step('Набираю текст по видео'); run([sys.executable, os.path.join(ENG, 'textreel.py'), sp])
+        dest = os.path.join(ROOT, 'trials', 'reels', 'final', slug + '_T.mp4')
+        shutil.copy(os.path.join(ENG, 'out', slug + '_text', 'final.mp4'), dest)
+        pr = json.loads(run(['ffprobe', '-v', 'error', '-show_entries', 'stream=width,height:format=duration', '-of', 'json', dest]))
+        d2 = float(pr['format']['duration']); ok = (pr['streams'][0]['width'], pr['streams'][0]['height']) == (1080, 1920) and d2 <= 35
+        db.execute("UPDATE reels SET sub=? WHERE id=?", ('Текст по видео · ' + vid + ' · звук добавить в приложении', rid)); db.commit()
+        setrow(job_dir=dest, length_s=round(d2), checks=('o' if ok else 'x') + 'ooo', status='wait' if ok else 'bad')
+        log('textreel', vid); log('build', f'text ok {d2:.1f}s'); step('Готово'); print('DONE', dest); sys.exit(0)
     # 1. director: split the script into lines with pose, stock query and effects
     step('Режиссёр раскладывает сценарий по кадрам')
     P = poses()

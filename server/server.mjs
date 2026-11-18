@@ -136,7 +136,7 @@ createServer(async (req, res) => {
       const out = join(root, 'trials', 'topics', String(Date.now())); await mkdir(out, { recursive: true });
       let style = ''; try { style = JSON.parse(db.prepare('SELECT value FROM settings WHERE key=?').get('scriptstyle')?.value || '{}')[ch] || ''; } catch {}
       jobs.set('topic', { state: 'running', note: 'Писатель и Критик работают, 3–6 минут', since: Date.now() });
-      const p = spawn(BASH, ['tools/write-scripts-v2.sh', `channels/${passport}`, 'research/trends-2026-11-18.md', out, String(Math.min(20, Math.max(4, +b.count || 10))), String(b.topic || '').slice(0, 200), String(style).slice(0, 2000)], { cwd: root });
+      const p = spawn(BASH, ['tools/write-scripts-v2.sh', `channels/${passport}`, 'research/trends-2026-11-18.md', out, String(Math.min(20, Math.max(4, +b.count || 10))), String(b.topic || '').slice(0, 200), String(style).slice(0, 2000), ['mix', 'text', 'tania', 'stock'].includes(b.format) ? b.format : 'mix'], { cwd: root });
       p.on('close', async () => {
         try {
           const f = JSON.parse(await readFile(join(out, 'final.json'), 'utf8')); let n = 0;

@@ -33,16 +33,25 @@
     if (l === 'ru') { dict = {}; return; }
     try { dict = await fetch('/i18n/' + l + '.json').then(r => r.json()); } catch { dict = {}; }
   }
+  // One button with the current language; a click opens a small menu (popover) anchored to it.
+  const MENU = [['ru', 'Русский', 'RU'], ['uk', 'Українська', 'UK'], ['en', 'English', 'EN'], ['tr', 'Türkçe', 'TR', 'soon'], ['es', 'Español', 'ES', 'soon']];
   function widget() {
-    const top = document.querySelector('.top'); if (!top || document.getElementById('langseg')) return;
-    const seg = document.createElement('div'); seg.className = 'tabs'; seg.id = 'langseg'; seg.style.marginLeft = '4px';
-    seg.innerHTML = LANGS.map(([c, n]) => `<button class="tab ${c === lang ? 'on' : ''}" data-lang="${c}" title="Language">${n}</button>`).join('');
-    const s = document.querySelector('.search'); s ? top.insertBefore(seg, s) : top.appendChild(seg);
-    seg.addEventListener('click', async e => {
-      const b = e.target.closest('[data-lang]'); if (!b) return; e.stopPropagation();
+    const top = document.querySelector('.top'); if (!top || document.getElementById('langbtn')) return;
+    const wrap = document.createElement('div'); wrap.style.cssText = 'position:relative';
+    const cur = MENU.find(m => m[0] === lang) || MENU[0];
+    wrap.innerHTML = `<button class="btn" id="langbtn" title="Language" style="padding:6px 12px;display:flex;gap:6px;align-items:center">🌐 ${cur[2]}</button>
+      <div id="langpop" style="display:none;position:absolute;right:0;top:calc(100% + 8px);min-width:200px;padding:6px;border-radius:14px;background:var(--surface);box-shadow:0 12px 40px rgba(0,0,0,.35);z-index:20;transform-origin:top right">
+      ${MENU.map(([c, n, s, soon]) => `<button data-lang="${c}" ${soon ? 'disabled' : ''} style="display:flex;width:100%;align-items:center;gap:10px;border:0;background:${c === lang ? 'var(--fill)' : 'transparent'};color:var(--text);padding:9px 12px;border-radius:10px;font:inherit;text-align:left;cursor:${soon ? 'default' : 'pointer'};opacity:${soon ? .45 : 1}"><span style="width:26px;color:var(--muted);font-size:12px;font-weight:600">${s}</span><span style="flex:1">${n}</span>${c === lang ? '<span style="color:var(--accent)">✓</span>' : soon ? '<span data-i18n-skip style="font-size:11px;color:var(--muted)">soon</span>' : ''}</button>`).join('')}</div>`;
+    const s = document.querySelector('.search'); s ? top.insertBefore(wrap, s) : top.appendChild(wrap);
+    const pop = wrap.querySelector('#langpop');
+    wrap.querySelector('#langbtn').addEventListener('click', e => { e.stopPropagation(); pop.style.display = pop.style.display === 'none' ? 'block' : 'none'; }, true);
+    pop.addEventListener('click', e => {
+      const b = e.target.closest('[data-lang]'); if (!b || b.disabled) return; e.stopPropagation();
       try { localStorage.setItem('lang', b.dataset.lang); } catch {}
-      location.reload();  // simplest and safest: every screen is rebuilt from Russian source text, then translated
+      location.reload();  // every screen is rebuilt from the Russian source text, then translated
     }, true);
+    document.addEventListener('click', e => { if (!wrap.contains(e.target)) pop.style.display = 'none'; });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') pop.style.display = 'none'; });
   }
   async function start() {
     document.documentElement.lang = lang;
