@@ -1,0 +1,45 @@
+#!/bin/bash
+# Scriptwriter v2 -> Critic. Passport + research + hook formulas in, scored scripts out. Uses `claude -p` (subscription).
+# usage: bash tools/write-scripts-v2.sh <channel passport> <research file> <outdir> [count]
+P="$1"; R="$2"; O="$3"; N="${4:-14}"
+mkdir -p "$O"
+{
+cat "$P"; echo; echo "=== RESEARCH ==="; cat "$R"; echo
+cat <<EOF
+=== TASK (Scriptwriter) ===
+You are the head scriptwriter of a short-video factory. Write $N DIFFERENT candidate reel scripts for this channel in English.
+Rules:
+- Each script is 25-32 seconds spoken, at most 45 words in SPOKEN. 1.75 words per second.
+- HOOK: the first line, at most 8 words, must stop the scroll AND be readable without sound. Use a different formula from the research list for each script (number+deadline, myth, pain-then-relief, mistake, anti-hook, open loop, direct address with action, concrete object). Never start with "Hey", a greeting, or a question everyone has heard.
+- Structure: HOOK -> open loop or tension -> ONE concrete micro-step (a number, a time, an object, a place) -> short payoff line -> CTA word (BOTTLE, SOCKS or PEN, matched to the topic). The brand slogan only in at most 3 of the scripts.
+- Be specific and slightly surprising. No generic motivation lines like "stay consistent" or "believe in yourself".
+- Follow every rule and ban in the passport (no body-shame, no before/after, no weight-loss promises, no invented numbers, no "Pixar", no aviation).
+- A claim about health must be safe and general; add nothing the nutritionist would not sign.
+- Also give per script: caption lines for the screen (max 7, each max 5 words), the stock-footage search idea for each line, and which Tania pose emotion fits each line (joy, serious, doubt, surprise, thoughtful).
+Output ONLY a JSON array, no prose. Each item: {"id":1,"hook_type":"...","hook":"...","spoken":"...","captions":["..."],"cta":"BOTTLE","product":"bottle|socks|pen","visuals":["..."],"tania":["..."],"why":"one sentence why this stops the scroll"}.
+EOF
+} > "$O/writer-prompt.txt"
+claude -p --output-format json --tools "" < "$O/writer-prompt.txt" > "$O/writer.json" 2> "$O/writer.err"
+python - "$O" <<'PY'
+import json,sys,re
+o=sys.argv[1]; d=json.load(open(o+'/writer.json',encoding='utf-8')); r=d.get('result','')
+m=re.search(r'\[.*\]',r,re.S); open(o+'/candidates.json','w',encoding='utf-8').write(m.group(0) if m else r)
+print('writer cost',d.get('total_cost_usd'),'candidates',len(json.loads(m.group(0))) if m else 0)
+PY
+{
+cat "$P"; echo; echo "=== CANDIDATES ==="; cat "$O/candidates.json"; echo
+cat <<EOF
+=== TASK (Critic) ===
+You are a ruthless short-video critic. Score every candidate 0-10 on: hook_strength (stops the scroll in 2 s and readable on mute), specificity (concrete number/object/time, not generic), novelty (not what every fitness account says), payoff (viewer gets one clear thing), passport_safety (10 = no ban violated, 0 = violates). Compute total = hook*2 + specificity + novelty + payoff + safety (max 60). Reject any with safety below 8.
+Then for the 6 best, REWRITE the weakest line so each reaches at least 9 on hook_strength, and keep spoken text at most 45 words.
+Output ONLY a JSON object: {"scores":[{"id":1,"hook":x,"specificity":x,"novelty":x,"payoff":x,"safety":x,"total":x,"verdict":"keep|rewrite|drop","note":"..."}],"final":[<the 6 best scripts, same fields as candidates, with improvements and the same visuals/tania lists>]}.
+EOF
+} > "$O/critic-prompt.txt"
+claude -p --output-format json --tools "" < "$O/critic-prompt.txt" > "$O/critic.json" 2> "$O/critic.err"
+python - "$O" <<'PY'
+import json,sys,re
+o=sys.argv[1]; d=json.load(open(o+'/critic.json',encoding='utf-8')); r=d.get('result','')
+m=re.search(r'\{.*\}',r,re.S); open(o+'/final.json','w',encoding='utf-8').write(m.group(0) if m else r)
+print('critic cost',d.get('total_cost_usd'))
+PY
+echo done

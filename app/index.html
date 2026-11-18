@@ -143,6 +143,12 @@ kbd{background:var(--panel2);border:1px solid var(--line);border-radius:4px;padd
   <div id="edbody"></div>
 </footer>
 
+<div class="modal" id="omodal"><div class="mbox" style="width:640px;max-height:92vh;overflow:auto"><h3 id="otitle"></h3><div id="obody"></div></div></div>
+<div class="modal" id="nomodal"><div class="mbox"><h3>Новый образ</h3>
+  <label>Название</label><input id="non" placeholder="например: Деловой синий">
+  <label>Что надето</label><input id="nod" placeholder="жакет, юбка-карандаш, туфли…">
+  <label>Для каких тем</label><input id="not" placeholder="через запятую">
+  <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:10px"><button class="btn" id="nox">Отмена</button><button class="btn go" id="nos">Добавить</button></div></div></div>
 <div class="modal" id="fxmodal"><div class="mbox" style="width:760px;max-height:92vh;overflow:auto">
   <h3 id="fxt">Добавить эффекты в ролик</h3>
   <p style="font-size:12px;color:var(--muted);margin:0 0 8px">Поставь галочку, задай секунды (когда включить и выключить) и текст. Эффект накладывается на копию ролика, исходник сохраняется. Время смотри в плеере: на какой секунде звучит слово.</p>
@@ -302,6 +308,35 @@ async function applyFx(){const r=R.find(x=>x.id===sel);const eff=[...document.qu
   const t=setInterval(async()=>{const j=(await fetch('/api/jobs').then(x=>x.json()))[r.id];if(!j||j.state==='running')return;clearInterval(t);if(j.state==='done'){await load();$('#fxmodal').classList.remove('on');openPlayer(r.id)}else{$('#fxs').textContent=j.note}},3000)}
 function saveFx(){if(live)fetch('/api/settings/skills',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(FXON)})}
 const TAG={ok:['проверено на нашем ролике','s-ok'],try:['должно работать, проверю на первом ролике','s-wait'],face:['нужно живое видео с человеком','s-draft']};
+// --- Tania outfits ("Образы Тани"): face stays hers, clothes change. Presets are ideas; a new outfit = a prompt for Flow + a starter set of poses.
+const OUTFITS=[
+ {id:'sport',n:'Спорт KM',d:'Чёрный топ с золотым KM, лосины, белые кроссовки. Основной образ, канон.',topics:'тренировки, привычки, вода, носки',st:'ready',poses:57},
+ {id:'business',n:'Деловой',d:'Приталенный пиджак цвета слоновой кости, блузка, прямые брюки, маленькая золотая брошь KM. Для разборов от нутрициолога, «что говорит наука», интервью.',topics:'питание от эксперта, мифы, разборы исследований',st:'idea'},
+ {id:'casual',n:'Кэжуал',d:'Светлый свитер свободного кроя, джинсы, белые кеды. Для бытовых тем и «разговор по душам».',topics:'сон, ритуалы утра, ленивые дни',st:'idea'},
+ {id:'tennis',n:'Теннис',d:'Белое поло, плиссированная юбка, козырёк, белые кроссовки. Для спокойной «спортивной жизни» и сезонных тем.',topics:'лето, прогулки, лёгкая активность',st:'idea'},
+ {id:'home',n:'Дом и кухня',d:'Домашний костюм цвета беж, светлый фартук. Для тем про еду, воду, тарелку.',topics:'тарелка KM, готовка, перекусы',st:'idea'},
+ {id:'sleep',n:'Сон и отдых',d:'Шёлковая пижама пастельного тона, повязка на волосах.',topics:'сон, восстановление, вечерние ритуалы',st:'idea'}];
+let OWN=[];
+const WARDROBE_BASE='Stylized 3D animated character, same young woman as the reference (keep her face, eyes, eyebrows, very long wavy honey-blonde hair and the small silver airplane pendant EXACTLY the same). ';
+function outfitPrompt(o){return WARDROBE_BASE+'New outfit: '+o.d+' The clothing has NO text and NO logos at all (logos are added later by code). Same proportions, smooth cartoon 3D style as the reference, soft studio light. Background: plain flat bright chroma green (#00FF00), no gradient, no floor, no shadows. Pose: ';}
+const STARTER=['explain_joy_camera','point_you_joy_camera','thumbs_up_joy_camera','ok_joy_camera','shrug_doubt_camera','stand_neutral_camera','explain_serious_camera','think_thoughtful_camera','wave_joy_camera','point_up_neutral_camera'];
+function outfitsView(){const all=[...OUTFITS,...OWN];
+ return `<h3 style="margin-top:16px">Образы Тани <button class="btn" id="oadd" style="padding:3px 10px;margin-left:8px">+ Новый образ</button></h3>
+ <p style="color:var(--muted);margin:0 0 8px;font-size:13px">Лицо и фигура остаются Таниными, меняется одежда. Продюсер выбирает образ по теме ролика (колонка «Для каких тем»), а ты можешь поставить свой в настройках ролика. Логотип KM на каждый образ накладывается кодом, нейросеть буквы ломает.</p>
+ <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:8px">${all.map(o=>`<div class="ag" style="align-items:flex-start">${o.id==='sport'?'<img src="/previews/outfit_sport.jpg" style="width:70px;border-radius:8px;background:#fff">':'<div style="width:70px;height:110px;border-radius:8px;background:var(--panel);display:grid;place-items:center;font-size:11px;color:var(--muted);text-align:center">нет картинок</div>'}<div><b>${o.n}</b><small>${o.d}</small><small>Для каких тем: ${o.topics||'—'}</small><span class="pill ${o.st==='ready'?'s-ok':o.st==='prompt'?'s-wait':'s-draft'}" style="display:inline-block;margin-top:4px">${o.st==='ready'?'готов, '+o.poses+' поз':o.st==='prompt'?'промпт готов, ждёт картинок':'идея, не создан'}</span> ${o.st!=='ready'?`<button class="btn" data-omk="${o.id}" style="padding:2px 8px;margin-top:4px">Создать образ</button>`:''}</div></div>`).join('')}</div>`}
+function openOutfit(id){const o=[...OUTFITS,...OWN].find(x=>x.id===id);if(!o)return;
+ $('#otitle').textContent='Создать образ: '+o.n;
+ $('#obody').innerHTML=`<p style="font-size:13px;color:var(--muted);margin:0 0 6px">Начни с <b>10 ключевых поз</b>, они закрывают почти все ролики (позы ниже). Каждая сцена в Flow по твоему правилу: сам выбираешь лучший вариант и удаляешь лишние.</p>
+ <label>Описание одежды (можно править)</label><textarea id="od" rows="3" style="width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:8px;color:var(--text);font:inherit">${o.d}</textarea>
+ <label>Для каких тем</label><input id="ot" value="${o.topics||''}">
+ <label>Промпт для Google Flow (скопируй, позы подставляются по одной)</label>
+ <textarea id="op" rows="6" readonly style="width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:8px;color:var(--text);font-size:12px">${outfitPrompt(o)}[ПОЗА]</textarea>
+ <label>10 стартовых поз</label><div style="font-size:12px;color:var(--muted)">${STARTER.join(' · ')}</div>
+ <p style="font-size:12px;color:var(--warn)">Платный путь (только с твоим «да»): правка существующих поз через fal nano-banana/edit, около $0,04 за картинку. Образ из 10 поз с двумя вариантами рта ≈ $1,2, полный из 57 поз ≈ $6,8. Бесплатный путь: Flow, ты сам.</p>
+ <div style="display:flex;gap:8px;justify-content:flex-end"><button class="btn" id="oclose">Закрыть</button><button class="btn go" id="osave" data-oid="${id}">Сохранить как «промпт готов»</button></div>`;
+ $('#omodal').classList.add('on')}
+function saveOutfits(){if(live)fetch('/api/settings/wardrobe',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(OWN)})}
+fetch('/api/settings/wardrobe').then(r=>r.ok?r.json():[]).then(w=>{if(Array.isArray(w)){OWN=w;if(view==='skills')skillsView()}}).catch(()=>{});
 let CATALOG=[],fxf='all';
 function loadCat(){return fetch('/fx-catalog.json?'+Date.now()).then(r=>r.ok?r.json():[]).then(c=>{CATALOG=c;if(view==='skills')skillsView()}).catch(()=>{})}
 loadCat();
@@ -318,7 +353,7 @@ function skillsView(){
     <div class="tabs" style="margin-bottom:12px">${[['all','Все '+CATALOG.length],['stock','Подходят для стока'],['face','Нужен человек в кадре'],['img','Нужны свои картинки']].map(([k,n])=>`<button class="tab ${fxf===k?'on':''}" data-fxf="${k}">${n}</button>`).join('')}</div>
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:8px">${shown.map((f,i)=>`<div class="ag" style="align-items:flex-start"><input type="checkbox" data-fx="${f.id}" ${on.includes(f.id)?'checked':''} ${f.face?'disabled':''} style="margin-top:3px">${f.status==='ok'?`<video src="/previews/${f.id}.mp4" muted loop playsinline preload="metadata" onmouseover="this.play()" onmouseout="this.pause()" style="width:64px;height:114px;object-fit:cover;border-radius:8px;background:#000"></video>`:`<div style="width:64px;height:114px;border-radius:8px;background:var(--panel);display:grid;place-items:center;font-size:10px;color:var(--muted);text-align:center">${f.status==='fail'?'нет превью':'рендер…'}</div>`}<div><b>${f.ru}</b><small>${f.desc}</small><span class="pill ${f.face?'s-draft':'s-ok'}" style="display:inline-block;margin-top:4px">${f.face?'нужен человек в кадре':f.images?'нужны свои картинки':'работает на стоке'}</span> <span class="pill ${CST[f.status][1]}" style="display:inline-block;margin-top:4px">${CST[f.status][0]}</span></div></div>`).join('')}</div>
     <h3 style="margin-top:16px">Другие навыки <button class="btn" id="cadd" style="padding:3px 10px;margin-left:8px">+ Добавить свой</button></h3>
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px">${SKILLS2.map(s=>`<div class="ag" style="align-items:flex-start"><div><b>${s[0]}</b><small>${s[1]}</small><span class="pill ${TAG[s[2]][1]}" style="display:inline-block;margin-top:4px">${TAG[s[2]][0]}</span></div></div>`).join('')}${CUST.map(s=>`<div class="ag" style="align-items:flex-start"><div><b>${s.n}</b><small>${s.d||'без описания'}</small><span class="pill s-draft" style="display:inline-block;margin-top:4px">твой навык · ${s.c==='all'?'все каналы':CH[s.c].n} · движок пока не подключён</span></div></div>`).join('')}</div>`;
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px">${SKILLS2.map(s=>`<div class="ag" style="align-items:flex-start"><div><b>${s[0]}</b><small>${s[1]}</small><span class="pill ${TAG[s[2]][1]}" style="display:inline-block;margin-top:4px">${TAG[s[2]][0]}</span></div></div>`).join('')}${CUST.map(s=>`<div class="ag" style="align-items:flex-start"><div><b>${s.n}</b><small>${s.d||'без описания'}</small><span class="pill s-draft" style="display:inline-block;margin-top:4px">твой навык · ${s.c==='all'?'все каналы':CH[s.c].n} · движок пока не подключён</span></div></div>`).join('')}</div>`+outfitsView();
     return}
   $('#grid').innerHTML=`<h2 style="margin:0 0 4px">Навыки и эффекты</h2><p style="color:var(--muted);margin:0 0 10px">Включённые эффекты Продюсер ставит в каждый новый ролик канала сам, на подходящие слова. Выбор сохраняется.</p>
   <div class="tabs" style="margin-bottom:12px">${Object.entries(CH).map(([k,v])=>`<button class="tab ${fxc===k?'on':''}" data-fxc="${k}">${v.n}</button>`).join('')}</div>
@@ -377,6 +412,12 @@ document.addEventListener('click',e=>{
   if(e.target.closest('#navwall')){view='wall';document.querySelectorAll('nav a').forEach(a=>a.classList.toggle('on',a.id==='navwall'));$('.tools').style.display='';all();return}
   const pl=e.target.closest('[data-play]'); if(pl){e.stopPropagation();openPlayer(+pl.dataset.play);return}
   if(e.target.closest('#plx')||e.target.id==='player'){closePlayer();return}
+  if(e.target.closest('#oadd')){$('#nomodal').classList.add('on');return}
+  if(e.target.closest('#nox')){$('#nomodal').classList.remove('on');return}
+  if(e.target.closest('#nos')){const n=$('#non').value.trim();if(n){OWN.push({id:'own'+OWN.length,n,d:$('#nod').value.trim()||'без описания',topics:$('#not').value.trim(),st:'idea'});saveOutfits()}$('#nomodal').classList.remove('on');skillsView();return}
+  const omk=e.target.closest('[data-omk]'); if(omk){openOutfit(omk.dataset.omk);return}
+  if(e.target.closest('#oclose')){$('#omodal').classList.remove('on');return}
+  if(e.target.closest('#osave')){const id=e.target.closest('#osave').dataset.oid;const arr=[...OUTFITS,...OWN];const o=arr.find(x=>x.id===id);o.d=$('#od').value;o.topics=$('#ot').value;o.st='prompt';if(!OWN.includes(o)){OWN.push({...o});OUTFITS.splice(OUTFITS.indexOf(o),1)}saveOutfits();$('#omodal').classList.remove('on');skillsView();return}
   if(e.target.closest('#fxopen')){openFx();return}
   if(e.target.closest('#fxcancel')){$('#fxmodal').classList.remove('on');return}
   if(e.target.closest('#fxgo')){applyFx();return}

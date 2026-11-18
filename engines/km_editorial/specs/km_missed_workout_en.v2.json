@@ -1,0 +1,16 @@
+{
+ "name": "km_missed_workout_en",
+ "brand": "KM  ·  HABITS  ·  01",
+ "voice_dir": "C:\\Users\\Вадим\\projects\\heroine-pose-library\\voice\\km_missed_workout_en",
+ "audio": "C:\\src\\content-studio\\trials\\reels\\fx\\km_missed_workout_en.m4a",
+ "lines": [
+  {"say": "Missed a workout?", "gold": ["workout"], "pose": "shrug_doubt_camera"},
+  {"say": "Don't wait for Monday. Restart today, with ten minutes.", "gold": ["Monday", "ten", "minutes"], "pose": "point_you_joy_camera",
+   "stock": "woman_tying_running_shoes",
+   "fx": [{"type": "stamp", "text": "NOT MONDAY", "word": "Monday"}, {"type": "counter", "n": 10, "label": "minutes", "word": "ten"}]},
+  {"say": "Socks on. Shoes on. Begin.", "gold": ["Socks"], "pose": "explain_joy_camera", "stock": "woman_pulling_on_white_sport"},
+  {"say": "Done beats perfect. The streak is not the goal.", "gold": ["perfect"], "pose": "thumbs_up_joy_camera"},
+  {"say": "Coming back is.", "gold": ["back"], "pose": "ok_joy_camera", "stock": "woman_jogging_park_autumn"},
+  {"say": "Send us the word SOCKS.", "gold": ["SOCKS"], "pose": "point_you_joy_camera", "fx": [{"type": "cta", "text": "SOCKS", "word": "SOCKS"}]}
+ ]
+}

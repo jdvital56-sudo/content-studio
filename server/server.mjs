@@ -91,11 +91,11 @@ createServer(async (req, res) => {
       res.writeHead(206, { 'Content-Type': 'video/mp4', 'Content-Range': `bytes ${start}-${end}/${buf.length}`, 'Content-Length': end - start + 1, 'Accept-Ranges': 'bytes' });
       return res.end(buf.subarray(start, end + 1));
     }
-    const st = url.pathname.match(/^\/api\/settings\/(skills|custom)$/);
+    const st = url.pathname.match(/^\/api\/settings\/(skills|custom|wardrobe)$/);
     if (st) {
       if (req.method === 'PUT') { const b = await readBody(req); db.prepare('INSERT OR REPLACE INTO settings(key,value) VALUES(?,?)').run(st[1], JSON.stringify(b)); log(null, 'owner', st[1], JSON.stringify(b).slice(0, 200)); return send(res, 200, { ok: true }); }
       const s = db.prepare('SELECT value FROM settings WHERE key=?').get(st[1]);
-      return send(res, 200, s ? JSON.parse(s.value) : (st[1] === 'custom' ? [] : {}));
+      return send(res, 200, s ? JSON.parse(s.value) : (st[1] === 'skills' ? {} : []));
     }
     if (url.pathname === '/api/jobs') return send(res, 200, Object.fromEntries(jobs));
     const fxm = url.pathname.match(/^\/api\/reels\/(\d+)\/effects$/);
