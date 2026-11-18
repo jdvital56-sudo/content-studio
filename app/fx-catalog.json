@@ -165,7 +165,7 @@
   "desc": "Человек становится обложкой, заголовок за головой",
   "face": true,
   "images": false,
-  "status": "todo"
+  "status": "ok"
  },
  {
   "id": "scribble",
@@ -181,7 +181,7 @@
   "desc": "Матовые виджеты парят вокруг головы (в заготовке подписи автора, правим)",
   "face": true,
   "images": false,
-  "status": "todo"
+  "status": "ok"
  },
  {
   "id": "red-collage",
@@ -189,7 +189,7 @@
   "desc": "Ч/б человек, огромное красное слово позади, три строки",
   "face": true,
   "images": false,
-  "status": "todo"
+  "status": "ok"
  },
  {
   "id": "split-headline",
@@ -197,7 +197,7 @@
   "desc": "Карточка с заголовком сдвигает человека вниз",
   "face": true,
   "images": false,
-  "status": "todo"
+  "status": "ok"
  },
  {
   "id": "pastel-word",
@@ -205,7 +205,7 @@
   "desc": "Сиреневая комната, слово за спиной, карточка профиля",
   "face": true,
   "images": false,
-  "status": "todo"
+  "status": "ok"
  },
  {
   "id": "check-pills",
@@ -213,7 +213,7 @@
   "desc": "Клетчатая комната, курсор нажимает синие таблетки",
   "face": true,
   "images": true,
-  "status": "todo"
+  "status": "ok"
  },
  {
   "id": "timeline",
@@ -221,7 +221,7 @@
   "desc": "Тёмно-красный тон, таймлайн, REC и бегунок",
   "face": false,
   "images": false,
-  "status": "todo"
+  "status": "ok"
  },
  {
   "id": "headline-box",
@@ -237,7 +237,7 @@
   "desc": "Сетка роликов за спиной, счётчик растёт",
   "face": true,
   "images": true,
-  "status": "todo"
+  "status": "ok"
  },
  {
   "id": "tier-list",
@@ -245,7 +245,7 @@
   "desc": "Падает тир-лист, нужный предмет летит в S",
   "face": true,
   "images": false,
-  "status": "todo"
+  "status": "ok"
  },
  {
   "id": "broll-split",
@@ -253,7 +253,7 @@
   "desc": "Сверху б-ролл с ценником, снизу человек",
   "face": true,
   "images": true,
-  "status": "todo"
+  "status": "ok"
  },
  {
   "id": "phone-fan",
@@ -261,7 +261,7 @@
   "desc": "Ролики веером как карты в руке",
   "face": true,
   "images": true,
-  "status": "todo"
+  "status": "ok"
  },
  {
   "id": "dot-reveal",
@@ -277,7 +277,7 @@
   "desc": "Заголовки копятся за головой, затем итог",
   "face": true,
   "images": false,
-  "status": "todo"
+  "status": "ok"
  },
  {
   "id": "checklist",
@@ -285,7 +285,7 @@
   "desc": "Список под подбородком, шаги крутятся и зеленеют",
   "face": true,
   "images": false,
-  "status": "todo"
+  "status": "ok"
  },
  {
   "id": "liquid-glass-graph",
@@ -293,7 +293,7 @@
   "desc": "Зелёный график растёт, число считается вверх",
   "face": true,
   "images": false,
-  "status": "todo"
+  "status": "ok"
  },
  {
   "id": "carousel-spin",
@@ -301,7 +301,7 @@
   "desc": "Ролики вращаются 3D-каруселью и замедляются",
   "face": true,
   "images": true,
-  "status": "todo"
+  "status": "ok"
  },
  {
   "id": "match-cut",
@@ -309,7 +309,7 @@
   "desc": "Страницы новостей режутся на одном слове в красной рамке",
   "face": true,
   "images": false,
-  "status": "todo"
+  "status": "ok"
  },
  {
   "id": "apple-toggles",
@@ -317,7 +317,7 @@
   "desc": "Карточка настроек, переключатели включаются по строкам",
   "face": true,
   "images": false,
-  "status": "todo"
+  "status": "ok"
  },
  {
   "id": "led-sign",
@@ -325,7 +325,7 @@
   "desc": "Свет гаснет, за спиной печатается светящаяся вывеска",
   "face": true,
   "images": false,
-  "status": "todo"
+  "status": "ok"
  },
  {
   "id": "slow-push",
@@ -333,7 +333,7 @@
   "desc": "Кинематографичный наезд на лицо, фон расплывается",
   "face": true,
   "images": false,
-  "status": "todo"
+  "status": "ok"
  },
  {
   "id": "over-the-shoulder-zoom",
@@ -341,7 +341,7 @@
   "desc": "Камера наезжает в угол, рядом растёт стеклянный график",
   "face": true,
   "images": false,
-  "status": "todo"
+  "status": "ok"
  },
  {
   "id": "messages",
@@ -349,7 +349,7 @@
   "desc": "Сообщения iMessage всплывают одно за другим",
   "face": true,
   "images": false,
-  "status": "todo"
+  "status": "ok"
  },
  {
   "id": "place-in-grid",
@@ -357,7 +357,7 @@
   "desc": "Человек сжимается в центр сетки 3×3, вокруг появляются ролики",
   "face": true,
   "images": true,
-  "status": "todo"
+  "status": "ok"
  },
  {
   "id": "tape-label",
@@ -365,7 +365,7 @@
   "desc": "Жёлтая лента с фразой ложится на грудь",
   "face": true,
   "images": false,
-  "status": "todo"
+  "status": "ok"
  },
  {
   "id": "select-resize",
@@ -373,7 +373,7 @@
   "desc": "Синяя рамка хватает число и курсор увеличивает его",
   "face": true,
   "images": false,
-  "status": "todo"
+  "status": "ok"
  },
  {
   "id": "wave-trim",
@@ -381,7 +381,7 @@
   "desc": "Панель с голосом, красные паузы схлопываются",
   "face": false,
   "images": false,
-  "status": "todo"
+  "status": "ok"
  },
  {
   "id": "huge-strike",
@@ -389,7 +389,7 @@
   "desc": "Большое слово появляется и перечёркивается красной линией",
   "face": true,
   "images": false,
-  "status": "todo"
+  "status": "ok"
  },
  {
   "id": "crayon-write",
@@ -397,7 +397,7 @@
   "desc": "Красный мелок пишет слово, подчёркивает и улетает",
   "face": true,
   "images": false,
-  "status": "todo"
+  "status": "ok"
  },
  {
   "id": "fan-build",
@@ -405,6 +405,6 @@
   "desc": "Обложки раскладываются веером по одной",
   "face": true,
   "images": true,
-  "status": "todo"
+  "status": "ok"
  }
 ]
