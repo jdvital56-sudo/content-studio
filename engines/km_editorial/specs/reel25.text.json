@@ -1,0 +1,98 @@
+{
+ "name": "reel25",
+ "video": "C:\\src\\content-studio\\media\\library\\km\\IMG_9980.MP4",
+ "start": 8.53,
+ "dur": 19.0,
+ "beats": [
+  {
+   "t": 0.3,
+   "end": 3.75,
+   "lines": [
+    {
+     "text": "Don't add a single rep today.",
+     "size": 74,
+     "delay": 0.0,
+     "gold": false
+    },
+    {
+     "text": "Slow them down.",
+     "size": 96,
+     "delay": 0.5,
+     "gold": false
+    }
+   ]
+  },
+  {
+   "t": 4.1,
+   "end": 7.55,
+   "lines": [
+    {
+     "text": "Take 3 counts down.",
+     "size": 96,
+     "delay": 0.0,
+     "gold": false
+    },
+    {
+     "text": "Take 1 count up.",
+     "size": 96,
+     "delay": 0.5,
+     "gold": true
+    }
+   ]
+  },
+  {
+   "t": 7.9,
+   "end": 11.35,
+   "lines": [
+    {
+     "text": "Same reps.",
+     "size": 118,
+     "delay": 0.0,
+     "gold": false
+    },
+    {
+     "text": "Much more control.",
+     "size": 96,
+     "delay": 0.5,
+     "gold": false
+    }
+   ]
+  },
+  {
+   "t": 11.7,
+   "end": 15.15,
+   "lines": [
+    {
+     "text": "Hips sag? Stop there.",
+     "size": 96,
+     "delay": 0.0,
+     "gold": false
+    },
+    {
+     "text": "That is your limit today.",
+     "size": 74,
+     "delay": 0.5,
+     "gold": false
+    }
+   ]
+  },
+  {
+   "t": 15.5,
+   "end": 18.95,
+   "lines": [
+    {
+     "text": "How many clean reps",
+     "size": 96,
+     "delay": 0.0,
+     "gold": false
+    },
+    {
+     "text": "did you get? Comment it.",
+     "size": 74,
+     "delay": 0.5,
+     "gold": true
+    }
+   ]
+  }
+ ]
+}

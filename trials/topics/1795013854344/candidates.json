@@ -1,0 +1,164 @@
+[
+  {
+    "id": 1,
+    "format": "text",
+    "hook_type": "number+deadline",
+    "hook": "Women at home: lower for 3 seconds.",
+    "beats": [
+      ["Women at home:", "lower for 3 seconds."],
+      ["Fast reps let momentum", "do the work."],
+      ["Count it out loud:", "one, two, three, up."],
+      ["Muscles stay in charge."],
+      ["Which rep do you rush?", "Save this, then tell me."]
+    ],
+    "spoken": "Women at home: lower for 3 seconds. Fast reps let momentum do the work. Count it out loud: one, two, three, up. Muscles stay in charge. Which rep do you rush? Save this, then tell me.",
+    "captions": ["Women at home:", "Lower for 3 seconds", "Momentum does the work", "Count it out loud", "One, two, three, up", "Muscles stay in charge", "Which rep do you rush?"],
+    "cta": "SAVE",
+    "visuals": [
+      "woman starting a bodyweight squat in a living room",
+      "slow-motion lowering phase of a squat, home setting",
+      "close-up of a quick bouncy rep, blurred motion",
+      "woman counting on fingers during a workout",
+      "slow controlled squat, side view",
+      "leg muscles working during a slow rep, close-up",
+      "woman pausing and looking at camera after a set"
+    ],
+    "tania": ["serious", "serious", "doubt", "thoughtful", "joy", "joy", "thoughtful"],
+    "why": "A specific number in the first line, aimed at a narrow audience, gives a clear promise that reads with no sound."
+  },
+  {
+    "id": 2,
+    "format": "text",
+    "hook_type": "myth",
+    "hook": "Myth: slow reps are only for beginners.",
+    "beats": [
+      ["Myth: slow reps", "are only for beginners."],
+      ["Try a slow glute bridge", "on the floor."],
+      ["Rise for 2 counts.", "Lower for 3."],
+      ["Slow is not easy.", "Slow is control."],
+      ["Slow rep or fast rep?", "Tell me below."]
+    ],
+    "spoken": "Myth: slow reps are only for beginners. Try a slow glute bridge on the floor. Rise for 2 counts. Lower for 3. Slow is not easy. Slow is control. Slow rep or fast rep? Tell me below.",
+    "captions": ["Myth: slow reps = beginner", "Try a slow glute bridge", "Rise for 2 counts", "Lower for 3", "Slow is not easy", "Slow is control", "Slow or fast? Tell me"],
+    "cta": "FOLLOW",
+    "visuals": [
+      "woman on a yoga mat looking skeptical at camera",
+      "glute bridge on a mat, side angle, home",
+      "hips rising slowly in a glute bridge",
+      "hips lowering slowly to the mat",
+      "woman breathing hard after a slow set, smiling",
+      "controlled glute bridge, close-up on form",
+      "woman shrugging and pointing at camera"
+    ],
+    "tania": ["doubt", "serious", "serious", "serious", "surprise", "joy", "thoughtful"],
+    "why": "It calls out a belief many women hold, so viewers stay to see whether the myth holds up."
+  },
+  {
+    "id": 3,
+    "format": "text",
+    "hook_type": "pain-then-relief",
+    "hook": "Knees wobbling mid-squat? Slow down.",
+    "beats": [
+      ["Knees wobbling mid-squat?", "Slow down."],
+      ["Rushing hides the wobble.", "Slow shows it."],
+      ["Lower for 3 counts", "with a mirror at your side."],
+      ["Spot it. Adjust. Repeat.", "Pain? Stop and ask a pro."],
+      ["Where do you wobble?", "Save this for leg day."]
+    ],
+    "spoken": "Knees wobbling mid-squat? Slow down. Rushing hides the wobble. Slow shows it. Lower for 3 counts with a mirror at your side. Spot it. Adjust. Repeat. Pain? Stop and ask a pro. Where do you wobble? Save this for leg day.",
+    "captions": ["Knees wobbling mid-squat?", "Slow down", "Rushing hides the wobble", "Mirror at your side", "Spot it. Adjust. Repeat.", "Pain? Stop, ask a pro", "Where do you wobble?"],
+    "cta": "SAVE",
+    "visuals": [
+      "woman squatting, knees shaking slightly, home gym",
+      "woman exhaling and slowing the tempo",
+      "fast squats in a blur next to a slow squat",
+      "woman checking her form in a full-length mirror",
+      "woman adjusting her stance and trying again",
+      "woman stopping and shaking out her legs",
+      "woman smiling at the mirror after a clean rep"
+    ],
+    "tania": ["doubt", "thoughtful", "surprise", "serious", "serious", "thoughtful", "joy"],
+    "why": "It names a pain the viewer can see in her own squat and gives the fix straight away."
+  },
+  {
+    "id": 4,
+    "format": "text",
+    "hook_type": "mistake",
+    "hook": "Women at home: stop bouncing at the bottom.",
+    "beats": [
+      ["Women at home:", "stop bouncing", "at the bottom."],
+      ["The bounce skips", "the hard part."],
+      ["Pause one full second", "at the bottom. Then rise."],
+      ["Discipline creates freedom."],
+      ["Do you bounce? Be honest.", "Send this to a friend."]
+    ],
+    "spoken": "Women at home: stop bouncing at the bottom. The bounce skips the hard part. Pause one full second at the bottom. Then rise. Discipline creates freedom. Do you bounce? Be honest. Send this to a friend.",
+    "captions": ["Stop bouncing at the bottom", "The bounce skips the work", "Pause one full second", "Then rise", "Discipline creates freedom", "Do you bounce?", "Send this to a friend"],
+    "cta": "SHARE",
+    "visuals": [
+      "woman bouncing out of the bottom of a squat",
+      "slow-motion bounce at the bottom, close-up",
+      "woman holding the bottom of a squat",
+      "woman rising smoothly from a squat",
+      "woman finishing a set, calm and focused",
+      "woman laughing, caught bouncing",
+      "two friends exercising together at home"
+    ],
+    "tania": ["serious", "doubt", "serious", "joy", "thoughtful", "surprise", "joy"],
+    "why": "It names one exact mistake that viewers can spot in their own reps, and the one-second pause is easy to try right away."
+  },
+  {
+    "id": 5,
+    "format": "text",
+    "hook_type": "anti-hook",
+    "hook": "Don't add more reps today. Slow them down.",
+    "beats": [
+      ["Don't add more reps today.", "Slow them down."],
+      ["Take 3 counts down.", "Take 1 count up."],
+      ["Same reps.", "Much more control."],
+      ["Hips sag? Stop there.", "That is your limit today."],
+      ["How many clean reps", "did you get? Comment it."]
+    ],
+    "spoken": "Don't add more reps today. Slow them down. Take 3 counts down. Take 1 count up. Same reps. Much more control. Hips sag? Stop there. That is your limit today. How many clean reps did you get? Comment it.",
+    "captions": ["Don't add more reps", "Slow them down", "3 counts down", "1 count up", "Hips sag? Stop there", "That's today's limit", "How many clean reps?"],
+    "cta": "FOLLOW",
+    "visuals": [
+      "woman at the top of a push-up on a mat, home",
+      "woman lowering slowly in a push-up, side view",
+      "push-up lowering phase, slow motion",
+      "quick push back up to the starting position",
+      "woman with hips sagging in a plank, then stopping",
+      "woman resting on her knees on the mat, calm",
+      "woman counting reps on her fingers"
+    ],
+    "tania": ["surprise", "serious", "serious", "serious", "doubt", "thoughtful", "joy"],
+    "why": "It tells viewers to do the opposite of what they expect (fewer reps, not more), which breaks the scroll pattern."
+  },
+  {
+    "id": 6,
+    "format": "text",
+    "hook_type": "concrete object",
+    "hook": "Women who rush squats: grab a chair.",
+    "beats": [
+      ["Women who rush squats:", "grab a chair."],
+      ["Touch the seat lightly,", "never drop onto it."],
+      ["Take 3 counts to get there.", "Then stand tall."],
+      ["Chair is a guide,", "not a rest stop."],
+      ["Chair squats: easy or hard?", "Save this and tell me."]
+    ],
+    "spoken": "Women who rush squats: grab a chair. Touch the seat lightly, never drop onto it. Take 3 counts to get there. Then stand tall. Chair is a guide, not a rest stop. Chair squats: easy or hard? Save this and tell me.",
+    "captions": ["Rush your squats? Grab a chair", "Touch the seat lightly", "Never drop onto it", "3 counts to get there", "Then stand tall", "A guide, not a rest stop", "Easy or hard? Tell me"],
+    "cta": "SAVE",
+    "visuals": [
+      "woman placing a kitchen chair behind her in a living room",
+      "squat with a light touch on the chair seat",
+      "woman dropping heavily onto a chair, then correcting",
+      "slow squat toward a chair, side view",
+      "woman standing up tall from the chair, arms forward",
+      "chair behind a woman mid-squat, close-up",
+      "woman smiling at the camera next to the chair"
+    ],
+    "tania": ["serious", "thoughtful", "doubt", "serious", "joy", "thoughtful", "surprise"],
+    "why": "A plain chair in the first frame shows viewers they can try this right now, with nothing to buy."
+  }
+]

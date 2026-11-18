@@ -58,7 +58,8 @@ try:
         vids = sorted([f for f in os.listdir(lib) if f.lower().endswith(('.mp4', '.mov', '.m4v', '.webm'))]) if os.path.isdir(lib) else []
         if not vids: raise RuntimeError('в «Мои видео» нет роликов этого канала: загрузи тренировку')
         used = [r[0] for r in db.execute("SELECT note FROM events WHERE action='textreel'")]
-        vid = min(vids, key=lambda v: used.count(v))  # the least used clip first
+        want = script.get('footage')
+        vid = want if want in vids else min(vids, key=lambda v: used.count(v))  # the clip the Writer wrote for, else the least used
         vpath = os.path.join(lib, vid)
         vdur = float(json.loads(run(['ffprobe', '-v', 'error', '-show_entries', 'format=duration', '-of', 'json', vpath]))['format']['duration'])
         beats = script.get('beats') or [[c] for c in (script.get('captions') or [script['hook']])]

@@ -336,7 +336,7 @@ function libView(){view='lib';navOn('navlib');$('.tools').style.display='none';$
  fetch('/api/library').then(r=>r.json()).then(L=>{$('#grid').innerHTML=`<h2 style="margin:0 0 4px">Мои видео (материал)</h2><p style="color:var(--muted);margin:0 0 10px">Сюда загружаешь свои съёмки: тренировки Тетяны, ролики клиента, длинные записи. Из них завод будет нарезать короткие ролики и брать куски для хуков. Файлы остаются на твоём компьютере, в папке <code>media/library</code>.</p>
   <button class="btn go" id="upl2" style="padding:8px 14px">+ Загрузить видео</button>
   <h3 style="margin-top:14px">Загружено (${L.length})</h3>
-  ${L.length?L.map(f=>`<div class="ag"><div style="flex:1"><b>${f.name}</b><small>${CH[f.channel]?CH[f.channel].n:f.channel} · ${f.mb} МБ</small></div><span class="pill s-draft">нарезка: следующий шаг</span></div>`).join(''):'<p style="color:var(--muted)">Пока ничего не загружено.</p>'}
+  ${L.length?L.map(f=>{const src='/api/library/file?channel='+encodeURIComponent(f.channel)+'&name='+encodeURIComponent(f.name);return `<div class="ag" style="align-items:center"><video src="${src}#t=1" muted playsinline preload="metadata" onmouseover="this.play()" onmouseout="this.pause()" style="width:72px;height:128px;object-fit:cover;border-radius:10px;background:#000;flex:none"></video><div style="flex:1"><b>${f.name}</b><small>${CH[f.channel]?CH[f.channel].n:f.channel} · ${f.mb} МБ</small><div style="margin-top:8px;display:flex;gap:8px"><button class="btn" data-libplay="${src}">▶ Смотреть полностью</button></div><textarea class="libdesc" data-ch="${f.channel}" data-nm="${f.name}" rows="2" placeholder="Что в этом видео: упражнение, место, темп. Писатель пишет текст ровно под это." style="margin-top:8px;width:100%;background:var(--surface2);border:0;border-radius:10px;padding:8px 10px;color:var(--text);font:inherit;font-size:13px">${f.desc||''}</textarea></div><span class="pill s-draft">нарезка: следующий шаг</span></div>`}).join(''):'<p style="color:var(--muted)">Пока ничего не загружено.</p>'}
   <div class="script" style="margin-top:12px"><b>Что завод будет делать с материалом (пока загрузка работает, нарезка нет):</b><br>1) расшифровать речь, 2) найти сильные моменты (резкая смена, фраза-хук, пауза после вывода), 3) нарезать на ролики по 15–45 секунд с субтитрами в стиле канала, 4) предложить 3 хука на каждый кусок, 5) положить на стену как черновики. Для роликов с человеком в кадре будут работать эффекты, которым нужно лицо.</div>`}).catch(()=>{$('#grid').innerHTML='<p>Нет связи с сервером.</p>'})}
 function hooksModal(){const H=R.filter(r=>r.script).map(r=>`<div class="ag"><div style="flex:1"><b>${r.script.hook}</b><small>${r.script.hook_type||''} · ${CH[r.ch].n}</small></div></div>`).join('');
  const old=R.filter(r=>!r.script&&r.video).map(r=>`<div class="ag"><div style="flex:1"><b>${r.title}</b><small>${styleOf(r)}</small></div></div>`).join('');
@@ -431,6 +431,7 @@ document.addEventListener('click',e=>{
     if(a==='save'){$('#pmodal').classList.remove('on');return}}
   if(e.target.closest('#navsk')){view='skills';skillsView();return}
   if(e.target.closest('#navwall')){view='wall';document.querySelectorAll('nav a').forEach(a=>a.classList.toggle('on',a.id==='navwall'));$('.tools').style.display='';all();return}
+  const lp=e.target.closest('[data-libplay]'); if(lp){$('#pvid').src=lp.dataset.libplay;$('#player').classList.add('on');$('#pvid').play().catch(()=>{});return}
   const pl=e.target.closest('[data-play]'); if(pl){e.stopPropagation();openPlayer(+pl.dataset.play);return}
   if(e.target.closest('#plx')||e.target.id==='player'){closePlayer();return}
   // --- real buttons of the reel card
@@ -511,6 +512,7 @@ setInterval(()=>{if(!live||view!=='wall'||document.querySelector('.modal.on'))re
 document.addEventListener('keyup',()=>{});
 document.addEventListener('change',e=>{
   if(e.target.name==='pmode'||e.target.name==='pmouth'){const p=PRES[fxc]||(PRES[fxc]={mode:'cameo',mouth:'calm'});p[e.target.name==='pmode'?'mode':'mouth']=e.target.value;if(live)fetch('/api/settings/presence',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(PRES)});return}
+  if(e.target.classList&&e.target.classList.contains('libdesc')){fetch('/api/library/desc',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({channel:e.target.dataset.ch,name:e.target.dataset.nm,text:e.target.value})});e.target.style.outline='2px solid var(--ok)';setTimeout(()=>e.target.style.outline='',800);return}
   if(e.target.id==='fxall'){fxall=e.target.checked;openFx();return}
   if(e.target.id==='chf'&&e.target.files[0]){$('#chn').textContent=e.target.files[0].name}
   if(e.target.id==='ufile'){UFILES=[...e.target.files];ulist()}

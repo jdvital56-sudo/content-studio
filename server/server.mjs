@@ -113,9 +113,26 @@ createServer(async (req, res) => {
       const c = Object.fromEntries(db.prepare("SELECT status s, COUNT(*) n FROM reels GROUP BY status").all().map(r => [r.s, r.n]));
       return send(res, 200, { streak, goal: 20, counts: c });
     }
+    // Play an uploaded source video in the browser (with Range, so seeking works).
+    if (url.pathname === '/api/library/file') {
+      const ch = (url.searchParams.get('channel') || '').replace(/[^a-z0-9_-]/gi, ''), nm = url.searchParams.get('name') || '';
+      const file = normalize(join(LIB, ch, nm));
+      if (!ch || !nm || nm.includes('..') || !file.startsWith(LIB)) return send(res, 400, { error: 'name' });
+      const buf = await readFile(file), range = req.headers.range?.match(/bytes=(\d*)-(\d*)/);
+      const type = /\.webm$/i.test(nm) ? 'video/webm' : /\.mov$/i.test(nm) ? 'video/quicktime' : 'video/mp4';
+      if (!range) { res.writeHead(200, { 'Content-Type': type, 'Content-Length': buf.length, 'Accept-Ranges': 'bytes' }); return res.end(buf); }
+      const start = range[1] ? +range[1] : 0, end = range[2] ? Math.min(+range[2], buf.length - 1) : buf.length - 1;
+      res.writeHead(206, { 'Content-Type': type, 'Content-Range': `bytes ${start}-${end}/${buf.length}`, 'Content-Length': end - start + 1, 'Accept-Ranges': 'bytes' });
+      return res.end(buf.subarray(start, end + 1));
+    }
+    if (url.pathname === '/api/library/desc' && req.method === 'POST') {
+      const b = await readBody(req); const ch = String(b.channel || '').replace(/[^a-z0-9_-]/gi, ''), nm = String(b.name || '');
+      const file = normalize(join(LIB, ch, nm)); if (!ch || !nm || nm.includes('..') || !file.startsWith(LIB)) return send(res, 400, { error: 'name' });
+      await writeFile(file + '.txt', String(b.text || '').slice(0, 1000)); log(null, 'owner', 'library-desc', nm); return send(res, 200, { ok: true });
+    }
     // Library of source material (the owner's / client's own footage) for cutting and hooks.
     if (url.pathname === '/api/library' && req.method === 'GET') {
-      const out = []; try { for (const ch of await readdir(LIB)) for (const f of await readdir(join(LIB, ch))) { const s = await stat(join(LIB, ch, f)); out.push({ channel: ch, name: f, mb: Math.round(s.size / 1048576), at: s.mtime }); } } catch {}
+      const out = []; try { for (const ch of await readdir(LIB)) for (const f of await readdir(join(LIB, ch))) { if (f.endsWith('.txt')) continue; const s = await stat(join(LIB, ch, f)); let desc = ''; try { desc = await readFile(join(LIB, ch, f + '.txt'), 'utf8'); } catch {} out.push({ channel: ch, name: f, mb: Math.round(s.size / 1048576), at: s.mtime, desc }); } } catch {}
       return send(res, 200, out);
     }
     if (url.pathname === '/api/library' && req.method === 'POST') {
@@ -134,9 +151,10 @@ createServer(async (req, res) => {
       const ch = ['km', 'wi', 'hi'].includes(b.channel) ? b.channel : 'km';
       const passport = { km: 'kosta-method.md', wi: 'what-if.md', hi: 'historical.md' }[ch];
       const out = join(root, 'trials', 'topics', String(Date.now())); await mkdir(out, { recursive: true });
+      let footage = ''; try { const d = join(LIB, ch); for (const f of await readdir(d)) if (f.endsWith('.txt')) footage += f.replace(/\.txt$/, '') + ': ' + (await readFile(join(d, f), 'utf8')).replace(/\s+/g, ' ') + ' || '; } catch {}
       let style = ''; try { style = JSON.parse(db.prepare('SELECT value FROM settings WHERE key=?').get('scriptstyle')?.value || '{}')[ch] || ''; } catch {}
       jobs.set('topic', { state: 'running', note: 'Писатель и Критик работают, 3–6 минут', since: Date.now() });
-      const p = spawn(BASH, ['tools/write-scripts-v2.sh', `channels/${passport}`, 'research/trends-2026-11-18.md', out, String(Math.min(20, Math.max(4, +b.count || 10))), String(b.topic || '').slice(0, 200), String(style).slice(0, 2000), ['mix', 'text', 'tania', 'stock'].includes(b.format) ? b.format : 'mix'], { cwd: root });
+      const p = spawn(BASH, ['tools/write-scripts-v2.sh', `channels/${passport}`, 'research/trends-2026-11-18.md', out, String(Math.min(20, Math.max(4, +b.count || 10))), String(b.topic || '').slice(0, 200), String(style).slice(0, 2000), ['mix', 'text', 'tania', 'stock'].includes(b.format) ? b.format : 'mix', footage.slice(0, 3000)], { cwd: root });
       p.on('close', async () => {
         try {
           const f = JSON.parse(await readFile(join(out, 'final.json'), 'utf8')); let n = 0;

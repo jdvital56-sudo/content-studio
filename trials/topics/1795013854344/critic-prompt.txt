@@ -1,0 +1,233 @@
+# Паспорт канала: Kosta Method
+
+Статус: **готов 17.11.2026.** Правки вносятся по ходу работы.
+
+## 1. Вид (визуал)
+
+- **Стиль «KM Editorial»**, полное описание: `C:\Users\Вадим\projects\kosta-method\content\reels\STYLE-KM-EDITORIAL.md`.
+- Кадр 1080×1920. Сверху 8% строка бренда (KM · тема · номер серии), графика 50% высоты, подпись 2 строки на сетке, внизу 12% пусто (интерфейс Reels).
+- Цвета: бумага `#FAF7F2`, сетка `#E7DCCB`, текст `#1D1D1F`, **одна сигнальная краска: золото `#C9AB7C`** (текст золотом `#8A6C3F`).
+- Шрифт один: Montserrat.
+- Движение: всё встаёт на сетку в такт, без пружин; появление шторкой, удаление «ножом». Одна вещь не по сетке = хук.
+- Логотип KM и любые надписи бренда **только наложением настоящего файла**, нейросеть буквы ломает.
+- **Решено 17.11:** KM Editorial остаётся стилем канала.
+
+## 2. Кто в кадре
+
+- Тетяна: лицо и ведущая бренда. Технику упражнений показывает **только живое видео Тетяны**.
+- Мультяшная Таня, канон D (`C:\src\kosta-method-app\assets\mascot\tania-canon.png`): золотой KM на топе, KM только на внешней стороне носков. Камео 1–2 раза за ролик, технику не показывает.
+- Живой говорящий аватар Тетяны: платный (Kling Avatar v2 на fal, Std $0,0562 за секунду, проверено 06.11) и нужно её письменное согласие на клон голоса и лица.
+- **Движок стиля: `engines/km_editorial` (18.11):** бумага, сетка, золото, Montserrat, слова по мере речи, мультяшная Таня карточкой в начале и в конце. Первые 3 ролика собраны им.
+- **Уточнено владельцем 18.11:** Таня в роликах только настоящая (Тетяна) или мультяшная (канон D). Сгенерированную героиню из reel-factory НЕ брать; из reel-factory берём только основу: голос, сток, графику, сборку.
+- **Решено 17.11:** на старте графика + голос + камео мультяшной Тани 1–2 раза за ролик. Как только Тетяна снимет себя на телефон, добавляем её живое видео (этап 3, нарезка говорящей головы). Платный аватар позже и только с её письменным согласием.
+
+## 3. Голос и текст
+
+- Структура рилса: **хук в первые 2 с** → одна польза → товар ясно в кадре → призыв + имя бренда.
+- Длина ролика = длина озвучки. **1,75 слова в секунду**: 30 с не больше 45 слов. После сборки ffprobe, больше 35 с при заказе 30 = брак.
+- Тексты про питание утверждает Тетяна, она нутрициолог.
+- Подача: «целеустремлённая, дисциплинированная». Слоганы: Discipline creates freedom, A stronger you.
+- ЗАДАЧА владельцу: попросить Тетяну надиктовать голосовым 10–20 фраз, как она говорит с клиентками. Пока их нет, сценарист пишет по слоганам и подаче выше. Ролики это не останавливает.
+
+## 4. Язык
+
+- Правило от 01.10: **контент на английском**, украинский только по просьбе владельца. Русский только для общения с Claude.
+- **Решено 17.11:** правило в силе, ролики на английском.
+
+## 5. Звук
+
+- Ровный пульс (минимал, маримба), голос на 6 дБ громче музыки, итог −14 LUFS. Сухие «печатные» звуки на щелчки сетки, настоящие записи.
+
+## 6. Аккаунты
+
+- Instagram основной: **@kosta_method** (решение 04.10); ещё есть `kosta_method_club`.
+- TikTok `@vkostamethod2509`, Facebook-страница бренда, LinkedIn личный Тетяны.
+- **Решено 17.11:** первый месяц завод готовит ролики для Instagram @kosta_method, TikTok @vkostamethod2509 и YouTube Shorts.
+- ОТКРЫТО: сверить подписчиков @kosta_method и kosta_method_club (на 03.10 у @kosta_method было 12). Основным делать тот, где больше живой аудитории.
+
+## 7. Куда ведём
+
+- **Сейчас цель одна: подписчики (решение владельца 18.11).** В роликах НЕ рекламируем товары (бутылка, носки, ручки), призыв только «подпишись», «сохрани», «отправь подруге». Продающие ролики и слова-призывы в директ включаем позже, когда будет аудитория. Предметы в кадре можно, прямая реклама нет.
+
+### Старое правило (до 18.11, отложено)
+
+- Товары в наличии: бутылка (металлическая ручка на крышке), носки, ручки (2 модели). Одежда «скоро».
+- **Решено 17.11 (Claude по поручению владельца):** призыв в ролике «напиши слово в директ» (BOTTLE, SOCKS, PEN). Цен на товары ещё нет, поэтому разговор в директе продаёт лучше, чем ссылка. В шапке профиля ссылка на сайт kosta-method.vercel.app с меткой UTM по площадке. Позже ответ на слово отправляет автоматика (этап 5).
+
+## 8. Нельзя
+
+- «−10 кг за 30 дней», «до/после», стыд за тело.
+- Слово «Pixar» в маркетинге.
+- Авиацию в биографии Тетяны не упоминать в текстах. Подвеска-самолётик на мультяшной Тане остаётся (решение владельца 18.11: это её фишка).
+- Имя и лицо дочери без согласия Тетяны.
+- Цифры стажа и клиенток не выдумывать.
+
+=== CANDIDATES ===
+[
+  {
+    "id": 1,
+    "format": "text",
+    "hook_type": "number+deadline",
+    "hook": "Women at home: lower for 3 seconds.",
+    "beats": [
+      ["Women at home:", "lower for 3 seconds."],
+      ["Fast reps let momentum", "do the work."],
+      ["Count it out loud:", "one, two, three, up."],
+      ["Muscles stay in charge."],
+      ["Which rep do you rush?", "Save this, then tell me."]
+    ],
+    "spoken": "Women at home: lower for 3 seconds. Fast reps let momentum do the work. Count it out loud: one, two, three, up. Muscles stay in charge. Which rep do you rush? Save this, then tell me.",
+    "captions": ["Women at home:", "Lower for 3 seconds", "Momentum does the work", "Count it out loud", "One, two, three, up", "Muscles stay in charge", "Which rep do you rush?"],
+    "cta": "SAVE",
+    "visuals": [
+      "woman starting a bodyweight squat in a living room",
+      "slow-motion lowering phase of a squat, home setting",
+      "close-up of a quick bouncy rep, blurred motion",
+      "woman counting on fingers during a workout",
+      "slow controlled squat, side view",
+      "leg muscles working during a slow rep, close-up",
+      "woman pausing and looking at camera after a set"
+    ],
+    "tania": ["serious", "serious", "doubt", "thoughtful", "joy", "joy", "thoughtful"],
+    "why": "A specific number in the first line, aimed at a narrow audience, gives a clear promise that reads with no sound."
+  },
+  {
+    "id": 2,
+    "format": "text",
+    "hook_type": "myth",
+    "hook": "Myth: slow reps are only for beginners.",
+    "beats": [
+      ["Myth: slow reps", "are only for beginners."],
+      ["Try a slow glute bridge", "on the floor."],
+      ["Rise for 2 counts.", "Lower for 3."],
+      ["Slow is not easy.", "Slow is control."],
+      ["Slow rep or fast rep?", "Tell me below."]
+    ],
+    "spoken": "Myth: slow reps are only for beginners. Try a slow glute bridge on the floor. Rise for 2 counts. Lower for 3. Slow is not easy. Slow is control. Slow rep or fast rep? Tell me below.",
+    "captions": ["Myth: slow reps = beginner", "Try a slow glute bridge", "Rise for 2 counts", "Lower for 3", "Slow is not easy", "Slow is control", "Slow or fast? Tell me"],
+    "cta": "FOLLOW",
+    "visuals": [
+      "woman on a yoga mat looking skeptical at camera",
+      "glute bridge on a mat, side angle, home",
+      "hips rising slowly in a glute bridge",
+      "hips lowering slowly to the mat",
+      "woman breathing hard after a slow set, smiling",
+      "controlled glute bridge, close-up on form",
+      "woman shrugging and pointing at camera"
+    ],
+    "tania": ["doubt", "serious", "serious", "serious", "surprise", "joy", "thoughtful"],
+    "why": "It calls out a belief many women hold, so viewers stay to see whether the myth holds up."
+  },
+  {
+    "id": 3,
+    "format": "text",
+    "hook_type": "pain-then-relief",
+    "hook": "Knees wobbling mid-squat? Slow down.",
+    "beats": [
+      ["Knees wobbling mid-squat?", "Slow down."],
+      ["Rushing hides the wobble.", "Slow shows it."],
+      ["Lower for 3 counts", "with a mirror at your side."],
+      ["Spot it. Adjust. Repeat.", "Pain? Stop and ask a pro."],
+      ["Where do you wobble?", "Save this for leg day."]
+    ],
+    "spoken": "Knees wobbling mid-squat? Slow down. Rushing hides the wobble. Slow shows it. Lower for 3 counts with a mirror at your side. Spot it. Adjust. Repeat. Pain? Stop and ask a pro. Where do you wobble? Save this for leg day.",
+    "captions": ["Knees wobbling mid-squat?", "Slow down", "Rushing hides the wobble", "Mirror at your side", "Spot it. Adjust. Repeat.", "Pain? Stop, ask a pro", "Where do you wobble?"],
+    "cta": "SAVE",
+    "visuals": [
+      "woman squatting, knees shaking slightly, home gym",
+      "woman exhaling and slowing the tempo",
+      "fast squats in a blur next to a slow squat",
+      "woman checking her form in a full-length mirror",
+      "woman adjusting her stance and trying again",
+      "woman stopping and shaking out her legs",
+      "woman smiling at the mirror after a clean rep"
+    ],
+    "tania": ["doubt", "thoughtful", "surprise", "serious", "serious", "thoughtful", "joy"],
+    "why": "It names a pain the viewer can see in her own squat and gives the fix straight away."
+  },
+  {
+    "id": 4,
+    "format": "text",
+    "hook_type": "mistake",
+    "hook": "Women at home: stop bouncing at the bottom.",
+    "beats": [
+      ["Women at home:", "stop bouncing", "at the bottom."],
+      ["The bounce skips", "the hard part."],
+      ["Pause one full second", "at the bottom. Then rise."],
+      ["Discipline creates freedom."],
+      ["Do you bounce? Be honest.", "Send this to a friend."]
+    ],
+    "spoken": "Women at home: stop bouncing at the bottom. The bounce skips the hard part. Pause one full second at the bottom. Then rise. Discipline creates freedom. Do you bounce? Be honest. Send this to a friend.",
+    "captions": ["Stop bouncing at the bottom", "The bounce skips the work", "Pause one full second", "Then rise", "Discipline creates freedom", "Do you bounce?", "Send this to a friend"],
+    "cta": "SHARE",
+    "visuals": [
+      "woman bouncing out of the bottom of a squat",
+      "slow-motion bounce at the bottom, close-up",
+      "woman holding the bottom of a squat",
+      "woman rising smoothly from a squat",
+      "woman finishing a set, calm and focused",
+      "woman laughing, caught bouncing",
+      "two friends exercising together at home"
+    ],
+    "tania": ["serious", "doubt", "serious", "joy", "thoughtful", "surprise", "joy"],
+    "why": "It names one exact mistake that viewers can spot in their own reps, and the one-second pause is easy to try right away."
+  },
+  {
+    "id": 5,
+    "format": "text",
+    "hook_type": "anti-hook",
+    "hook": "Don't add more reps today. Slow them down.",
+    "beats": [
+      ["Don't add more reps today.", "Slow them down."],
+      ["Take 3 counts down.", "Take 1 count up."],
+      ["Same reps.", "Much more control."],
+      ["Hips sag? Stop there.", "That is your limit today."],
+      ["How many clean reps", "did you get? Comment it."]
+    ],
+    "spoken": "Don't add more reps today. Slow them down. Take 3 counts down. Take 1 count up. Same reps. Much more control. Hips sag? Stop there. That is your limit today. How many clean reps did you get? Comment it.",
+    "captions": ["Don't add more reps", "Slow them down", "3 counts down", "1 count up", "Hips sag? Stop there", "That's today's limit", "How many clean reps?"],
+    "cta": "FOLLOW",
+    "visuals": [
+      "woman at the top of a push-up on a mat, home",
+      "woman lowering slowly in a push-up, side view",
+      "push-up lowering phase, slow motion",
+      "quick push back up to the starting position",
+      "woman with hips sagging in a plank, then stopping",
+      "woman resting on her knees on the mat, calm",
+      "woman counting reps on her fingers"
+    ],
+    "tania": ["surprise", "serious", "serious", "serious", "doubt", "thoughtful", "joy"],
+    "why": "It tells viewers to do the opposite of what they expect (fewer reps, not more), which breaks the scroll pattern."
+  },
+  {
+    "id": 6,
+    "format": "text",
+    "hook_type": "concrete object",
+    "hook": "Women who rush squats: grab a chair.",
+    "beats": [
+      ["Women who rush squats:", "grab a chair."],
+      ["Touch the seat lightly,", "never drop onto it."],
+      ["Take 3 counts to get there.", "Then stand tall."],
+      ["Chair is a guide,", "not a rest stop."],
+      ["Chair squats: easy or hard?", "Save this and tell me."]
+    ],
+    "spoken": "Women who rush squats: grab a chair. Touch the seat lightly, never drop onto it. Take 3 counts to get there. Then stand tall. Chair is a guide, not a rest stop. Chair squats: easy or hard? Save this and tell me.",
+    "captions": ["Rush your squats? Grab a chair", "Touch the seat lightly", "Never drop onto it", "3 counts to get there", "Then stand tall", "A guide, not a rest stop", "Easy or hard? Tell me"],
+    "cta": "SAVE",
+    "visuals": [
+      "woman placing a kitchen chair behind her in a living room",
+      "squat with a light touch on the chair seat",
+      "woman dropping heavily onto a chair, then correcting",
+      "slow squat toward a chair, side view",
+      "woman standing up tall from the chair, arms forward",
+      "chair behind a woman mid-squat, close-up",
+      "woman smiling at the camera next to the chair"
+    ],
+    "tania": ["serious", "thoughtful", "doubt", "serious", "joy", "thoughtful", "surprise"],
+    "why": "A plain chair in the first frame shows viewers they can try this right now, with nothing to buy."
+  }
+]
+=== TASK (Critic) ===
+You are a ruthless short-video critic. Score every candidate 0-10 on: hook_strength (stops the scroll in 2 s and readable on mute), specificity (concrete number/object/time, not generic), novelty (not what every fitness account says), payoff (viewer gets one clear thing), passport_safety (10 = no ban violated, 0 = violates). Compute total = hook*2 + specificity + novelty + payoff + safety (max 60). Reject any with safety below 8.
+Then for the 6 best, REWRITE the weakest line so each reaches at least 9 on hook_strength, and keep spoken text at most 45 words.
+Output ONLY a JSON object: {"scores":[{"id":1,"hook":x,"specificity":x,"novelty":x,"payoff":x,"safety":x,"total":x,"verdict":"keep|rewrite|drop","note":"..."}],"final":[<the 6 best scripts, same fields as candidates, with improvements and the same visuals/tania lists>]}.
