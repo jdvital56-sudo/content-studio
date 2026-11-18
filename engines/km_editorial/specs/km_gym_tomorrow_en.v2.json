@@ -1,0 +1,71 @@
+{
+ "name": "km_gym_tomorrow_en",
+ "brand": "KM  ·  HABITS  ·  04",
+ "voice_dir": "C:\\Users\\Вадим\\projects\\heroine-pose-library\\voice\\km_gym_tomorrow_en",
+ "audio": "C:\\src\\content-studio\\trials\\reels\\fx\\km_gym_tomorrow_en.m4a",
+ "lines": [
+  {
+   "say": "Don't go to the gym tomorrow.",
+   "gold": [
+    "Don't"
+   ],
+   "pose": "stop_serious_camera"
+  },
+  {
+   "say": "Take a ten minute walk instead.",
+   "gold": [
+    "ten",
+    "walk"
+   ],
+   "pose": "point_you_joy_camera",
+   "stock": "woman_walking_park",
+   "fx": [
+    {
+     "type": "counter",
+     "n": 10,
+     "label": "minutes",
+     "word": "ten"
+    }
+   ]
+  },
+  {
+   "say": "Halfway, stop on a bench and write one workout for Thursday in your notes.",
+   "gold": [
+    "Thursday"
+   ],
+   "pose": "explain_joy_camera",
+   "stock": "woman_writing_in_journal_des"
+  },
+  {
+   "say": "A written plan is harder to ignore than a thought.",
+   "gold": [
+    "written",
+    "plan"
+   ],
+   "pose": "thumbs_up_joy_camera"
+  },
+  {
+   "say": "Walking counts. Planning counts.",
+   "gold": [
+    "counts."
+   ],
+   "pose": "ok_joy_camera",
+   "stock": "woman_walking_sunset"
+  },
+  {
+   "say": "Follow for one small habit a day.",
+   "gold": [
+    "Follow"
+   ],
+   "pose": "wave_joy_camera",
+   "fx": [
+    {
+     "type": "cta",
+     "text": "FOLLOW",
+     "word": "Follow",
+     "label": "@kosta_method"
+    }
+   ]
+  }
+ ]
+}

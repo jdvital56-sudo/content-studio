@@ -1,0 +1,68 @@
+{
+ "name": "km_phone_down_en",
+ "brand": "KM  ·  HABITS  ·  06",
+ "voice_dir": "C:\\Users\\Вадим\\projects\\heroine-pose-library\\voice\\km_phone_down_en",
+ "audio": "C:\\src\\content-studio\\trials\\reels\\fx\\km_phone_down_en.m4a",
+ "lines": [
+  {
+   "say": "Phone down. Stand up. Right now.",
+   "gold": [
+    "Right"
+   ],
+   "pose": "stop_neutral_camera"
+  },
+  {
+   "say": "Rise onto your toes five times, slowly.",
+   "gold": [
+    "five"
+   ],
+   "pose": "point_up_neutral_camera",
+   "stock": "person_stretching_neck",
+   "fx": [
+    {
+     "type": "counter",
+     "n": 5,
+     "label": "times",
+     "word": "five"
+    }
+   ]
+  },
+  {
+   "say": "Lower just as slowly.",
+   "gold": [
+    "slowly."
+   ],
+   "pose": "explain_neutral_camera"
+  },
+  {
+   "say": "That is your reset between work and workout.",
+   "gold": [
+    "reset"
+   ],
+   "pose": "ok_joy_camera",
+   "stock": "office_desk_laptop"
+  },
+  {
+   "say": "Then walk around the block. Ten minutes is plenty.",
+   "gold": [
+    "Ten"
+   ],
+   "pose": "explain_joy_camera",
+   "stock": "walking_sneakers"
+  },
+  {
+   "say": "Save this for your next work break.",
+   "gold": [
+    "Save"
+   ],
+   "pose": "thumbs_up_joy_camera",
+   "fx": [
+    {
+     "type": "cta",
+     "text": "SAVE",
+     "word": "Save"
+    }
+   ]
+  }
+ ]
+}

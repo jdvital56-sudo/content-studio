@@ -195,7 +195,7 @@ def main(spec_path):
                 a = ease(ft / 0.3); pill = Image.new('RGBA', (480, 120), (0, 0, 0, 0)); pd = ImageDraw.Draw(pill)
                 pd.rounded_rectangle([0, 0, 479, 119], 60, fill=GOLD + (int(255 * a),))
                 pulse = 1 + 0.03 * math.sin(ft * 6)
-                txt = f'DM  “{fx["text"]}”'; f2 = font(46, 800); tw = pd.textlength(txt, font=f2)
+                txt = {'FOLLOW': 'FOLLOW', 'SAVE': 'SAVE THIS', 'SHARE': 'SEND TO A FRIEND'}.get(fx['text'], f'DM  “{fx["text"]}”'); f2 = font(46, 800); tw = pd.textlength(txt, font=f2)
                 pd.text(((480 - tw) / 2, 32), txt, font=f2, fill=INK + (int(255 * a),))
                 pill = pill.resize((int(480 * pulse), int(120 * pulse)))
                 fr.alpha_composite(pill, (90, 1180 + int((1 - a) * 40)))

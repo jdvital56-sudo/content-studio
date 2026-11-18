@@ -1,0 +1,68 @@
+{
+ "name": "km_ten_pm_en",
+ "brand": "KM  ·  HABITS  ·  05",
+ "voice_dir": "C:\\Users\\Вадим\\projects\\heroine-pose-library\\voice\\km_ten_pm_en",
+ "audio": "C:\\src\\content-studio\\trials\\reels\\fx\\km_ten_pm_en.m4a",
+ "lines": [
+  {
+   "say": "Skipped training? Ten p.m. fixes it.",
+   "gold": [
+    "Ten",
+    "fixes"
+   ],
+   "pose": "shrug_surprise_camera"
+  },
+  {
+   "say": "Stand up and write tomorrow's workout on a sticky note.",
+   "gold": [
+    "tomorrow's"
+   ],
+   "pose": "point_you_joy_camera",
+   "stock": "hand_writing_workout_plan_in"
+  },
+  {
+   "say": "Time, place, one exercise. Nothing else.",
+   "gold": [
+    "one"
+   ],
+   "pose": "explain_serious_camera",
+   "fx": [
+    {
+     "type": "counter",
+     "n": 1,
+     "label": "exercise",
+     "word": "one"
+    }
+   ]
+  },
+  {
+   "say": "Then lay out your workout clothes by the bed.",
+   "gold": [
+    "bed."
+   ],
+   "pose": "explain_joy_camera",
+   "stock": "woman_lying_on_bed_looking_a"
+  },
+  {
+   "say": "You are not starting over. You are booking the next one.",
+   "gold": [
+    "booking"
+   ],
+   "pose": "heart_joy_camera"
+  },
+  {
+   "say": "Follow for a small plan every day.",
+   "gold": [
+    "Follow"
+   ],
+   "pose": "wave_joy_camera",
+   "fx": [
+    {
+     "type": "cta",
+     "text": "FOLLOW",
+     "word": "Follow"
+    }
+   ]
+  }
+ ]
+}

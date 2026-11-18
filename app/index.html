@@ -74,6 +74,11 @@ aside h4{margin:0 0 8px;font-size:12px;text-transform:uppercase;letter-spacing:1
 .ruler{display:flex;font-size:10px;color:var(--muted)}.ruler span{flex:1;border-left:1px solid var(--line);padding-left:3px}
 .play{position:absolute;top:-2px;bottom:-2px;width:2px;background:var(--bad);z-index:3;pointer-events:none}
 .prog{position:absolute;left:0;right:0;bottom:0;background:rgba(14,16,19,.82);padding:5px 8px;font-size:11px;color:var(--text)}.prog div{height:4px;background:var(--line);border-radius:2px;margin-top:3px}.prog div span{display:block;height:100%;background:var(--blue);border-radius:2px}
+details{border:1px solid var(--line);border-radius:12px;background:var(--panel);margin:8px 0;padding:0 12px}
+details>summary{cursor:pointer;padding:12px 0;font-weight:600;list-style:none}details>summary::before{content:"▸ ";color:var(--gold)}details[open]>summary::before{content:"▾ "}
+details>div{padding-bottom:12px}
+.stylepill{position:absolute;left:8px;bottom:8px;z-index:2;background:rgba(14,16,19,.82);color:var(--gold);border:1px solid var(--gold);border-radius:999px;padding:2px 9px;font-size:11px;font-weight:600}
+.poster{position:relative}
 .playbtn{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:48px;height:48px;border-radius:50%;border:0;background:rgba(14,16,19,.7);color:#fff;font-size:18px;z-index:2}
 .card:hover .playbtn{background:var(--gold);color:#1d1d1f}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;place-items:center;z-index:9}.modal.on{display:grid}
@@ -105,6 +110,7 @@ kbd{background:var(--panel2);border:1px solid var(--line);border-radius:4px;padd
   <a>Ночная очередь</a>
   <a>Банк хуков</a>
   <a id="navsk">Навыки</a>
+  <a id="navcl" style="font-size:12px">Вид клиента (демо)</a>
   <h6>Каналы</h6>
   <a id="navpp">Паспорта</a>
   <a id="newch">Новый канал +</a>
@@ -143,6 +149,7 @@ kbd{background:var(--panel2);border:1px solid var(--line);border-radius:4px;padd
   <div id="edbody"></div>
 </footer>
 
+<div class="modal" id="chmodal"><div class="mbox" style="width:560px;max-height:92vh;overflow:auto"><h3>Свой персонаж <button class="btn" id="chx" style="float:right;padding:2px 8px">✕</button></h3><div id="chbody"></div></div></div>
 <div class="modal" id="omodal"><div class="mbox" style="width:640px;max-height:92vh;overflow:auto"><h3 id="otitle"></h3><div id="obody"></div></div></div>
 <div class="modal" id="nomodal"><div class="mbox"><h3>Новый образ</h3>
   <label>Название</label><input id="non" placeholder="например: Деловой синий">
@@ -222,11 +229,11 @@ const $=s=>document.querySelector(s);
 function fmt(s){return s?Math.floor(s/60)+':'+String(s%60).padStart(2,'0'):'—'}
 function tabs(){ $('#tabs').innerHTML=[['all','Все каналы'],...Object.entries(CH).map(([k,v])=>[k,v.n])].map(([k,n])=>`<button class="tab ${ch===k?'on':''}" data-k="${k}">${n}</button>`).join('')}
 function filters(){ $('#filters').innerHTML=[['all','Все'],...Object.entries(ST).map(([k,v])=>[k,v[0]])].map(([k,n])=>{const c=R.filter(r=>(ch==='all'||r.ch===ch)&&(k==='all'||r.st===k)).length;return `<button class="f ${st===k?'on':''}" data-k="${k}">${n} ${c}</button>`}).join('')}
-function list(){return R.filter(r=>(ch==='all'||r.ch===ch)&&(st==='all'||r.st===st)).sort((a,b)=>b.id-a.id)} // newest first
+function list(){if(clientMode)return [];return R.filter(r=>(ch==='all'||r.ch===ch)&&(st==='all'||r.st===st)).sort((a,b)=>b.id-a.id)} // newest first
 const PR={3:[62,'Озвучка готова, рендер'],12:[35,'Графика карты'],7:[88,'Проверка качества']};
-function poster(r){const c=CH[r.ch],p=PR[r.id];if(r.video)return `<div class="poster" style="padding:0;background:#000"><video class="pv" src="/api/reels/${r.id}/video#t=0.8" muted loop playsinline preload="metadata" style="width:100%;height:100%;object-fit:cover"></video><button class="playbtn" data-play="${r.id}" title="Смотреть со звуком">▶</button></div>`;return `<div class="poster ${c.c}"><div class="brand">${c.b} ${r.id}</div><div class="t">${r.title}</div>${(r.st==='render'||r.st==='check')&&p?`<div class="prog">${p[1]} ${p[0]}%<div><span style="width:${p[0]}%"></span></div></div>`:''}</div>`}
+function poster(r){const c=CH[r.ch],p=PR[r.id];if(r.video)return `<div class="poster" style="padding:0;background:#000"><span class="stylepill">${styleOf(r)}</span><video class="pv" src="/api/reels/${r.id}/video#t=0.8" muted loop playsinline preload="metadata" style="width:100%;height:100%;object-fit:cover"></video><button class="playbtn" data-play="${r.id}" title="Смотреть со звуком">▶</button></div>`;return `<div class="poster ${c.c}"><div class="brand">${c.b} ${r.id}</div><div class="t">${r.title}</div>${(r.st==='render'||r.st==='check')&&p?`<div class="prog">${p[1]} ${p[0]}%<div><span style="width:${p[0]}%"></span></div></div>`:''}</div>`}
 function dots(q){return `<span class="dots">${[...q].map(x=>`<span class="dot ${x==='x'?'x':x==='n'?'n':''}"></span>`).join('')}</span>`}
-function grid(){ if(view==='skills'){skillsView();return} $('#grid').style.display=''; const L=list(); $('#grid').innerHTML=L.map((r,i)=>`<div class="card ${r.id===sel?'sel':''}" data-id="${r.id}"><span class="num">${i+1}</span>${poster(r)}<div class="meta"><span class="pill ${ST[r.st][1]}">${ST[r.st][0]}</span>${dots(r.q)}<span>${fmt(r.len)}</span></div></div>`).join('')||'<p style="color:var(--muted)">Здесь пока пусто.</p>'}
+function grid(){ if(view==='skills'){skillsView();return} $('#grid').style.display=''; const L=list(); $('#grid').innerHTML=L.map((r,i)=>`<div class="card ${r.id===sel?'sel':''}" data-id="${r.id}"><span class="num">${i+1}</span>${poster(r)}<div class="meta"><span class="pill ${ST[r.st][1]}">${ST[r.st][0]}</span>${dots(r.q)}<span>${fmt(r.len)}</span></div></div>`).join('')||(clientMode?'<div class="script" style="max-width:520px"><b>Пока пусто, так и должно быть.</b><br>Новый клиент начинает с чистой стены. Шаги: 1) «Новый канал +» (паспорт с подсказками), 2) «Навыки» → «Свой персонаж» (фото → выбор вида), 3) «Тема → ролики».</div>':'<p style="color:var(--muted)">Здесь пока пусто.</p>')}
 function det(){ const r=R.find(x=>x.id===sel); if(!r){$('#det').innerHTML='';return}
   const bad=r.q.includes('x'),canOk=!bad&&r.q.indexOf('n')<0&&r.st!=='pub';
   const names=['Формат 1080×1920','Громкость −14 LUFS','Субтитры = речь (до 3%)','Безопасные зоны, нет чёрных кадров'];
@@ -320,7 +327,7 @@ let OWN=[];
 const WARDROBE_BASE='Stylized 3D animated character, same young woman as the reference (keep her face, eyes, eyebrows, very long wavy honey-blonde hair and the small silver airplane pendant EXACTLY the same). ';
 function outfitPrompt(o){return WARDROBE_BASE+'New outfit: '+o.d+' The clothing has NO text and NO logos at all (logos are added later by code). Same proportions, smooth cartoon 3D style as the reference, soft studio light. Background: plain flat bright chroma green (#00FF00), no gradient, no floor, no shadows. Pose: ';}
 const STARTER=['explain_joy_camera','point_you_joy_camera','thumbs_up_joy_camera','ok_joy_camera','shrug_doubt_camera','stand_neutral_camera','explain_serious_camera','think_thoughtful_camera','wave_joy_camera','point_up_neutral_camera'];
-function outfitsView(){const all=[...OUTFITS,...OWN];
+function outfitsView(){const all=[...OUTFITS.filter(o=>!(clientMode&&o.id==='sport')),...OWN];
  return `<h3 style="margin-top:16px">Образы Тани <button class="btn" id="oadd" style="padding:3px 10px;margin-left:8px">+ Новый образ</button></h3>
  <p style="color:var(--muted);margin:0 0 8px;font-size:13px">Лицо и фигура остаются Таниными, меняется одежда. Продюсер выбирает образ по теме ролика (колонка «Для каких тем»), а ты можешь поставить свой в настройках ролика. Логотип KM на каждый образ накладывается кодом, нейросеть буквы ломает.</p>
  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:8px">${all.map(o=>`<div class="ag" style="align-items:flex-start">${o.id==='sport'?'<img src="/previews/outfit_sport.jpg" style="width:70px;border-radius:8px;background:#fff">':'<div style="width:70px;height:110px;border-radius:8px;background:var(--panel);display:grid;place-items:center;font-size:11px;color:var(--muted);text-align:center">нет картинок</div>'}<div><b>${o.n}</b><small>${o.d}</small><small>Для каких тем: ${o.topics||'—'}</small><span class="pill ${o.st==='ready'?'s-ok':o.st==='prompt'?'s-wait':'s-draft'}" style="display:inline-block;margin-top:4px">${o.st==='ready'?'готов, '+o.poses+' поз':o.st==='prompt'?'промпт готов, ждёт картинок':'идея, не создан'}</span> ${o.st!=='ready'?`<button class="btn" data-omk="${o.id}" style="padding:2px 8px;margin-top:4px">Создать образ</button>`:''}</div></div>`).join('')}</div>`}
@@ -337,6 +344,36 @@ function openOutfit(id){const o=[...OUTFITS,...OWN].find(x=>x.id===id);if(!o)ret
  $('#omodal').classList.add('on')}
 function saveOutfits(){if(live)fetch('/api/settings/wardrobe',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(OWN)})}
 fetch('/api/settings/wardrobe').then(r=>r.ok?r.json():[]).then(w=>{if(Array.isArray(w)){OWN=w;if(view==='skills')skillsView()}}).catch(()=>{});
+// ---- accordion: Skills page sections stay closed until opened (state remembered per viewer)
+function secState(){try{return JSON.parse(localStorage.getItem('skill-sec')||'{}')}catch{return{}}}
+function accordionize(){
+  const g=$('#grid'); if(!g||view!=='skills')return; const st=secState(); const kids=[...g.children];
+  const mk=(key,title,nodes,btn)=>{const d=document.createElement('details');d.dataset.sec=key;d.open=!!st[key];const s=document.createElement('summary');s.textContent=title;d.append(s);const b=document.createElement('div');b.style.paddingTop='8px';if(btn)b.append(btn);nodes.forEach(n=>b.append(n));d.append(b);return d};
+  const head=[],out=[]; let i=0;
+  while(i<kids.length&&kids[i].tagName!=='H3'){head.push(kids[i]);i++}
+  const intro=head.filter(n=>n.tagName==='H2'||n.tagName==='P'); const rest=head.filter(n=>!intro.includes(n));
+  intro.forEach(n=>out.push(n));
+  if(rest.length)out.push(mk('fx','Эффекты: '+(CATALOG.length||51)+' шт., с видеопревью',rest));
+  const keys={'Другие навыки':'skills','Образы Тани':'outfits','Свой персонаж':'character'};
+  while(i<kids.length){const h=kids[i];i++;const body=[];while(i<kids.length&&kids[i].tagName!=='H3'){body.push(kids[i]);i++}
+    const btn=h.querySelector('button');const title=h.textContent.replace(btn?btn.textContent:'','').trim();
+    const k=Object.keys(keys).find(x=>title.startsWith(x))||title; out.push(mk(keys[k]||k,title,body,btn))}
+  g.replaceChildren(...out);
+  g.querySelectorAll('details').forEach(d=>d.addEventListener('toggle',()=>{const s=secState();s[d.dataset.sec]=d.open;try{localStorage.setItem('skill-sec',JSON.stringify(s))}catch{}}));
+}
+// ---- "Свой персонаж": client onboarding (photo -> pick a look). Generation is connected when the first client arrives.
+const LOOKS=[['3d','3D-мультяшный','Гладкий 3D как в семейных мультфильмах. Так сделана Таня. Самый узнаваемый и «живой».'],['flat','Плоская иллюстрация','Чистые формы и мало деталей. Дёшево и быстро, хорошо для текстовых роликов.'],['comic','Комикс','Контур и полутона. Подходит для историй и юмора.'],['anime','Аниме','Крупные глаза и яркая мимика. Для молодой аудитории.'],['clay','Пластилин','Тёплый ручной вид. Выделяется в ленте.'],['avatar','Оживший аватар','Реалистичный человек, который говорит. Нужна съёмка и письменное согласие.']];
+let CHAR=null,chStep=0,chPick='3d';
+function charView(){return `<h3 style="margin-top:16px">Свой персонаж (для клиентов)</h3>
+ <p style="color:var(--muted);margin:0 0 8px;font-size:13px">Клиент загружает своё фото, выбирает вид, и завод делает его персонажа с позами и движущимся ртом. Ничего из твоих образов (Таня, Kosta Method) клиенту не передаётся: он начинает с пустого завода.</p>
+ ${CHAR?`<div class="ag"><div><b>Заявка сохранена</b><small>Вид: ${LOOKS.find(l=>l[0]===CHAR.look)[1]} · фото: ${CHAR.photo||'без имени'}</small></div></div>`:''}
+ <button class="btn go" id="chnew" style="padding:6px 12px">Создать персонажа из фото</button>`}
+function chRender(){const b=$('#chbody');
+ if(chStep===0)b.innerHTML=`<p style="font-size:13px;color:var(--muted)">Шаг 1 из 3. Загрузи портрет: лицо крупно, хороший свет, без очков и маски.</p><label for="chf" style="display:block;border:2px dashed var(--line);border-radius:12px;padding:20px;text-align:center;cursor:pointer;color:var(--muted)">Нажми и выбери фото<br><small id="chn"></small></label><input type="file" id="chf" accept="image/*" style="display:none"><label style="display:flex;gap:8px;margin-top:10px;color:var(--text);font-size:13px"><input type="checkbox" id="chc"> Это моё фото, или у меня есть письменное согласие человека на фото и его цифровой образ. Мне есть 18. Это не известная публичная персона.</label><div style="display:flex;justify-content:flex-end;margin-top:12px"><button class="btn go" data-ch="1">Дальше</button></div>`;
+ if(chStep===1)b.innerHTML=`<p style="font-size:13px;color:var(--muted)">Шаг 2 из 3. Выбери вид. На следующем шаге завод покажет 4 варианта выбранного вида.</p>${LOOKS.map(l=>`<label class="ag" style="cursor:pointer;align-items:flex-start"><input type="radio" name="look" value="${l[0]}" ${chPick===l[0]?'checked':''}><div><b>${l[1]}</b><small>${l[2]}</small></div></label>`).join('')}<div style="display:flex;justify-content:space-between;margin-top:12px"><button class="btn" data-ch="0">Назад</button><button class="btn go" data-ch="2">Дальше</button></div>`;
+ if(chStep===2)b.innerHTML=`<p style="font-size:13px;color:var(--muted)">Шаг 3 из 3. Что будет дальше.</p><div class="script">1) 4 варианта персонажа на выбор ≈ <b>$0,16</b>.<br>2) Набор из 10 ключевых поз со ртом ≈ <b>$1,2</b>, полный набор из 57 поз ≈ <b>$6,8</b>.<br>3) Расходы идут с <b>твоего собственного ключа</b> сервиса картинок, платформа деньги клиента не держит.</div><p style="font-size:12px;color:var(--warn)">Генерация подключается при первом клиенте. Сейчас заявка сохраняется, и ничего не тратится.</p><div style="display:flex;justify-content:space-between;margin-top:12px"><button class="btn" data-ch="1">Назад</button><button class="btn go" data-ch="save">Сохранить заявку</button></div>`}
+function styleOf(r){const s=r.sub||'';if(s.includes('KM Editorial'))return 'KM Editorial · Таня';if(s.includes('Вариант Б'))return 'Сток + плашки';if(r.ch==='hi')return 'Анимированная карта';if(r.ch==='wi')return 'Стикмены 3D';return 'KM Editorial'}
+let clientMode=false;
 let CATALOG=[],fxf='all';
 function loadCat(){return fetch('/fx-catalog.json?'+Date.now()).then(r=>r.ok?r.json():[]).then(c=>{CATALOG=c;if(view==='skills')skillsView()}).catch(()=>{})}
 loadCat();
@@ -353,8 +390,8 @@ function skillsView(){
     <div class="tabs" style="margin-bottom:12px">${[['all','Все '+CATALOG.length],['stock','Подходят для стока'],['face','Нужен человек в кадре'],['img','Нужны свои картинки']].map(([k,n])=>`<button class="tab ${fxf===k?'on':''}" data-fxf="${k}">${n}</button>`).join('')}</div>
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:8px">${shown.map((f,i)=>`<div class="ag" style="align-items:flex-start"><input type="checkbox" data-fx="${f.id}" ${on.includes(f.id)?'checked':''} ${f.face?'disabled':''} style="margin-top:3px">${f.status==='ok'?`<video src="/previews/${f.id}.mp4" muted loop playsinline preload="metadata" onmouseover="this.play()" onmouseout="this.pause()" style="width:64px;height:114px;object-fit:cover;border-radius:8px;background:#000"></video>`:`<div style="width:64px;height:114px;border-radius:8px;background:var(--panel);display:grid;place-items:center;font-size:10px;color:var(--muted);text-align:center">${f.status==='fail'?'нет превью':'рендер…'}</div>`}<div><b>${f.ru}</b><small>${f.desc}</small><span class="pill ${f.face?'s-draft':'s-ok'}" style="display:inline-block;margin-top:4px">${f.face?'нужен человек в кадре':f.images?'нужны свои картинки':'работает на стоке'}</span> <span class="pill ${CST[f.status][1]}" style="display:inline-block;margin-top:4px">${CST[f.status][0]}</span></div></div>`).join('')}</div>
     <h3 style="margin-top:16px">Другие навыки <button class="btn" id="cadd" style="padding:3px 10px;margin-left:8px">+ Добавить свой</button></h3>
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px">${SKILLS2.map(s=>`<div class="ag" style="align-items:flex-start"><div><b>${s[0]}</b><small>${s[1]}</small><span class="pill ${TAG[s[2]][1]}" style="display:inline-block;margin-top:4px">${TAG[s[2]][0]}</span></div></div>`).join('')}${CUST.map(s=>`<div class="ag" style="align-items:flex-start"><div><b>${s.n}</b><small>${s.d||'без описания'}</small><span class="pill s-draft" style="display:inline-block;margin-top:4px">твой навык · ${s.c==='all'?'все каналы':CH[s.c].n} · движок пока не подключён</span></div></div>`).join('')}</div>`+outfitsView();
-    return}
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px">${SKILLS2.map(s=>`<div class="ag" style="align-items:flex-start"><div><b>${s[0]}</b><small>${s[1]}</small><span class="pill ${TAG[s[2]][1]}" style="display:inline-block;margin-top:4px">${TAG[s[2]][0]}</span></div></div>`).join('')}${CUST.map(s=>`<div class="ag" style="align-items:flex-start"><div><b>${s.n}</b><small>${s.d||'без описания'}</small><span class="pill s-draft" style="display:inline-block;margin-top:4px">твой навык · ${s.c==='all'?'все каналы':CH[s.c].n} · движок пока не подключён</span></div></div>`).join('')}</div>`+outfitsView()+charView();
+    accordionize(); return}
   $('#grid').innerHTML=`<h2 style="margin:0 0 4px">Навыки и эффекты</h2><p style="color:var(--muted);margin:0 0 10px">Включённые эффекты Продюсер ставит в каждый новый ролик канала сам, на подходящие слова. Выбор сохраняется.</p>
   <div class="tabs" style="margin-bottom:12px">${Object.entries(CH).map(([k,v])=>`<button class="tab ${fxc===k?'on':''}" data-fxc="${k}">${v.n}</button>`).join('')}</div>
   <h3>Эффекты (скилл effects, 51 шт., здесь те, что подходят нам)</h3>
@@ -412,6 +449,14 @@ document.addEventListener('click',e=>{
   if(e.target.closest('#navwall')){view='wall';document.querySelectorAll('nav a').forEach(a=>a.classList.toggle('on',a.id==='navwall'));$('.tools').style.display='';all();return}
   const pl=e.target.closest('[data-play]'); if(pl){e.stopPropagation();openPlayer(+pl.dataset.play);return}
   if(e.target.closest('#plx')||e.target.id==='player'){closePlayer();return}
+  if(e.target.closest('#chnew')){chStep=0;chRender();$('#chmodal').classList.add('on');return}
+  if(e.target.closest('#chx')){$('#chmodal').classList.remove('on');return}
+  const chb=e.target.closest('[data-ch]'); if(chb){const v=chb.dataset.ch;
+    if(v==='1'&&chStep===0&&!$('#chc').checked){alert('Отметь согласие: без него персонажа создавать нельзя.');return}
+    if(chStep===1){const r=document.querySelector('input[name=look]:checked');if(r)chPick=r.value}
+    if(v==='save'){CHAR={look:chPick,photo:$('#chn')?.textContent||''};$('#chmodal').classList.remove('on');skillsView();return}
+    chStep=+v;chRender();return}
+  if(e.target.closest('#navcl')){clientMode=!clientMode;$('#navcl').textContent=clientMode?'← Вернуть мой завод':'Вид клиента (демо)';all();if(view==='skills')skillsView();return}
   if(e.target.closest('#oadd')){$('#nomodal').classList.add('on');return}
   if(e.target.closest('#nox')){$('#nomodal').classList.remove('on');return}
   if(e.target.closest('#nos')){const n=$('#non').value.trim();if(n){OWN.push({id:'own'+OWN.length,n,d:$('#nod').value.trim()||'без описания',topics:$('#not').value.trim(),st:'idea'});saveOutfits()}$('#nomodal').classList.remove('on');skillsView();return}
@@ -451,6 +496,7 @@ setInterval(()=>{if(!live||view!=='wall'||document.querySelector('.modal.on'))re
 document.addEventListener('keyup',()=>{});
 document.addEventListener('change',e=>{
   if(e.target.id==='fxall'){fxall=e.target.checked;openFx();return}
+  if(e.target.id==='chf'&&e.target.files[0]){$('#chn').textContent=e.target.files[0].name}
   if(e.target.id==='ufile'&&e.target.files[0]){$('#uname').textContent=e.target.files[0].name}
   if(e.target.id==='uch')usk();
 });
