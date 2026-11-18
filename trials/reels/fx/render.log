@@ -1,0 +1,14 @@
+Pass 1: tracking you (2 effects)...
+INFO: Created TensorFlow Lite XNNPACK delegate for CPU.
+WARNING: Logging before InitGoogle() is written to STDERR
+W0000 00:00:1794991528.211017   25408 inference_feedback_manager.cc:121] Feedback manager requires a model with a single signature inference. Disabling support for feedback tensors.
+Pass 2: adding the effects...
+    0.0s / 15.9s
+    5.0s / 15.9s
+   10.0s / 15.9s
+   15.0s / 15.9s
+Done: missed_fx.mp4
+video,1080,1920
+audio
+15.800000
+Input Integrated:    -13.9 LUFS

@@ -23,6 +23,7 @@ CREATE TABLE IF NOT EXISTS reels(
   created_at TEXT DEFAULT CURRENT_TIMESTAMP,
   updated_at TEXT DEFAULT CURRENT_TIMESTAMP
 );
+CREATE TABLE IF NOT EXISTS settings(key TEXT PRIMARY KEY, value TEXT);
 CREATE TABLE IF NOT EXISTS events(
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   reel_id INTEGER, actor TEXT, action TEXT, note TEXT,
@@ -73,7 +74,17 @@ createServer(async (req, res) => {
       const row = db.prepare('SELECT job_dir FROM reels WHERE id=?').get(+v[1]);
       const media = join(root, 'trials', 'reels', 'final');
       if (!row?.job_dir || !normalize(row.job_dir).startsWith(media)) return send(res, 404, { error: 'no video' });
-      return send(res, 200, await readFile(row.job_dir), 'video/mp4');
+      // Range support: the browser player needs it to seek and to show the first frame fast.
+      const buf = await readFile(row.job_dir), range = req.headers.range?.match(/bytes=(\d*)-(\d*)/);
+      if (!range) { res.writeHead(200, { 'Content-Type': 'video/mp4', 'Content-Length': buf.length, 'Accept-Ranges': 'bytes' }); return res.end(buf); }
+      const start = range[1] ? +range[1] : 0, end = range[2] ? Math.min(+range[2], buf.length - 1) : buf.length - 1;
+      res.writeHead(206, { 'Content-Type': 'video/mp4', 'Content-Range': `bytes ${start}-${end}/${buf.length}`, 'Content-Length': end - start + 1, 'Accept-Ranges': 'bytes' });
+      return res.end(buf.subarray(start, end + 1));
+    }
+    if (url.pathname === '/api/settings/skills') {
+      if (req.method === 'PUT') { const b = await readBody(req); db.prepare('INSERT OR REPLACE INTO settings(key,value) VALUES(?,?)').run('skills', JSON.stringify(b)); log(null, 'owner', 'skills', JSON.stringify(b).slice(0, 200)); return send(res, 200, { ok: true }); }
+      const s = db.prepare('SELECT value FROM settings WHERE key=?').get('skills');
+      return send(res, 200, s ? JSON.parse(s.value) : {});
     }
     if (url.pathname === '/api/events') return send(res, 200, db.prepare('SELECT * FROM events ORDER BY id DESC LIMIT 100').all());
     // static files from app/
