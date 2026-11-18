@@ -1,0 +1,82 @@
+[
+  {
+    "id": 1,
+    "hook_type": "number+deadline",
+    "hook": "Do this 30 minutes before bed.",
+    "spoken": "Do this 30 minutes before bed. Dim every light you can reach. Lamps on, overhead off. Your body reads bright light as daytime. Dim light tells it the day is closing. One lamp, thirty minutes. Save this for tonight.",
+    "captions": ["30 minutes before bed", "Dim every light", "Lamps on, overhead off", "Bright light means daytime", "Dim light: day is closing", "One lamp. Thirty minutes.", "Save this for tonight"],
+    "visuals": ["wall clock at 9:30 pm in a dim room", "hand turning off a bright ceiling light", "warm table lamp glowing in a living room", "sunny window with bright daylight", "sunset glow fading through curtains", "single lamp on a bedside table at night", "phone screen with a save icon over a cozy bedroom"],
+    "tania": ["serious", "thoughtful", "joy", "surprise", "thoughtful", "joy", "joy"],
+    "why": "A clear number and deadline gives the viewer a task they can do tonight, and it reads without sound."
+  },
+  {
+    "id": 2,
+    "hook_type": "myth",
+    "hook": "Sleep doesn't start in bed.",
+    "spoken": "Sleep doesn't start in bed. It starts at the sink. Wash your face slowly, warm water, one full minute. Not for skin. As a signal: this day is done. Small ritual, easy to repeat. Follow for more quiet evening habits.",
+    "captions": ["Sleep doesn't start in bed", "It starts at the sink", "Warm water. One full minute.", "Not for skin", "A signal: day is done", "Small ritual, easy to repeat", "Follow for quiet evenings"],
+    "visuals": ["empty made bed in soft light", "bathroom sink with running water", "hands splashing warm water on a face", "close-up of a towel by the sink", "bathroom light switched off at night", "slow routine in a calm bathroom", "candle and folded towel on a shelf"],
+    "tania": ["doubt", "surprise", "serious", "thoughtful", "thoughtful", "joy", "joy"],
+    "why": "It contradicts what people assume about sleep, then promises a surprising place where it begins."
+  },
+  {
+    "id": 3,
+    "hook_type": "pain-then-relief",
+    "hook": "Wide awake at 1 a.m.? Stand up.",
+    "spoken": "Wide awake at 1 a.m.? Stand up. Don't scroll. Go to another room, sit with a dim lamp and a paper book for ten minutes. Come back when your eyes feel heavy. Bed is for sleeping, not worrying. Save this for the bad nights.",
+    "captions": ["Awake at 1 a.m.?", "Stand up", "Don't scroll", "Dim lamp, paper book", "Ten minutes", "Back when eyes feel heavy", "Save this for bad nights"],
+    "visuals": ["bedside clock showing 1:00 in the dark", "person sitting up and swinging legs out of bed", "phone face down on a table", "dim lamp beside an open paper book", "kitchen timer set to ten minutes", "person yawning and walking back to the bedroom", "pillow and blanket in soft lamp light"],
+    "tania": ["doubt", "serious", "serious", "thoughtful", "thoughtful", "joy", "joy"],
+    "why": "It names a night everyone dreads and gives an unexpected first move, getting out of bed, before the viewer can scroll away."
+  },
+  {
+    "id": 4,
+    "hook_type": "mistake",
+    "hook": "Mistake: your phone sleeps by your pillow.",
+    "spoken": "Mistake: your phone sleeps by your pillow. Move the charger across the room tonight. Now the alarm needs you to stand up, and the last scroll is gone. Ten steps away is enough. Follow for small evening habits that stick.",
+    "captions": ["Phone sleeps by your pillow", "Move the charger tonight", "Across the room", "Alarm now needs you up", "No last scroll", "Ten steps away", "Follow for small habits"],
+    "visuals": ["phone glowing on a pillow in the dark", "hand unplugging a charger from a wall", "charger cable on a dresser far from the bed", "alarm ringing on a dresser across the room", "thumb scrolling a phone in bed, then put away", "person walking ten steps across a bedroom", "tidy bedroom with phone charging on a shelf"],
+    "tania": ["surprise", "serious", "thoughtful", "doubt", "serious", "joy", "joy"],
+    "why": "A named mistake with an object the viewer is probably touching right now makes them check their own bed."
+  },
+  {
+    "id": 5,
+    "hook_type": "anti-hook",
+    "hook": "Don't try to relax tonight.",
+    "spoken": "Don't try to relax tonight. Forcing it rarely works. Just write tomorrow's three tasks on paper, then close the notebook. The list holds them, so your head doesn't have to. Two minutes, one pen. Discipline creates freedom. Save this.",
+    "captions": ["Don't try to relax", "Forcing it rarely works", "Write tomorrow's three tasks", "Close the notebook", "The list holds them", "Two minutes. One pen.", "Discipline creates freedom"],
+    "visuals": ["person on a sofa tensely trying to relax", "clenched hands loosening on a blanket", "pen writing a short list in a notebook", "notebook closing on a desk", "notebook resting on a nightstand", "pen and timer showing two minutes", "calm evening desk with lamp and notebook"],
+    "tania": ["doubt", "thoughtful", "serious", "joy", "thoughtful", "serious", "joy"],
+    "why": "Telling people not to do the thing they are desperately trying to do breaks the expected pattern and creates instant curiosity."
+  },
+  {
+    "id": 6,
+    "hook_type": "open loop",
+    "hook": "There's a ten-minute walk nobody mentions.",
+    "spoken": "There's a ten-minute walk nobody mentions. After dinner, go outside, no headphones, no phone in hand. Just slow steps and evening air. Your body gets a gentle end to the day. That's the whole trick. Follow for more calm evening habits.",
+    "captions": ["A ten-minute walk", "After dinner", "No headphones", "Phone stays in pocket", "Slow steps, evening air", "A gentle end to the day", "Follow for calm evenings"],
+    "visuals": ["street at dusk with warm window lights", "empty dinner table with plates cleared", "earbuds left on a shelf by the door", "phone going into a jacket pocket", "feet walking slowly on an evening path", "sky turning pink and orange at sunset", "quiet neighborhood lit by street lamps"],
+    "tania": ["surprise", "thoughtful", "serious", "serious", "joy", "joy", "joy"],
+    "why": "It promises a secret and delays the answer, so the viewer stays to hear what the walk actually involves."
+  },
+  {
+    "id": 7,
+    "hook_type": "direct address with action",
+    "hook": "Hand on belly. Breathe out slowly.",
+    "spoken": "Hand on belly. Breathe out slowly. Count four in, six out. Do it five times, lying in bed. Longer exhales help the body slow down. No app, no timer, just your hand. Send this to a friend who can't switch off.",
+    "captions": ["Hand on belly", "Breathe out slowly", "Four in, six out", "Five times, lying in bed", "Longer exhales slow you down", "No app. No timer.", "Send to a friend"],
+    "visuals": ["hand resting on a belly under a blanket", "slow exhale with soft breath visible in cool air", "fingers counting four then six on a blanket", "person lying in bed with eyes closed", "gentle waves rolling on a quiet beach", "empty nightstand with no phone or timer", "two friends texting, one smiling at a phone"],
+    "tania": ["serious", "thoughtful", "serious", "thoughtful", "joy", "joy", "joy"],
+    "why": "It starts with a physical command the viewer can follow at once, so they are already doing it before deciding to scroll."
+  },
+  {
+    "id": 8,
+    "hook_type": "concrete object",
+    "hook": "Put one glass of water on your nightstand.",
+    "spoken": "Put one glass of water on your nightstand. Tonight, not tomorrow. It's a cue: the evening is over and you've planned for morning. Pour it, set it down, lights low. Thirty seconds. Discipline creates freedom. Follow for more.",
+    "captions": ["One glass on your nightstand", "Tonight, not tomorrow", "A cue: evening is over", "You've planned for morning", "Pour it. Set it down.", "Lights low. Thirty seconds.", "Discipline creates freedom"],
+    "visuals": ["glass of water on a wooden nightstand", "calendar page with today circled", "bedroom lamp being dimmed", "sunrise light on a tidy bedside table", "water pouring into a glass", "hand switching off a lamp, timer at thirty seconds", "peaceful bedroom at night with a single glass"],
+    "tania": ["surprise", "serious", "thoughtful", "joy", "serious", "joy", "joy"],
+    "why": "A single everyday object in the first frame makes the habit instantly visual and easy to copy tonight."
+  }
+]

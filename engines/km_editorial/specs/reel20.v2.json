@@ -1,0 +1,99 @@
+{
+ "name": "reel20",
+ "brand": "KM  ·  HABITS  ·  20",
+ "presence": "cameo",
+ "mouth": "calm",
+ "lines": [
+  {
+   "say": "Stop doing sleep math.",
+   "gold": [
+    "sleep math"
+   ],
+   "pose": "stop_serious_camera",
+   "fx": [],
+   "stock": null
+  },
+  {
+   "say": "\"If I sleep now, I get five hours.\"",
+   "gold": [
+    "five hours"
+   ],
+   "pose": "think_doubt_camera",
+   "fx": [
+    {
+     "type": "counter",
+     "n": 5,
+     "label": "hours",
+     "word": "five"
+    }
+   ],
+   "stock": "C:\\Users\\Вадим\\projects\\heroine-pose-library\\library\\stock\\woman_lying_in_bed_holding_p_438c17c3a2.mp4"
+  },
+  {
+   "say": "Checking the clock keeps your mind busy.",
+   "gold": [
+    "clock"
+   ],
+   "pose": "explain_doubt_camera",
+   "fx": [],
+   "stock": "C:\\Users\\Вадим\\projects\\heroine-pose-library\\library\\stock\\woman_looking_at_bedside_ala_e220d8fdb7.mp4"
+  },
+  {
+   "say": "Turn it around.",
+   "gold": [
+    "Turn it around"
+   ],
+   "pose": "point_up_serious_camera",
+   "fx": [
+    {
+     "type": "stamp",
+     "text": "TURN AROUND",
+     "word": "around"
+    }
+   ],
+   "stock": null
+  },
+  {
+   "say": "Stand up, dim lamp, read ten minutes.",
+   "gold": [
+    "dim lamp"
+   ],
+   "pose": "explain_joy_camera",
+   "fx": [
+    {
+     "type": "counter",
+     "n": 10,
+     "label": "minutes",
+     "word": "ten"
+    }
+   ],
+   "stock": "C:\\Users\\Вадим\\projects\\heroine-pose-library\\library\\stock\\woman_reading_book_by_lamp_acdd1321b0.mp4"
+  },
+  {
+   "say": "Sleep comes when you stop chasing it.",
+   "gold": [
+    "stop chasing"
+   ],
+   "pose": "stand_joy_camera",
+   "fx": [],
+   "stock": null
+  },
+  {
+   "say": "Follow for calmer nights.",
+   "gold": [
+    "calmer nights"
+   ],
+   "pose": "point_you_joy_camera",
+   "fx": [
+    {
+     "type": "cta",
+     "text": "FOLLOW",
+     "word": "Follow"
+    }
+   ],
+   "stock": null
+  }
+ ],
+ "voice_dir": "C:\\Users\\Вадим\\projects\\heroine-pose-library\\voice\\reel20",
+ "audio": "C:\\src\\content-studio\\trials\\reels\\fx\\reel20.m4a"
+}

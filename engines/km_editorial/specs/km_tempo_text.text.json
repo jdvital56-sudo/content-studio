@@ -1,0 +1,11 @@
+{
+ "name": "km_tempo_text",
+ "video": "C:\\src\\content-studio\\media\\library\\km\\IMG_9980.MP4",
+ "start": 6, "dur": 16,
+ "beats": [
+  {"t": 0.3, "end": 3.6, "lines": [{"text": "Be honest:", "size": 74}, {"text": "do you RUSH", "size": 118, "delay": 0.5}, {"text": "your reps?", "size": 118, "delay": 1.1}]},
+  {"t": 3.9, "end": 8.0, "lines": [{"text": "Slow reps", "size": 118}, {"text": "feel harder.", "size": 118, "delay": 0.6, "gold": true}]},
+  {"t": 8.3, "end": 12.4, "lines": [{"text": "Try", "size": 74}, {"text": "3 seconds up.", "size": 118, "delay": 0.4}, {"text": "3 seconds down.", "size": 118, "delay": 1.2, "gold": true}]},
+  {"t": 12.7, "end": 16.0, "lines": [{"text": "Save this for", "size": 96}, {"text": "your next workout", "size": 96, "delay": 0.6}, {"text": "Follow for more", "size": 74, "delay": 1.5, "gold": true}]}
+ ]
+}
