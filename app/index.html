@@ -143,6 +143,19 @@ kbd{background:var(--panel2);border:1px solid var(--line);border-radius:4px;padd
   <div id="edbody"></div>
 </footer>
 
+<div class="modal" id="fxmodal"><div class="mbox" style="width:760px;max-height:92vh;overflow:auto">
+  <h3 id="fxt">Добавить эффекты в ролик</h3>
+  <p style="font-size:12px;color:var(--muted);margin:0 0 8px">Поставь галочку, задай секунды (когда включить и выключить) и текст. Эффект накладывается на копию ролика, исходник сохраняется. Время смотри в плеере: на какой секунде звучит слово.</p>
+  <div id="fxl"></div>
+  <p id="fxs" style="font-size:13px;color:var(--warn);min-height:18px"></p>
+  <div style="display:flex;gap:8px;justify-content:flex-end"><button class="btn" id="fxcancel">Закрыть</button><button class="btn go" id="fxgo">Наложить выбранные</button></div>
+</div></div>
+<div class="modal" id="cmodal"><div class="mbox"><h3>Добавить свой навык</h3>
+  <label>Название</label><input id="cn" placeholder="например: Субтитры в стиле Hormozi">
+  <label>Что делает и когда его включать</label><input id="cd" placeholder="одна-две строки для Продюсера и Критика">
+  <label>Каналы</label><select id="cc"><option value="all">Все каналы</option><option value="km">Kosta Method</option><option value="wi">What if</option><option value="hi">Исторический</option></select>
+  <p style="font-size:12px;color:var(--muted)">Навык попадёт в список. Чтобы завод умел его применять, Claude подключает его движок: скажи, и я это сделаю.</p>
+  <div style="display:flex;gap:8px;justify-content:flex-end"><button class="btn" id="cx">Отмена</button><button class="btn go" id="cs">Добавить</button></div></div></div>
 <div class="modal" id="player"><div style="position:relative;height:92vh;aspect-ratio:9/16;max-width:94vw"><video id="pvid" controls playsinline style="width:100%;height:100%;background:#000;border-radius:12px"></video><button class="btn" id="plx" style="position:absolute;top:8px;right:8px">Закрыть ✕</button></div></div>
 <div class="modal" id="umodal"><div class="mbox" style="width:560px">
   <h3>Загрузить видео</h3>
@@ -214,7 +227,7 @@ function det(){ const r=R.find(x=>x.id===sel); if(!r){$('#det').innerHTML='';ret
   $('#det').innerHTML=`<h4>Выбрано · ${CH[r.ch].n}</h4>${r.video?`<video src="/api/reels/${r.id}/video" controls playsinline style="width:100%;border-radius:10px;max-height:420px;background:#000"></video>`:poster(r)}<h3>${r.title}</h3><p>${r.sub}</p>
   <div class="script"><b>Хук (2 с):</b> ${r.title}<br><b>Призыв:</b> ${r.ch==='km'?'напиши слово '+(((r.sub||'').match(/DM (\w+)/)||[])[1]||'BOTTLE')+' в директ':r.ch==='wi'?'полный ролик на канале':'смотри полный фильм'}</div>
   <ul class="chk">${[...r.q].map((x,i)=>`<li><span class="${x==='o'?'o':x==='x'?'b':'p'}">${x==='o'?'✓':x==='x'?'✕':'…'}</span>${names[i]}</li>`).join('')}</ul>
-  <div class="btns"><button class="btn main ${canOk?'':'off'}">${canOk?'Одобрить (A)':'Одобрить недоступно: проверка не пройдена'}</button><button class="btn">Переделать (R)</button><button class="btn">Пакет для публикации</button><button class="btn" id="unik" style="grid-column:1/3">Уникализатор ×3: другие хуки и нарезка для A/B</button></div>`}
+  <div class="btns"><button class="btn main ${canOk?'':'off'}">${canOk?'Одобрить (A)':'Одобрить недоступно: проверка не пройдена'}</button><button class="btn">Переделать (R)</button><button class="btn">Пакет для публикации</button>${r.video?'<button class="btn" id="fxopen" style="grid-column:1/3">Добавить эффекты в этот ролик…</button>':''}<button class="btn" id="unik" style="grid-column:1/3">Уникализатор ×3: другие хуки и нарезка для A/B</button></div>`}
 const SK=[
 ['Хуки и сценарий',[['youtube','Хуки, SEO и структура YouTube',['km','wi','hi']],['cartoon','Мультяшные ролики без слов',['km']],['science','Научные и исторические факты, без выдумок',['wi','hi']],['humanizer','Живой язык текста (без «ИИ-тона»)',['km','wi','hi']]]],
 ['Нарезка и монтаж',[['recut','Нарезка говорящей головы: паузы, дубли, субтитры',['km']],['arcads','15 стилей монтажа (кинетика, стекло, неон…)',['km']],['caps','Субтитры в стиле канала',['km','wi','hi']],['effects','51 эффект: шторка, нож, наезды',['km','hi']],['sfx','Настоящие звуки на щелчки',['km','wi']]]],
@@ -270,23 +283,56 @@ const SKILLS2=[
 ['Мультяшная Таня (канон D)','Вставка Тани 1–2 раза за ролик. Нужен шаг наложения в заводе, делаю','try'],
 ['cinematic-skill','Стена улик + карта + фото, для Исторического','ok'],
 ['Стикмены 3D','Для What if','ok']];
+let CUST=[],fxall=false;
+const TXT=new Set('lineup locked-on backdrop-word spotlight the-bill todo pause-point uninstall reel-frame shortcut-rain reject-stamp cover-star scribble red-collage split-headline check-pills timeline headline-box broll-split phone-fan tape-label select-resize huge-strike crayon-write messages led-sign apple-toggles'.split(' '));
+// Effects whose text or author name from the original skill must be set by us first (placeholders of the skill's author): not offered for manual use yet.
+const DENYC=new Set('comment-box glass-widgets pastel-word checklist headline-wall liquid-glass-graph over-the-shoulder-zoom match-cut tier-list cover-star'.split(' '));
+const FXD={'reject-stamp':'SKIP IT','scribble':'KEEP GOING','headline-box':'MAIN IDEA|SAY IT SHORT'};
+const FXTEXT=['reject-stamp','scribble','headline-box'];
+function openFx(){const r=R.find(x=>x.id===sel);if(!r||!r.video)return;$('#fxt').textContent='Эффекты для ролика: '+r.title;$('#fxs').textContent='';
+  const pick=CATALOG.length?CATALOG.filter(f=>f.status==='ok'&&!f.images&&!DENYC.has(f.id)&&(!f.face||fxall)).map(f=>[f.id,f.ru,f.desc+(f.face?' (нужен человек в кадре)':'')]):FX.filter(f=>f[3]!=='face');
+  $('#fxl').innerHTML=`<label style="display:flex;gap:6px;font-size:13px;color:var(--text);margin:0 0 8px"><input type="checkbox" id="fxall" ${fxall?'checked':''}> Показать и эффекты, которым нужен человек в кадре (на стоке без лица могут выглядеть плохо)</label>`+pick.map(f=>`<div class="ag" style="align-items:flex-start"><input type="checkbox" class="fxc" data-id="${f[0]}" style="margin-top:4px"><video src="/previews/${f[0]}.mp4" muted loop playsinline preload="metadata" onmouseover="this.play()" onmouseout="this.pause()" onerror="this.style.display='none'" style="width:70px;height:124px;object-fit:cover;border-radius:8px;background:#000"></video><div style="flex:1"><b>${f[1]}</b><small>${f[2]}</small><div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;align-items:center"><span style="font-size:12px;color:var(--muted)">с</span><input class="fs" type="number" step="0.1" value="1" style="width:64px;background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:4px;color:var(--text)"><span style="font-size:12px;color:var(--muted)">до</span><input class="fe" type="number" step="0.1" value="3.5" style="width:64px;background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:4px;color:var(--text)">${TXT.has(f[0])?`<input class="ft" value="${FXD[f[0]]||'HABIT'}" style="flex:1;min-width:120px;background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:4px;color:var(--text)">`:''}${f[0]==='moody'?'<select class="fg" style="background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:4px;color:var(--text)"><option value="warm">тёплая</option><option value="cool">холодная</option><option value="bw">ч/б</option><option value="pop">контрастная</option><option value="moody">мрачная</option></select>':''}</div></div></div>`).join('');
+  $('#fxmodal').classList.add('on')}
+async function applyFx(){const r=R.find(x=>x.id===sel);const eff=[...document.querySelectorAll('#fxl .ag')].filter(a=>a.querySelector('.fxc').checked).map(a=>({fx:a.querySelector('.fxc').dataset.id,start:+a.querySelector('.fs').value,end:+a.querySelector('.fe').value,text:a.querySelector('.ft')?.value,grade:a.querySelector('.fg')?.value}));
+  if(!eff.length){$('#fxs').textContent='Отметь хотя бы один эффект.';return}
+  if(!live){$('#fxs').textContent='Нет связи с сервером.';return}
+  const res=await fetch(`/api/reels/${r.id}/effects`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({effects:eff})});
+  if(!res.ok){$('#fxs').textContent='Не получилось: проверь секунды (до больше, чем с).';return}
+  $('#fxs').textContent='Накладываю эффекты, обычно 2–6 минут. Окно можно закрыть: ролик обновится сам.';
+  const t=setInterval(async()=>{const j=(await fetch('/api/jobs').then(x=>x.json()))[r.id];if(!j||j.state==='running')return;clearInterval(t);if(j.state==='done'){await load();$('#fxmodal').classList.remove('on');openPlayer(r.id)}else{$('#fxs').textContent=j.note}},3000)}
 function saveFx(){if(live)fetch('/api/settings/skills',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(FXON)})}
 const TAG={ok:['проверено на нашем ролике','s-ok'],try:['должно работать, проверю на первом ролике','s-wait'],face:['нужно живое видео с человеком','s-draft']};
+let CATALOG=[],fxf='all';
+function loadCat(){return fetch('/fx-catalog.json?'+Date.now()).then(r=>r.ok?r.json():[]).then(c=>{CATALOG=c;if(view==='skills')skillsView()}).catch(()=>{})}
+loadCat();
+const CST={ok:['превью готово','s-ok'],todo:['превью рендерится…','s-wait'],fail:['превью не получилось','s-bad']};
 function skillsView(){
   document.querySelectorAll('nav a').forEach(a=>a.classList.toggle('on',a.id==='navsk'));$('.tools').style.display='none';
   const on=FXON[fxc]||[];
   $('#grid').style.display='block';
+  if(CATALOG.length){
+    const shown=CATALOG.filter(f=>fxf==='all'||(fxf==='stock'&&!f.face&&!f.images)||(fxf==='face'&&f.face)||(fxf==='img'&&f.images));
+    const ready=CATALOG.filter(f=>f.status==='ok').length;
+    $('#grid').innerHTML=`<h2 style="margin:0 0 4px">Навыки и эффекты</h2><p style="color:var(--muted);margin:0 0 10px">Все ${CATALOG.length} эффектов скилла effects. Наведи мышь на превью, оно проигрывается. Превью готово: ${ready} из ${CATALOG.length}${ready<CATALOG.length?' (остальные рендерятся)':''}. Галочка = Продюсер ставит эффект в новые ролики канала сам. Наложить эффект в готовый ролик: выбери ролик на стене и нажми «Добавить эффекты в этот ролик…».</p>
+    <div class="tabs" style="margin-bottom:8px">${Object.entries(CH).map(([k,v])=>`<button class="tab ${fxc===k?'on':''}" data-fxc="${k}">${v.n}</button>`).join('')}</div>
+    <div class="tabs" style="margin-bottom:12px">${[['all','Все '+CATALOG.length],['stock','Подходят для стока'],['face','Нужен человек в кадре'],['img','Нужны свои картинки']].map(([k,n])=>`<button class="tab ${fxf===k?'on':''}" data-fxf="${k}">${n}</button>`).join('')}</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:8px">${shown.map((f,i)=>`<div class="ag" style="align-items:flex-start"><input type="checkbox" data-fx="${f.id}" ${on.includes(f.id)?'checked':''} ${f.face?'disabled':''} style="margin-top:3px">${f.status==='ok'?`<video src="/previews/${f.id}.mp4" muted loop playsinline preload="metadata" onmouseover="this.play()" onmouseout="this.pause()" style="width:64px;height:114px;object-fit:cover;border-radius:8px;background:#000"></video>`:`<div style="width:64px;height:114px;border-radius:8px;background:var(--panel);display:grid;place-items:center;font-size:10px;color:var(--muted);text-align:center">${f.status==='fail'?'нет превью':'рендер…'}</div>`}<div><b>${f.ru}</b><small>${f.desc}</small><span class="pill ${f.face?'s-draft':'s-ok'}" style="display:inline-block;margin-top:4px">${f.face?'нужен человек в кадре':f.images?'нужны свои картинки':'работает на стоке'}</span> <span class="pill ${CST[f.status][1]}" style="display:inline-block;margin-top:4px">${CST[f.status][0]}</span></div></div>`).join('')}</div>
+    <h3 style="margin-top:16px">Другие навыки <button class="btn" id="cadd" style="padding:3px 10px;margin-left:8px">+ Добавить свой</button></h3>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px">${SKILLS2.map(s=>`<div class="ag" style="align-items:flex-start"><div><b>${s[0]}</b><small>${s[1]}</small><span class="pill ${TAG[s[2]][1]}" style="display:inline-block;margin-top:4px">${TAG[s[2]][0]}</span></div></div>`).join('')}${CUST.map(s=>`<div class="ag" style="align-items:flex-start"><div><b>${s.n}</b><small>${s.d||'без описания'}</small><span class="pill s-draft" style="display:inline-block;margin-top:4px">твой навык · ${s.c==='all'?'все каналы':CH[s.c].n} · движок пока не подключён</span></div></div>`).join('')}</div>`;
+    return}
   $('#grid').innerHTML=`<h2 style="margin:0 0 4px">Навыки и эффекты</h2><p style="color:var(--muted);margin:0 0 10px">Включённые эффекты Продюсер ставит в каждый новый ролик канала сам, на подходящие слова. Выбор сохраняется.</p>
   <div class="tabs" style="margin-bottom:12px">${Object.entries(CH).map(([k,v])=>`<button class="tab ${fxc===k?'on':''}" data-fxc="${k}">${v.n}</button>`).join('')}</div>
   <h3>Эффекты (скилл effects, 51 шт., здесь те, что подходят нам)</h3>
-  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px">${FX.map(f=>`<div class="ag" style="align-items:flex-start;${f[3]==='face'?'opacity:.6':''}"><input type="checkbox" data-fx="${f[0]}" ${on.includes(f[0])?'checked':''} ${f[3]==='face'?'disabled':''} style="margin-top:3px"><div><b>${f[1]}</b><small>${f[2]}</small><span class="pill ${TAG[f[3]][1]}" style="display:inline-block;margin-top:4px">${TAG[f[3]][0]}</span></div></div>`).join('')}</div>
-  <h3 style="margin-top:16px">Другие навыки</h3>
-  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px">${SKILLS2.map(s=>`<div class="ag" style="align-items:flex-start"><div><b>${s[0]}</b><small>${s[1]}</small><span class="pill ${TAG[s[2]][1]}" style="display:inline-block;margin-top:4px">${TAG[s[2]][0]}</span></div></div>`).join('')}</div>`;
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:8px">${FX.map(f=>`<div class="ag" style="align-items:flex-start;${f[3]==='face'?'opacity:.6':''}"><input type="checkbox" data-fx="${f[0]}" ${on.includes(f[0])?'checked':''} ${f[3]==='face'?'disabled':''} style="margin-top:3px">${f[3]!=='face'?`<video src="/previews/${f[0]}.mp4" muted loop playsinline preload="metadata" onmouseover="this.play()" onmouseout="this.pause()" onerror="this.style.display='none'" style="width:64px;height:114px;object-fit:cover;border-radius:8px;background:#000"></video>`:''}<div><b>${f[1]}</b><small>${f[2]}</small><span class="pill ${TAG[f[3]][1]}" style="display:inline-block;margin-top:4px">${TAG[f[3]][0]}</span></div></div>`).join('')}</div>
+  <h3 style="margin-top:16px">Другие навыки <button class="btn" id="cadd" style="padding:3px 10px;margin-left:8px">+ Добавить свой</button></h3>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px">${SKILLS2.map(s=>`<div class="ag" style="align-items:flex-start"><div><b>${s[0]}</b><small>${s[1]}</small><span class="pill ${TAG[s[2]][1]}" style="display:inline-block;margin-top:4px">${TAG[s[2]][0]}</span></div></div>`).join('')}${CUST.map(s=>`<div class="ag" style="align-items:flex-start"><div><b>${s.n}</b><small>${s.d||'без описания'}</small><span class="pill s-draft" style="display:inline-block;margin-top:4px">твой навык · ${s.c==='all'?'все каналы':CH[s.c].n} · движок пока не подключён</span></div></div>`).join('')}</div>
+  <p style="color:var(--muted);font-size:12px;margin-top:10px">Чтобы наложить эффект в готовый ролик, выбери ролик на стене и нажми «Добавить эффекты в этот ролик…».</p>`;
 }
 function openPlayer(id){$('#pvid').src='/api/reels/'+id+'/video';$('#player').classList.add('on');$('#pvid').play().catch(()=>{})}
 function closePlayer(){const v=$('#pvid');v.pause();v.removeAttribute('src');v.load();$('#player').classList.remove('on')}
 document.addEventListener('mouseover',e=>{const v=e.target.closest('.card')?.querySelector('video.pv');if(v&&v.paused)v.play().catch(()=>{})});
 document.addEventListener('mouseout',e=>{const c=e.target.closest('.card');if(c&&!c.contains(e.relatedTarget)){const v=c.querySelector('video.pv');if(v){v.pause()}}});
+fetch('/api/settings/custom').then(r=>r.ok?r.json():[]).then(c=>{if(Array.isArray(c))CUST=c}).catch(()=>{});
 fetch('/api/settings/skills').then(r=>r.ok?r.json():{}).then(s=>{if(s&&Object.keys(s).length)FXON=s}).catch(()=>{});
 let mode='ed';
 const STEPS=['Сценарий','Озвучка','Графика','Рендер','Проверка','Ждёт тебя'];
@@ -314,7 +360,7 @@ function ed(){
 function tl(){ed()}
 function all(){tabs();filters();grid();det();tl()}
 document.addEventListener('click',e=>{
-  const t=e.target.closest('.tab'); if(t){ch=t.dataset.k;all();return}
+  const t=e.target.closest('.tab'); if(t&&t.dataset.k!==undefined){ch=t.dataset.k;all();return}
   const m=e.target.closest('[data-m]'); if(m){mode=m.dataset.m;document.querySelectorAll('[data-m]').forEach(x=>x.classList.toggle('on',x===m));ed();return}
   if(e.target.closest('#newtopic')){$('#modal').classList.add('on');return}
   if(e.target.closest('#upl')){usk();$('#umodal').classList.add('on');return}
@@ -331,7 +377,14 @@ document.addEventListener('click',e=>{
   if(e.target.closest('#navwall')){view='wall';document.querySelectorAll('nav a').forEach(a=>a.classList.toggle('on',a.id==='navwall'));$('.tools').style.display='';all();return}
   const pl=e.target.closest('[data-play]'); if(pl){e.stopPropagation();openPlayer(+pl.dataset.play);return}
   if(e.target.closest('#plx')||e.target.id==='player'){closePlayer();return}
+  if(e.target.closest('#fxopen')){openFx();return}
+  if(e.target.closest('#fxcancel')){$('#fxmodal').classList.remove('on');return}
+  if(e.target.closest('#fxgo')){applyFx();return}
+  if(e.target.closest('#cadd')){$('#cmodal').classList.add('on');return}
+  if(e.target.closest('#cx')){$('#cmodal').classList.remove('on');return}
+  if(e.target.closest('#cs')){const n=$('#cn').value.trim();if(n){CUST.push({n,d:$('#cd').value.trim(),c:$('#cc').value});if(live)fetch('/api/settings/custom',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(CUST)});$('#cn').value='';$('#cd').value='';}$('#cmodal').classList.remove('on');skillsView();return}
   const fxb=e.target.closest('[data-fx]'); if(fxb){const id=fxb.dataset.fx,l=FXON[fxc]||(FXON[fxc]=[]);const i=l.indexOf(id);i<0?l.push(id):l.splice(i,1);saveFx();skillsView();return}
+  const ff=e.target.closest('[data-fxf]'); if(ff){fxf=ff.dataset.fxf;skillsView();return}
   const fch=e.target.closest('[data-fxc]'); if(fch){fxc=fch.dataset.fxc;skillsView();return}
   if(e.target.closest('#sx')){$('#smodal').classList.remove('on');return}
   const sk=e.target.closest('[data-sk]'); if(sk){skc=sk.dataset.sk;skills();return}
@@ -354,6 +407,7 @@ function load(){return fetch('/api/reels').then(r=>r.ok?r.json():Promise.reject(
 function save(id,status){if(!live)return;fetch('/api/reels/'+id,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({status})})}
 document.addEventListener('keyup',()=>{});
 document.addEventListener('change',e=>{
+  if(e.target.id==='fxall'){fxall=e.target.checked;openFx();return}
   if(e.target.id==='ufile'&&e.target.files[0]){$('#uname').textContent=e.target.files[0].name}
   if(e.target.id==='uch')usk();
 });

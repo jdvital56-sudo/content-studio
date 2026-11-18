@@ -1,0 +1,7 @@
+Pass 1: tracking you (1 effect)...
+INFO: Created TensorFlow Lite XNNPACK delegate for CPU.
+WARNING: Logging before InitGoogle() is written to STDERR
+W0000 00:00:1794992163.782657   22556 inference_feedback_manager.cc:121] Feedback manager requires a model with a single signature inference. Disabling support for feedback tensors.
+Pass 2: adding the effects...
+    0.0s / 4.0s
+Done: C:/src/content-studio/app/previews/rabbit-hole.mp4

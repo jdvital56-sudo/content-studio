@@ -1,0 +1,410 @@
+[
+ {
+  "id": "noise",
+  "ru": "Лента роликов",
+  "desc": "Рилсы сыплются за головой, по одному каждые четверть секунды",
+  "face": true,
+  "images": true,
+  "status": "ok"
+ },
+ {
+  "id": "lineup",
+  "ru": "Нумерованные плитки",
+  "desc": "Плитки с номерами веером над головой",
+  "face": true,
+  "images": false,
+  "status": "ok"
+ },
+ {
+  "id": "locked-on",
+  "ru": "Захват лица",
+  "desc": "Угловые рамки цепляются за лицо, камера ведёт",
+  "face": true,
+  "images": false,
+  "status": "ok"
+ },
+ {
+  "id": "orbit",
+  "ru": "Орбита роликов",
+  "desc": "Ролики кружат вокруг головы",
+  "face": true,
+  "images": true,
+  "status": "ok"
+ },
+ {
+  "id": "lean-in",
+  "ru": "Наезд на слово",
+  "desc": "Быстрый наезд камеры на одно слово",
+  "face": true,
+  "images": false,
+  "status": "ok"
+ },
+ {
+  "id": "backdrop-word",
+  "ru": "Слово за спиной",
+  "desc": "Огромное слово падает за человеком",
+  "face": true,
+  "images": false,
+  "status": "ok"
+ },
+ {
+  "id": "spotlight",
+  "ru": "Прожектор",
+  "desc": "Гасит фон, человек остаётся в свете",
+  "face": true,
+  "images": false,
+  "status": "ok"
+ },
+ {
+  "id": "the-bill",
+  "ru": "Чек с инструкцией",
+  "desc": "Инструкция печатается как чек над головой",
+  "face": true,
+  "images": false,
+  "status": "ok"
+ },
+ {
+  "id": "moody",
+  "ru": "Цветокоррекция",
+  "desc": "Тёплый, холодный, ч/б, контрастный тон на весь ролик",
+  "face": false,
+  "images": false,
+  "status": "ok"
+ },
+ {
+  "id": "swipe",
+  "ru": "До / после",
+  "desc": "Ползунок «до/после» проходит по кадру (для цвета, не для тела)",
+  "face": false,
+  "images": false,
+  "status": "ok"
+ },
+ {
+  "id": "todo",
+  "ru": "Список дел",
+  "desc": "Список рядом с головой, пункты отмечаются по мере речи",
+  "face": true,
+  "images": false,
+  "status": "ok"
+ },
+ {
+  "id": "comment-box",
+  "ru": "Строка комментария",
+  "desc": "Печатает слово в комментарии (в заготовке чужой ник, правим перед работой)",
+  "face": true,
+  "images": false,
+  "status": "ok"
+ },
+ {
+  "id": "tap",
+  "ru": "Кнопка Follow",
+  "desc": "Follow нажимается и становится Following",
+  "face": false,
+  "images": false,
+  "status": "ok"
+ },
+ {
+  "id": "pause-point",
+  "ru": "Стоп-кадр со стрелкой",
+  "desc": "Кадр замирает, рисованная стрелка показывает на человека",
+  "face": true,
+  "images": false,
+  "status": "ok"
+ },
+ {
+  "id": "uninstall",
+  "ru": "Полоса удаления",
+  "desc": "Глючная полоса «удаление», кадр рассыпается",
+  "face": false,
+  "images": false,
+  "status": "ok"
+ },
+ {
+  "id": "reel-frame",
+  "ru": "Рамка рилса",
+  "desc": "Видео уменьшается до карточки рилса",
+  "face": false,
+  "images": false,
+  "status": "ok"
+ },
+ {
+  "id": "shortcut-rain",
+  "ru": "Дождь клавиш",
+  "desc": "Клавиши клавиатуры падают за спиной",
+  "face": true,
+  "images": false,
+  "status": "ok"
+ },
+ {
+  "id": "reject-stamp",
+  "ru": "Штамп",
+  "desc": "Красная печать на слове",
+  "face": false,
+  "images": false,
+  "status": "ok"
+ },
+ {
+  "id": "countdown-flip",
+  "ru": "Отсчёт 3-2-1",
+  "desc": "Перекидные цифры отсчёта",
+  "face": false,
+  "images": false,
+  "status": "ok"
+ },
+ {
+  "id": "rabbit-hole",
+  "ru": "Туннель",
+  "desc": "Кадр уходит сам в себя, для перехода",
+  "face": false,
+  "images": false,
+  "status": "ok"
+ },
+ {
+  "id": "cover-star",
+  "ru": "Обложка журнала",
+  "desc": "Человек становится обложкой, заголовок за головой",
+  "face": true,
+  "images": false,
+  "status": "todo"
+ },
+ {
+  "id": "scribble",
+  "ru": "Маркер",
+  "desc": "Рисованные стрелки и обводка",
+  "face": false,
+  "images": false,
+  "status": "ok"
+ },
+ {
+  "id": "glass-widgets",
+  "ru": "Стеклянные виджеты",
+  "desc": "Матовые виджеты парят вокруг головы (в заготовке подписи автора, правим)",
+  "face": true,
+  "images": false,
+  "status": "todo"
+ },
+ {
+  "id": "red-collage",
+  "ru": "Красный коллаж",
+  "desc": "Ч/б человек, огромное красное слово позади, три строки",
+  "face": true,
+  "images": false,
+  "status": "todo"
+ },
+ {
+  "id": "split-headline",
+  "ru": "Заголовок сверху",
+  "desc": "Карточка с заголовком сдвигает человека вниз",
+  "face": true,
+  "images": false,
+  "status": "todo"
+ },
+ {
+  "id": "pastel-word",
+  "ru": "Пастельное слово",
+  "desc": "Сиреневая комната, слово за спиной, карточка профиля",
+  "face": true,
+  "images": false,
+  "status": "todo"
+ },
+ {
+  "id": "check-pills",
+  "ru": "Галочки-таблетки",
+  "desc": "Клетчатая комната, курсор нажимает синие таблетки",
+  "face": true,
+  "images": true,
+  "status": "todo"
+ },
+ {
+  "id": "timeline",
+  "ru": "Таймлайн монтажа",
+  "desc": "Тёмно-красный тон, таймлайн, REC и бегунок",
+  "face": false,
+  "images": false,
+  "status": "todo"
+ },
+ {
+  "id": "headline-box",
+  "ru": "Заголовок с наездом",
+  "desc": "Две строки, вторая в белой рамке",
+  "face": false,
+  "images": false,
+  "status": "ok"
+ },
+ {
+  "id": "profile-wall",
+  "ru": "Стена профиля",
+  "desc": "Сетка роликов за спиной, счётчик растёт",
+  "face": true,
+  "images": true,
+  "status": "todo"
+ },
+ {
+  "id": "tier-list",
+  "ru": "Тир-лист",
+  "desc": "Падает тир-лист, нужный предмет летит в S",
+  "face": true,
+  "images": false,
+  "status": "todo"
+ },
+ {
+  "id": "broll-split",
+  "ru": "Б-ролл и человек",
+  "desc": "Сверху б-ролл с ценником, снизу человек",
+  "face": true,
+  "images": true,
+  "status": "todo"
+ },
+ {
+  "id": "phone-fan",
+  "ru": "Веер телефонов",
+  "desc": "Ролики веером как карты в руке",
+  "face": true,
+  "images": true,
+  "status": "todo"
+ },
+ {
+  "id": "dot-reveal",
+  "ru": "Сборка из точек",
+  "desc": "Кадр собирается из светящихся точек",
+  "face": false,
+  "images": false,
+  "status": "ok"
+ },
+ {
+  "id": "headline-wall",
+  "ru": "Стена заголовков",
+  "desc": "Заголовки копятся за головой, затем итог",
+  "face": true,
+  "images": false,
+  "status": "todo"
+ },
+ {
+  "id": "checklist",
+  "ru": "Чек-лист задач",
+  "desc": "Список под подбородком, шаги крутятся и зеленеют",
+  "face": true,
+  "images": false,
+  "status": "todo"
+ },
+ {
+  "id": "liquid-glass-graph",
+  "ru": "Стеклянный график",
+  "desc": "Зелёный график растёт, число считается вверх",
+  "face": true,
+  "images": false,
+  "status": "todo"
+ },
+ {
+  "id": "carousel-spin",
+  "ru": "Карусель",
+  "desc": "Ролики вращаются 3D-каруселью и замедляются",
+  "face": true,
+  "images": true,
+  "status": "todo"
+ },
+ {
+  "id": "match-cut",
+  "ru": "Склейка по слову",
+  "desc": "Страницы новостей режутся на одном слове в красной рамке",
+  "face": true,
+  "images": false,
+  "status": "todo"
+ },
+ {
+  "id": "apple-toggles",
+  "ru": "Переключатели iPhone",
+  "desc": "Карточка настроек, переключатели включаются по строкам",
+  "face": true,
+  "images": false,
+  "status": "todo"
+ },
+ {
+  "id": "led-sign",
+  "ru": "LED-вывеска",
+  "desc": "Свет гаснет, за спиной печатается светящаяся вывеска",
+  "face": true,
+  "images": false,
+  "status": "todo"
+ },
+ {
+  "id": "slow-push",
+  "ru": "Медленный наезд",
+  "desc": "Кинематографичный наезд на лицо, фон расплывается",
+  "face": true,
+  "images": false,
+  "status": "todo"
+ },
+ {
+  "id": "over-the-shoulder-zoom",
+  "ru": "Графики из-за плеча",
+  "desc": "Камера наезжает в угол, рядом растёт стеклянный график",
+  "face": true,
+  "images": false,
+  "status": "todo"
+ },
+ {
+  "id": "messages",
+  "ru": "Всплывающие сообщения",
+  "desc": "Сообщения iMessage всплывают одно за другим",
+  "face": true,
+  "images": false,
+  "status": "todo"
+ },
+ {
+  "id": "place-in-grid",
+  "ru": "Плитка профиля",
+  "desc": "Человек сжимается в центр сетки 3×3, вокруг появляются ролики",
+  "face": true,
+  "images": true,
+  "status": "todo"
+ },
+ {
+  "id": "tape-label",
+  "ru": "Лента с фразой",
+  "desc": "Жёлтая лента с фразой ложится на грудь",
+  "face": true,
+  "images": false,
+  "status": "todo"
+ },
+ {
+  "id": "select-resize",
+  "ru": "Выделение и увеличение",
+  "desc": "Синяя рамка хватает число и курсор увеличивает его",
+  "face": true,
+  "images": false,
+  "status": "todo"
+ },
+ {
+  "id": "wave-trim",
+  "ru": "Обрезка тишины",
+  "desc": "Панель с голосом, красные паузы схлопываются",
+  "face": false,
+  "images": false,
+  "status": "todo"
+ },
+ {
+  "id": "huge-strike",
+  "ru": "Огромное слово зачёркнуто",
+  "desc": "Большое слово появляется и перечёркивается красной линией",
+  "face": true,
+  "images": false,
+  "status": "todo"
+ },
+ {
+  "id": "crayon-write",
+  "ru": "Мелок",
+  "desc": "Красный мелок пишет слово, подчёркивает и улетает",
+  "face": true,
+  "images": false,
+  "status": "todo"
+ },
+ {
+  "id": "fan-build",
+  "ru": "Веер обложек",
+  "desc": "Обложки раскладываются веером по одной",
+  "face": true,
+  "images": true,
+  "status": "todo"
+ }
+]
