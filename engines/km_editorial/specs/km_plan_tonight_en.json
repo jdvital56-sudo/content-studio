@@ -1,0 +1,40 @@
+{
+ "name": "km_plan_tonight_en",
+ "brand": "KM  ·  HABITS  ·  02",
+ "cta": "PEN",
+ "voice_dir": "C:\\Users\\Вадим\\projects\\heroine-pose-library\\voice\\km_plan_tonight_en",
+ "audio": "C:\\src\\content-studio\\trials\\reels\\fx\\km_plan_tonight_en.m4a",
+ "lines": [
+  {
+   "say": "Motivation is not coming today.",
+   "gold": [
+    "Motivation"
+   ]
+  },
+  {
+   "say": "That's fine.",
+   "gold": [
+    "fine"
+   ]
+  },
+  {
+   "say": "Tonight, write tomorrow's workout by hand. The day, the time, one exercise.",
+   "gold": [
+    "hand",
+    "one"
+   ]
+  },
+  {
+   "say": "A written plan is harder to skip.",
+   "gold": [
+    "harder"
+   ]
+  },
+  {
+   "say": "Send us the word PEN.",
+   "gold": [
+    "PEN"
+   ]
+  }
+ ]
+}

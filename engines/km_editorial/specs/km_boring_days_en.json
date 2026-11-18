@@ -1,0 +1,45 @@
+{
+ "name": "km_boring_days_en",
+ "brand": "KM  ·  HABITS  ·  03",
+ "cta": "BOTTLE",
+ "voice_dir": "C:\\Users\\Вадим\\projects\\heroine-pose-library\\voice\\km_boring_days_en",
+ "audio": "C:\\src\\content-studio\\trials\\reels\\fx\\km_boring_days_en.m4a",
+ "lines": [
+  {
+   "say": "Nobody sees the boring days.",
+   "gold": [
+    "boring"
+   ]
+  },
+  {
+   "say": "The cold mornings. The tired legs. The workout you almost skipped.",
+   "gold": [
+    "almost"
+   ]
+  },
+  {
+   "say": "Those are the ones that count.",
+   "gold": [
+    "count"
+   ]
+  },
+  {
+   "say": "Grab your bottle and show up anyway.",
+   "gold": [
+    "anyway"
+   ]
+  },
+  {
+   "say": "Discipline creates freedom.",
+   "gold": [
+    "freedom"
+   ]
+  },
+  {
+   "say": "Send us the word BOTTLE.",
+   "gold": [
+    "BOTTLE"
+   ]
+  }
+ ]
+}

@@ -1,0 +1,47 @@
+{
+ "name": "km_missed_workout_en",
+ "brand": "KM  ·  HABITS  ·  01",
+ "cta": "SOCKS",
+ "voice_dir": "C:\\Users\\Вадим\\projects\\heroine-pose-library\\voice\\km_missed_workout_en",
+ "audio": "C:\\src\\content-studio\\trials\\reels\\fx\\km_missed_workout_en.m4a",
+ "lines": [
+  {
+   "say": "Missed a workout?",
+   "gold": [
+    "workout"
+   ]
+  },
+  {
+   "say": "Don't wait for Monday. Restart today, with ten minutes.",
+   "gold": [
+    "Monday",
+    "ten",
+    "minutes"
+   ]
+  },
+  {
+   "say": "Socks on. Shoes on. Begin.",
+   "gold": [
+    "Socks"
+   ]
+  },
+  {
+   "say": "Done beats perfect. The streak is not the goal.",
+   "gold": [
+    "perfect"
+   ]
+  },
+  {
+   "say": "Coming back is.",
+   "gold": [
+    "back"
+   ]
+  },
+  {
+   "say": "Send us the word SOCKS.",
+   "gold": [
+    "SOCKS"
+   ]
+  }
+ ]
+}

@@ -1,0 +1,13 @@
+{
+ "duration_s": 15.81,
+ "engine": "km_editorial",
+ "style": "KM Editorial",
+ "voice_words": 34,
+ "licenses": [
+  {
+   "file": "tania-canon.png",
+   "license": "own brand asset",
+   "source": "kosta-method-app"
+  }
+ ]
+}
