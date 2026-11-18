@@ -1,0 +1,79 @@
+# Паспорт канала: Kosta Method
+
+Статус: **готов 17.11.2026.** Правки вносятся по ходу работы.
+
+## 1. Вид (визуал)
+
+- **Стиль «KM Editorial»**, полное описание: `C:\Users\Вадим\projects\kosta-method\content\reels\STYLE-KM-EDITORIAL.md`.
+- Кадр 1080×1920. Сверху 8% строка бренда (KM · тема · номер серии), графика 50% высоты, подпись 2 строки на сетке, внизу 12% пусто (интерфейс Reels).
+- Цвета: бумага `#FAF7F2`, сетка `#E7DCCB`, текст `#1D1D1F`, **одна сигнальная краска: золото `#C9AB7C`** (текст золотом `#8A6C3F`).
+- Шрифт один: Montserrat.
+- Движение: всё встаёт на сетку в такт, без пружин; появление шторкой, удаление «ножом». Одна вещь не по сетке = хук.
+- Логотип KM и любые надписи бренда **только наложением настоящего файла**, нейросеть буквы ломает.
+- **Решено 17.11:** KM Editorial остаётся стилем канала.
+
+## 2. Кто в кадре
+
+- Тетяна: лицо и ведущая бренда. Технику упражнений показывает **только живое видео Тетяны**.
+- Мультяшная Таня, канон D (`C:\src\kosta-method-app\assets\mascot\tania-canon.png`): золотой KM на топе, KM только на внешней стороне носков. Камео 1–2 раза за ролик, технику не показывает.
+- Живой говорящий аватар Тетяны: платный (Kling Avatar v2 на fal, Std $0,0562 за секунду, проверено 06.11) и нужно её письменное согласие на клон голоса и лица.
+- **Движок стиля: `engines/km_editorial` (18.11):** бумага, сетка, золото, Montserrat, слова по мере речи, мультяшная Таня карточкой в начале и в конце. Первые 3 ролика собраны им.
+- **Уточнено владельцем 18.11:** Таня в роликах только настоящая (Тетяна) или мультяшная (канон D). Сгенерированную героиню из reel-factory НЕ брать; из reel-factory берём только основу: голос, сток, графику, сборку.
+- **Решено 17.11:** на старте графика + голос + камео мультяшной Тани 1–2 раза за ролик. Как только Тетяна снимет себя на телефон, добавляем её живое видео (этап 3, нарезка говорящей головы). Платный аватар позже и только с её письменным согласием.
+
+## 3. Голос и текст
+
+- Структура рилса: **хук в первые 2 с** → одна польза → товар ясно в кадре → призыв + имя бренда.
+- Длина ролика = длина озвучки. **1,75 слова в секунду**: 30 с не больше 45 слов. После сборки ffprobe, больше 35 с при заказе 30 = брак.
+- Тексты про питание утверждает Тетяна, она нутрициолог.
+- Подача: «целеустремлённая, дисциплинированная». Слоганы: Discipline creates freedom, A stronger you.
+- ЗАДАЧА владельцу: попросить Тетяну надиктовать голосовым 10–20 фраз, как она говорит с клиентками. Пока их нет, сценарист пишет по слоганам и подаче выше. Ролики это не останавливает.
+
+## 4. Язык
+
+- Правило от 01.10: **контент на английском**, украинский только по просьбе владельца. Русский только для общения с Claude.
+- **Решено 17.11:** правило в силе, ролики на английском.
+
+## 5. Звук
+
+- Ровный пульс (минимал, маримба), голос на 6 дБ громче музыки, итог −14 LUFS. Сухие «печатные» звуки на щелчки сетки, настоящие записи.
+
+## 6. Аккаунты
+
+- Instagram основной: **@kosta_method** (решение 04.10); ещё есть `kosta_method_club`.
+- TikTok `@vkostamethod2509`, Facebook-страница бренда, LinkedIn личный Тетяны.
+- **Решено 17.11:** первый месяц завод готовит ролики для Instagram @kosta_method, TikTok @vkostamethod2509 и YouTube Shorts.
+- ОТКРЫТО: сверить подписчиков @kosta_method и kosta_method_club (на 03.10 у @kosta_method было 12). Основным делать тот, где больше живой аудитории.
+
+## 7. Куда ведём
+
+- **Сейчас цель одна: подписчики (решение владельца 18.11).** В роликах НЕ рекламируем товары (бутылка, носки, ручки), призыв только «подпишись», «сохрани», «отправь подруге». Продающие ролики и слова-призывы в директ включаем позже, когда будет аудитория. Предметы в кадре можно, прямая реклама нет.
+
+### Старое правило (до 18.11, отложено)
+
+- Товары в наличии: бутылка (металлическая ручка на крышке), носки, ручки (2 модели). Одежда «скоро».
+- **Решено 17.11 (Claude по поручению владельца):** призыв в ролике «напиши слово в директ» (BOTTLE, SOCKS, PEN). Цен на товары ещё нет, поэтому разговор в директе продаёт лучше, чем ссылка. В шапке профиля ссылка на сайт kosta-method.vercel.app с меткой UTM по площадке. Позже ответ на слово отправляет автоматика (этап 5).
+
+## 8. Нельзя
+
+- «−10 кг за 30 дней», «до/после», стыд за тело.
+- Слово «Pixar» в маркетинге.
+- Авиацию в биографии Тетяны не упоминать в текстах. Подвеска-самолётик на мультяшной Тане остаётся (решение владельца 18.11: это её фишка).
+- Имя и лицо дочери без согласия Тетяны.
+- Цифры стажа и клиенток не выдумывать.
+
+=== CANDIDATES ===
+[
+{"id":1,"hook_type":"number+deadline","hook":"Your evening has a ten-minute deadline.","spoken":"Your evening has a ten-minute deadline. Ten minutes before bed, put your phone in another room. Not the bedside table. The hallway. Your brain stops waiting for a buzz, and winding down gets easier. Follow for small evening habits.","captions":["Ten-minute deadline","Phone in another room","Not the bedside table","The hallway","Winding down gets easier","Follow for evening habits"],"cta":"FOLLOW","visuals":["wall clock showing evening time, warm light","hand setting a phone on a hallway shelf","empty bedside table close-up with lamp","quiet dim hallway at night","woman relaxing on sofa with a book","soft evening window glow"],"tania":["serious","doubt","surprise","thoughtful","joy","joy"],"why":"A countdown plus a surprising rule (the hallway, not the nightstand) is readable in a glance and makes people want to know the reason."},
+{"id":2,"hook_type":"myth","hook":"Recovery is not a reward.","spoken":"Recovery is not a reward. It starts tonight. Put tomorrow's workout clothes by the door, before you brush your teeth. One less decision in the morning. Rest feels lighter when the plan is waiting. Save this. Discipline creates freedom.","captions":["Recovery is not a reward","It starts tonight","Clothes by the door","Before you brush","One less decision","Discipline creates freedom"],"cta":"SAVE","visuals":["tired woman on couch evening light","calendar page turning to tomorrow","folded workout clothes by an apartment door","brushing teeth in bathroom mirror","morning sunlight on a ready bag","woman stretching calmly in morning light"],"tania":["serious","thoughtful","joy","surprise","thoughtful","joy"],"why":"It flips a belief people hold (rest must be earned) and gives a two-minute step they can do tonight."},
+{"id":3,"hook_type":"pain-then-relief","hook":"Skipped your workout?","spoken":"Skipped your workout? Do this at ten p.m. Lie on the floor, legs up the wall, two minutes. Breathe slowly through your nose. No guilt, no catching up. The day is done, and your body can settle. Send this to a friend.","captions":["Skipped your workout?","Do this at 10 p.m.","Legs up the wall","Two slow breaths... then more","No guilt. No catching up.","Send this to a friend"],"visuals":["woman looking at a clock late evening, tired","living room floor with a yoga mat, dim light","legs resting up a wall, top-down view","close-up of calm face breathing","hand switching off a lamp","two friends texting on sofa"],"tania":["doubt","thoughtful","serious","thoughtful","joy","joy"],"cta":"SHARE","why":"It names a feeling many people have at night and relieves it right away with a gentle, guilt-free step."},
+{"id":4,"hook_type":"mistake","hook":"The mistake: bright lights at bedtime.","spoken":"The mistake: bright lights at bedtime. An hour before sleep, switch off the big ceiling light. Use one lamp instead, low and warm. Dim light tells your body the day is ending. Small change, calmer evening. Follow for more evening habits.","captions":["Mistake: bright lights","Ceiling light off","One warm lamp","Low and warm","Day is ending","Follow for evening habits"],"cta":"FOLLOW","visuals":["bright overhead light in a bedroom, harsh","hand pressing a wall switch off","single warm table lamp in a dark room","close-up of lamp glow on a wall","window with dusk sky","cozy bedroom with soft lamp light"],"tania":["doubt","serious","thoughtful","joy","thoughtful","joy"],"why":"A visible contrast (harsh light, then warm lamp) shows the fix in one second, with no sound needed."},
+{"id":5,"hook_type":"anti-hook","hook":"Don't try to sleep yet.","spoken":"Don't try to sleep yet. First, stand by a window for one minute. Look at something far away. Breathe out slowly, longer than you breathe in. Your shoulders drop without effort. Then go to bed. Save this for the nights you feel wired.","captions":["Don't try to sleep yet","One minute at a window","Look far away","Long breath out","Shoulders drop","Save for wired nights"],"cta":"SAVE","visuals":["woman lying awake in bed, phone glow off","person standing at a night window","city lights in the distance through glass","slow breath mist on a cool window","relaxed shoulders, back view","bed with soft blanket turned down"],"tania":["surprise","thoughtful","thoughtful","serious","joy","joy"],"why":"It goes against what everyone expects (stop forcing sleep) and promises a tiny step for the wired-at-night feeling."},
+{"id":6,"hook_type":"open loop","hook":"A one-minute habit. Wait for it.","spoken":"A one-minute habit. Wait for it. Tonight, write tomorrow's one priority on a sticky note. Just one. Stick it on your mirror. Your mind has less to rehearse, and bedtime gets quieter. That was it. Follow for small habits like this.","captions":["A one-minute habit","Wait for it...","One sticky note","Just one priority","On your mirror","Follow for small habits"],"cta":"FOLLOW","visuals":["hand holding a stopwatch showing one minute","blurred mystery object under a cloth","pen writing on a yellow sticky note","note with a single line written","sticky note pressed onto a bathroom mirror","quiet bedroom at night, lamp off"],"tania":["surprise","doubt","thoughtful","serious","joy","joy"],"why":"The viewer waits for the reveal, and the answer is so small and doable that it feels worth saving."},
+{"id":7,"hook_type":"direct address with action","hook":"Close the laptop. Walk around the block.","spoken":"Close the laptop. Walk around the block. Ten minutes after dinner, no headphones, just you and the evening air. Let your legs do the work while your head slows down. You come home ready to rest. A stronger you starts tonight. Follow for more.","captions":["Close the laptop","Walk around the block","Ten minutes, no headphones","Evening air","Head slows down","A stronger you"],"cta":"FOLLOW","visuals":["hand closing a laptop on a desk","woman stepping out of an apartment door at dusk","quiet street walk, golden hour","trees and soft evening sky","legs walking on a sidewalk, tracking shot","woman entering home, smiling, warm hallway"],"tania":["serious","joy","thoughtful","joy","thoughtful","joy"],"why":"Two direct commands in the first line give a clear action right away, and the walk is easy to picture."},
+{"id":8,"hook_type":"concrete object","hook":"One mug can end your evening scroll.","spoken":"One mug can end your evening scroll. Make a caffeine-free tea and drink it at the table, no screens. Ten quiet minutes with something warm in your hands. It signals the day is closing. Save this for tonight.","captions":["One mug","Caffeine-free tea","At the table","No screens","Warm hands, quiet mind","Save this for tonight"],"cta":"SAVE","visuals":["ceramic mug on a wooden table, steam rising","pouring hot water into a mug, tea bag","empty table with a single mug, dim kitchen","phone face down next to the mug","hands wrapped around a warm mug","kitchen window with night view"],"tania":["surprise","thoughtful","serious","doubt","joy","joy"],"why":"A single everyday object in the first frame replaces the endless scroll with a calm picture the viewer can copy tonight."}
+]
+=== TASK (Critic) ===
+You are a ruthless short-video critic. Score every candidate 0-10 on: hook_strength (stops the scroll in 2 s and readable on mute), specificity (concrete number/object/time, not generic), novelty (not what every fitness account says), payoff (viewer gets one clear thing), passport_safety (10 = no ban violated, 0 = violates). Compute total = hook*2 + specificity + novelty + payoff + safety (max 60). Reject any with safety below 8.
+Then for the 6 best, REWRITE the weakest line so each reaches at least 9 on hook_strength, and keep spoken text at most 45 words.
+Output ONLY a JSON object: {"scores":[{"id":1,"hook":x,"specificity":x,"novelty":x,"payoff":x,"safety":x,"total":x,"verdict":"keep|rewrite|drop","note":"..."}],"final":[<the 6 best scripts, same fields as candidates, with improvements and the same visuals/tania lists>]}.

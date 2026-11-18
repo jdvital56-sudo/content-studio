@@ -150,3 +150,16 @@ details>div{padding:0 0 var(--s4)}
 
 /* bottom structure bar: collapsed by default, one line */
 .bar:not(.open) #edbody{display:none}
+
+/* acid theme: green-neon on near-black */
+:root[data-theme="acid"]{
+  --bg:#070b03;--surface:#111a07;--surface2:#1a2610;--fill:rgba(170,255,0,.12);--sep:rgba(190,255,60,.16);
+  --text:#efffd6;--muted:#93ad6a;--accent:#c6ff00;--accent-text:#0a1200;
+  --gold:#d9ff4d;--ok:#6dff3a;--warn:#ffe14d;--bad:#ff5c7a;--blue:#7dffd0;--violet:#c3ff9e;
+  --material:rgba(12,20,5,.74);--shadow:0 1px 2px rgba(0,0,0,.5),0 8px 28px rgba(150,255,0,.08);--scrim:rgba(2,6,0,.62)}
+:root[data-theme="acid"] .logo b{color:var(--accent)}
+:root[data-theme="acid"] nav a svg{stroke:var(--accent)}
+:root[data-theme="acid"] .card.sel{outline-color:var(--accent);box-shadow:0 0 0 1px var(--accent),0 0 24px rgba(198,255,0,.25)}
+:root[data-theme="acid"] input[type=checkbox]:checked{background:var(--accent)}
+:root[data-theme="acid"] input[type=checkbox]:checked::after{background:#0a1200}
+#themeseg .tab{padding:5px 10px;font-size:14px;line-height:1}
