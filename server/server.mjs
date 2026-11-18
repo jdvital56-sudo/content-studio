@@ -36,6 +36,21 @@ CREATE TABLE IF NOT EXISTS events(
 try { db.exec('ALTER TABLE reels ADD COLUMN base_path TEXT'); } catch {}
 try { db.exec('ALTER TABLE reels ADD COLUMN script TEXT'); } catch {}
 const LIB = join(root, 'media', 'library');
+for (const c of ['planned_at TEXT', 'platform TEXT', 'notified INTEGER DEFAULT 0']) { try { db.exec('ALTER TABLE reels ADD COLUMN ' + c); } catch {} }
+// Telegram: the owner types his own bot token and chat id in the app (stored only in the local database, never in git or chat).
+// local wall-clock time as YYYY-MM-DDTHH:MM (slots like 19:00 mean the owner's local time, not UTC)
+const localISO = d => new Date(d.getTime() - d.getTimezoneOffset() * 6e4).toISOString().slice(0, 16);
+function tgConf() { try { return JSON.parse(db.prepare("SELECT value FROM settings WHERE key='telegram'").get()?.value || '{}'); } catch { return {}; } }
+function notify(text) {
+  const t = tgConf(); if (!t.token || !t.chat || t.off) return Promise.resolve(false);
+  return new Promise(ok => { const p = spawn('curl', ['-s', '-m', '15', '-X', 'POST', `https://api.telegram.org/bot${t.token}/sendMessage`, '-d', `chat_id=${t.chat}`, '--data-urlencode', `text=${text}`]);
+    let out = ''; p.stdout.on('data', d => out += d); p.on('close', () => ok(/"ok":true/.test(out))); });
+}
+// Publishing reminders: once a minute, a planned reel whose time has come is announced in Telegram.
+setInterval(() => {
+  const due = db.prepare("SELECT id,title,platform,planned_at FROM reels WHERE planned_at IS NOT NULL AND planned_at <= ? AND notified=0 AND status='ok'").all(localISO(new Date()));
+  for (const r of due) { notify(`⏰ Время публиковать: «${r.title}» → ${r.platform || 'Instagram'}. Пакет: стена → «Публикация».`); db.prepare('UPDATE reels SET notified=1 WHERE id=?').run(r.id); }
+}, 60000);
 const BASH = 'C:\\Program Files\\Git\\bin\\bash.exe';
 // Effects that work on stock footage without a face (see app Skills page). Face-bound ones are not allowed here.
 const FX_OK = new Set(['reject-stamp', 'tap', 'countdown-flip', 'moody', 'scribble', 'rabbit-hole', 'dot-reveal', 'headline-box']);
@@ -95,12 +110,38 @@ createServer(async (req, res) => {
       res.writeHead(206, { 'Content-Type': 'video/mp4', 'Content-Range': `bytes ${start}-${end}/${buf.length}`, 'Content-Length': end - start + 1, 'Accept-Ranges': 'bytes' });
       return res.end(buf.subarray(start, end + 1));
     }
-    const st = url.pathname.match(/^\/api\/settings\/(skills|custom|wardrobe|scriptstyle|publish|presence)$/);
+    const st = url.pathname.match(/^\/api\/settings\/(skills|custom|wardrobe|scriptstyle|publish|presence|slots)$/);
     if (st) {
       if (req.method === 'PUT') { const b = await readBody(req); db.prepare('INSERT OR REPLACE INTO settings(key,value) VALUES(?,?)').run(st[1], JSON.stringify(b)); log(null, 'owner', st[1], JSON.stringify(b).slice(0, 200)); return send(res, 200, { ok: true }); }
       const s = db.prepare('SELECT value FROM settings WHERE key=?').get(st[1]);
-      return send(res, 200, s ? JSON.parse(s.value) : (['skills', 'scriptstyle', 'publish', 'presence'].includes(st[1]) ? {} : []));
+      return send(res, 200, s ? JSON.parse(s.value) : (['skills', 'scriptstyle', 'publish', 'presence', 'slots'].includes(st[1]) ? {} : []));
     }
+    if (url.pathname === '/api/telegram') {
+      if (req.method === 'PUT') { const b = await readBody(req); const cur = tgConf();
+        const v = { token: b.token ? String(b.token).trim() : cur.token, chat: String(b.chat ?? cur.chat ?? '').trim(), off: !!b.off };
+        db.prepare("INSERT OR REPLACE INTO settings(key,value) VALUES('telegram',?)").run(JSON.stringify(v)); log(null, 'owner', 'telegram', 'settings saved'); return send(res, 200, { ok: true }); }
+      if (req.method === 'POST') return send(res, 200, { ok: await notify('✅ Content Studio подключён. Сюда будут приходить готовые ролики и напоминания о публикации.') });
+      const t = tgConf(); return send(res, 200, { hasToken: !!t.token, chat: t.chat || '', off: !!t.off });  // the token itself never leaves the server
+    }
+    if (url.pathname === '/api/plan' && req.method === 'GET')
+      return send(res, 200, db.prepare("SELECT id,channel,title,status,planned_at,platform FROM reels WHERE planned_at IS NOT NULL ORDER BY planned_at").all());
+    if (url.pathname === '/api/plan/auto' && req.method === 'POST') {
+      // Put approved, unplanned reels into the next free slots of their channel (slots: {km:{times:['19:00'],platforms:['Instagram']}}).
+      let slots = {}; try { slots = JSON.parse(db.prepare("SELECT value FROM settings WHERE key='slots'").get()?.value || '{}'); } catch {}
+      const taken = new Set(db.prepare('SELECT channel, planned_at FROM reels WHERE planned_at IS NOT NULL').all().map(r => r.channel + r.planned_at));
+      const todo = db.prepare("SELECT id,channel FROM reels WHERE status='ok' AND planned_at IS NULL ORDER BY id").all(); let n = 0;
+      for (const r of todo) {
+        const conf = slots[r.channel] || { times: ['19:00'], platforms: ['Instagram'] }; const now = new Date();
+        outer: for (let d = 0; d < 60; d++) for (const tm of conf.times) {
+          const day = new Date(now.getTime() + d * 864e5); const at = localISO(day).slice(0, 10) + 'T' + tm;
+          if (at <= localISO(now) || taken.has(r.channel + at)) continue;
+          db.prepare('UPDATE reels SET planned_at=?, platform=?, notified=0 WHERE id=?').run(at, (conf.platforms || ['Instagram']).join(', '), r.id); taken.add(r.channel + at); n++; break outer;
+        }
+      }
+      log(null, 'owner', 'plan', `auto ${n}`); return send(res, 200, { planned: n });
+    }
+    const pm = url.pathname.match(/^\/api\/plan\/(\d+)$/);
+    if (pm && req.method === 'DELETE') { db.prepare('UPDATE reels SET planned_at=NULL, platform=NULL, notified=0 WHERE id=?').run(+pm[1]); return send(res, 200, { ok: true }); }
     if (url.pathname === '/api/jobs') return send(res, 200, Object.fromEntries(jobs));
     if (url.pathname === '/api/health') {
       let free = null; try { const s = statfsSync('C:\\'); free = Math.round(s.bavail * s.bsize / 1073741824); } catch {}
@@ -162,7 +203,7 @@ createServer(async (req, res) => {
             const r = db.prepare('INSERT INTO reels(channel,title,sub,status,script) VALUES(?,?,?,?,?)').run(ch, s.hook, (s.spoken || '').slice(0, 110), 'draft', JSON.stringify(s));
             log(r.lastInsertRowid, 'scriptwriter', 'script', s.hook_type || ''); n++;
           }
-          jobs.set('topic', { state: 'done', note: `Готово: ${n} сценариев на стене` });
+          jobs.set('topic', { state: 'done', note: `Готово: ${n} сценариев на стене` }); notify(`✍️ Готово ${n} новых сценариев. Открой стену: «Черновик».`);
         } catch (e) { jobs.set('topic', { state: 'error', note: 'Сценарии не получились (проверь вход claude)' }); }
       });
       return send(res, 202, { started: true });
@@ -178,7 +219,7 @@ createServer(async (req, res) => {
       const p = spawn('python', [join(root, 'tools', 'build-reel.py'), String(id)], { cwd: root, env: { ...process.env, PYTHONIOENCODING: 'utf-8' } });
       let buf = ''; const onData = d => { buf += d; let i; while ((i = buf.indexOf('\n')) >= 0) { const l = buf.slice(0, i).trim(); buf = buf.slice(i + 1); if (l.startsWith('STEP ')) jobs.set(key, { state: 'running', note: l.slice(5) }); else if (l.startsWith('ERROR')) jobs.set(key, { state: 'error', note: l.slice(6) }); } };
       p.stdout.on('data', onData); p.stderr.on('data', () => {});
-      p.on('close', c => { if (jobs.get(key)?.state !== 'error') jobs.set(key, c === 0 ? { state: 'done', note: 'Готово' } : { state: 'error', note: 'Сборка не удалась' }); });
+      p.on('close', c => { if (jobs.get(key)?.state !== 'error') jobs.set(key, c === 0 ? { state: 'done', note: 'Готово' } : { state: 'error', note: 'Сборка не удалась' }); const r = db.prepare('SELECT title FROM reels WHERE id=?').get(id); notify(jobs.get(key).state === 'done' ? `🎬 Ролик готов и ждёт тебя: «${r?.title}»` : `⚠️ Ролик «${r?.title}» не собрался: ${jobs.get(key).note}`); });
       return send(res, 202, { started: true });
     }
     const dl = url.pathname.match(/^\/api\/reels\/(\d+)$/);

@@ -33,6 +33,7 @@
   <a id="newch"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>Новый канал</a>
   <h6>Выпуск</h6>
   <a id="navpub"><svg viewBox="0 0 24 24"><path d="M21 3L10 14"/><path d="M21 3l-7 18-4-7-7-4z"/></svg>Публикация</a>
+  <a id="navcal"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Календарь</a>
   <a id="navarc"><svg viewBox="0 0 24 24"><path d="M7 18a4 4 0 0 1-.5-8A6 6 0 0 1 18 9.5a4 4 0 0 1-.5 8.5z"/></svg>Архив на Диске</a>
   <h6>Завод</h6>
   <a id="navsk"><svg viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/></svg>Навыки</a>
@@ -294,6 +295,32 @@ function chRender(){const b=$('#chbody');
  if(chStep===2)b.innerHTML=`<p style="font-size:13px;color:var(--muted)">Шаг 3 из 3. Что будет дальше.</p><div class="script">1) 4 варианта персонажа на выбор ≈ <b>$0,16</b>.<br>2) Набор из 10 ключевых поз со ртом ≈ <b>$1,2</b>, полный набор из 57 поз ≈ <b>$6,8</b>.<br>3) Расходы идут с <b>твоего собственного ключа</b> сервиса картинок, платформа деньги клиента не держит.</div><p style="font-size:12px;color:var(--warn)">Генерация подключается при первом клиенте. Сейчас заявка сохраняется, и ничего не тратится.</p><div style="display:flex;justify-content:space-between;margin-top:12px"><button class="btn" data-ch="1">Назад</button><button class="btn go" data-ch="save">Сохранить заявку</button></div>`}
 function styleOf(r){const s=r.sub||'';if(s.includes('Текст по видео'))return 'Текст на живом видео';if(s.includes('KM Editorial'))return 'KM Editorial · Таня';if(s.includes('Вариант Б'))return 'Сток + плашки';if(r.ch==='hi')return 'Анимированная карта';if(r.ch==='wi')return 'Стикмены 3D';return 'KM Editorial'}
 let clientMode=false;
+// ---- Calendar: publishing plan by day, slots per channel, Telegram reminders
+let SLOTS={},PLAN=[],TG={};
+const DAYS=['Вс','Пн','Вт','Ср','Чт','Пт','Сб'];
+const lISO=d=>new Date(d.getTime()-d.getTimezoneOffset()*6e4).toISOString().slice(0,16);
+async function calView(){view='cal';navOn('navcal');$('.tools').style.display='none';$('#grid').style.display='block';
+ [SLOTS,PLAN,TG]=await Promise.all([fetch('/api/settings/slots').then(r=>r.json()).catch(()=>({})),fetch('/api/plan').then(r=>r.json()).catch(()=>[]),fetch('/api/telegram').then(r=>r.json()).catch(()=>({}))]);
+ const now=new Date(),days=[...Array(7)].map((_,i)=>new Date(now.getTime()+i*864e5)),key=d=>lISO(d).slice(0,10);
+ const tomorrow=key(days[1]),ready=R.filter(r=>r.st==='ok'&&!PLAN.find(p=>p.id===r.id)).length;
+ const emptyTomorrow=Object.keys(CH).filter(c=>(SLOTS[c]||{times:['19:00']}).times.length&&!PLAN.find(p=>p.channel===c&&p.planned_at.slice(0,10)===tomorrow));
+ $('#grid').innerHTML=`<h2>Календарь</h2><p style="color:var(--muted);max-width:720px">План выхода роликов на неделю. В назначенное время завод присылает напоминание в Telegram с названием ролика и площадкой. Публикуешь пока ты сам, пакет в «Публикации».</p>
+ ${emptyTomorrow.length?`<div class="script" style="border:1px solid var(--warn)"><b style="color:var(--warn)">На завтра пусто:</b> ${emptyTomorrow.map(c=>CH[c].n).join(', ')}. ${ready?`Одобренных роликов без даты: ${ready}. Нажми «Расставить одобренные».`:'Одобренных роликов без даты нет: одобри ролики на стене.'}</div>`:''}
+ <div style="display:flex;gap:8px;margin:12px 0"><button class="btn go" id="calauto">Расставить одобренные (${ready})</button></div>
+ <div style="display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px">${days.map((d,i)=>{const k=key(d),items=PLAN.filter(p=>p.planned_at.slice(0,10)===k);
+   return `<div style="background:var(--surface);border-radius:14px;padding:10px;min-height:150px"><div style="font-weight:600;margin-bottom:6px">${i===0?'Сегодня':i===1?'Завтра':DAYS[d.getDay()]} <span style="color:var(--muted);font-weight:400">${d.getDate()}.${String(d.getMonth()+1).padStart(2,'0')}</span></div>
+   ${items.map(p=>`<div style="background:var(--surface2);border-radius:10px;padding:6px 8px;margin-bottom:6px;font-size:12px"><b>${p.planned_at.slice(11)}</b> · ${CH[p.channel]?CH[p.channel].n:p.channel}<div style="margin:2px 0">${p.title}</div><small>${p.platform||''}${p.status==='pub'?' · опубликован':''}</small><button class="btn plain" data-unplan="${p.id}" style="padding:2px 0;min-height:0;font-size:12px">убрать</button></div>`).join('')||'<small>пусто</small>'}</div>`}).join('')}</div>
+ <h3>Слоты выхода по каналам</h3><p style="color:var(--muted);font-size:13px">Время по твоим часам, через запятую. Например: 09:00, 19:30.</p>
+ ${Object.entries(CH).map(([c,v])=>{const s=SLOTS[c]||{times:['19:00'],platforms:['Instagram']};return `<div class="ag" style="align-items:center"><div style="width:140px"><b>${v.n}</b></div><input class="slott" data-c="${c}" value="${s.times.join(', ')}" style="width:160px;background:var(--surface2);border:0;border-radius:10px;padding:8px 10px;color:var(--text);font:inherit">
+   ${['Instagram','TikTok','YouTube Shorts'].map(p=>`<label style="font-size:13px;align-items:center"><input type="checkbox" class="slotp" data-c="${c}" value="${p}" ${s.platforms.includes(p)?'checked':''}> ${p}</label>`).join('')}</div>`}).join('')}
+ <div style="margin-top:6px"><button class="btn" id="slotsave">Сохранить слоты</button> <small id="slotmsg" style="display:inline;color:var(--ok)"></small></div>
+ <h3>Уведомления в Telegram</h3>
+ <div class="ag" style="flex-direction:column;gap:10px"><div><b>${TG.hasToken?'Бот подключён':'Бот не подключён'}</b><small>Сюда приходят: готовые ролики, новые сценарии, ошибки сборки и напоминания «пора публиковать».</small></div>
+ <ol style="margin:0;padding-left:18px;font-size:13px;color:var(--muted)"><li>В Telegram открой @BotFather → /newbot → придумай имя. Он пришлёт токен.</li><li>Напиши своему боту любое сообщение.</li><li>Узнай свой chat id: напиши @userinfobot, он ответит числом.</li><li>Вставь токен и chat id сюда сам (в чат Claude их не присылай) и нажми «Проверить».</li></ol>
+ <input id="tgtoken" type="password" placeholder="${TG.hasToken?'токен сохранён (вставь новый, чтобы заменить)':'токен бота от @BotFather'}" style="background:var(--surface2);border:0;border-radius:10px;padding:9px 12px;color:var(--text);font:inherit;width:100%">
+ <input id="tgchat" value="${TG.chat||''}" placeholder="chat id (число)" style="background:var(--surface2);border:0;border-radius:10px;padding:9px 12px;color:var(--text);font:inherit;width:100%">
+ <div style="display:flex;gap:8px;align-items:center"><button class="btn go" id="tgsave">Сохранить</button><button class="btn" id="tgtest">Проверить</button><small id="tgmsg" style="display:inline"></small></div></div>`}
+
 // ---- multi-file upload: choose several files, they go one after another with their own progress
 let UFILES=[],UPLOADING=false;
 function mb(n){return n>=1048576?(n/1048576).toFixed(n>=1.05e8?0:1)+' МБ':Math.max(1,Math.round(n/1024))+' КБ'}
@@ -454,6 +481,13 @@ document.addEventListener('click',e=>{
   if(e.target.closest('#navtrash')){showWall('navtrash','trash');return}
   if(e.target.closest('#navnight')){gm('Ночная очередь','<p>Очередь задач на ночь: сценарии, озвучка и рендер, чтобы днём компьютер был свободен.</p><p style="color:var(--warn);font-size:13px">Расписание ночных запусков пока не подключено: сейчас «Тема → ролики» выполняется сразу. Включим вместе с автозапуском стены (tools\\install-autostart.cmd).</p>');return}
   if(e.target.closest('#navhooks')){hooksModal();return}
+  if(e.target.closest('#navcal')){calView();return}
+  if(e.target.closest('#calauto')){fetch('/api/plan/auto',{method:'POST'}).then(r=>r.json()).then(()=>calView());return}
+  const up=e.target.closest('[data-unplan]'); if(up){fetch('/api/plan/'+up.dataset.unplan,{method:'DELETE'}).then(()=>calView());return}
+  if(e.target.closest('#slotsave')){const S={};document.querySelectorAll('.slott').forEach(i=>{const c=i.dataset.c;S[c]={times:i.value.split(',').map(x=>x.trim()).filter(x=>/^\d{1,2}:\d{2}$/.test(x)).map(x=>x.padStart(5,'0')),platforms:[...document.querySelectorAll('.slotp[data-c="'+c+'"]:checked')].map(x=>x.value)}});
+    fetch('/api/settings/slots',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(S)}).then(()=>{$('#slotmsg').textContent='Сохранено'});return}
+  if(e.target.closest('#tgsave')){fetch('/api/telegram',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:$('#tgtoken').value,chat:$('#tgchat').value})}).then(()=>{$('#tgtoken').value='';$('#tgmsg').textContent='Сохранено';$('#tgmsg').style.color='var(--ok)'});return}
+  if(e.target.closest('#tgtest')){$('#tgmsg').textContent='Отправляю…';fetch('/api/telegram',{method:'POST'}).then(r=>r.json()).then(j=>{$('#tgmsg').textContent=j.ok?'Сообщение отправлено, проверь Telegram':'Не получилось: проверь токен, chat id и что ты написал боту';$('#tgmsg').style.color=j.ok?'var(--ok)':'var(--bad)'});return}
   if(e.target.closest('#navpub')){pubView();return}
   if(e.target.closest('#navlib')||e.target.closest('#upl2')&&false){libView();return}
   if(e.target.closest('#upl2')){UFILES=[];ulist();$('#umodal').classList.add('on');return}
