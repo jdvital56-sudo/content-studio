@@ -19,7 +19,8 @@ def log(action, note=''): db.execute('INSERT INTO events(reel_id,actor,action,no
 def setrow(**kw):
     db.execute('UPDATE reels SET ' + ','.join(f'{k}=?' for k in kw) + ',updated_at=CURRENT_TIMESTAMP WHERE id=?', (*kw.values(), rid)); db.commit()
 def run(cmd, **kw):
-    r = subprocess.run(cmd, capture_output=True, text=True, encoding='utf-8', env=env, **kw)
+    kw.setdefault('env', env)
+    r = subprocess.run(cmd, capture_output=True, text=True, encoding='utf-8', **kw)
     if r.returncode != 0: raise RuntimeError((r.stderr or r.stdout)[-400:])
     return r.stdout
 

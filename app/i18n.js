@@ -10,7 +10,12 @@
   function tr(text) {
     if (lang === 'ru' || !CYR.test(text)) return null;
     const lead = text.match(/^\s*/)[0], trail = text.match(/\s*$/)[0], core = text.trim().replace(/\s+/g, ' ');
-    const [k, nums] = norm(core); const v = dict[k]; if (!v) return null;
+    const [k, nums] = norm(core); let v = dict[k];
+    if (!v && nums.length) {  // "Все 19", "Черновик 3": the words are in the dictionary, the number is appended
+      const base = core.replace(/\d+(?:[.,]\d+)?/g, '').replace(/\s+/g, ' ').trim();
+      if (dict[base]) return lead + dict[base] + ' ' + nums.join(' ') + trail;
+    }
+    if (!v) return null;
     let i = 0; return lead + v.replace(/\{n\}/g, () => nums[i++] ?? '') + trail;
   }
   function walk(root) {
