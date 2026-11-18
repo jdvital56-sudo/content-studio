@@ -19,7 +19,7 @@ PAPER, GRID, INK, GOLD, GOLD_T, WHITE = (250, 247, 242), (231, 220, 203), (29, 2
 FONT = r'C:\src\arcads-cut\fonts\Montserrat.ttf'
 PAD = 0.35
 CARD = (900, 700); CARD_XY = (90, 190)
-TANIA_H = 820; LEDGE_Y = 1690
+TANIA_H = 820; LEDGE_Y = 1690; MOUTH_MAX = 1
 
 
 def font(size, weight=700):
@@ -109,12 +109,17 @@ def main(spec_path):
                           stock=ln.get('stock'), fx=ln.get('fx', []), cta=ln.get('cta')))
         t0 += d + PAD
     total = t0; nfr = int(math.ceil(total * FPS))
+    # hero presence: 'always' | 'cameo' (hook, middle, final line = 3 appearances) | 'off'
+    global MOUTH_MAX; MOUTH_MAX = {'calm': 1, 'normal': 2}.get(sp.get('mouth', 'calm'), 1)  # 'calm' = at most the half-open mouth
+    pres = sp.get('presence', 'always'); n = len(units)
+    show = {'always': set(range(n)), 'off': set(), 'cameo': {0, n // 2, n - 1}}.get(pres, set(range(n)))
+    for u in units: u['tania'] = u['i'] in show
     bg = base_bg(sp.get('brand', 'KM  ·  HABITS'))
     cardmask = rounded_mask(*CARD, 44)
     for u in units:
         toks = [w for w, _, _ in u['words']]
         if u['stock']:  # caption bottom-left, narrow
-            size, maxw, maxh = 66, 470, 700
+            size, maxw, maxh = 66, (470 if u['tania'] else 900), 700
             for size in (66, 58, 52, 46):
                 fnt = font(size, 800); lay, hgt = layout(toks, size, maxw, fnt)
                 if hgt <= maxh: break
@@ -200,16 +205,18 @@ def main(spec_path):
                 pill = pill.resize((int(480 * pulse), int(120 * pulse)))
                 fr.alpha_composite(pill, (90, 1180 + int((1 - a) * 40)))
         # --- Tania: cut-out, mouth follows the voice, small pop when the pose changes
-        if u['pose'] != last_pose: last_pose = u['pose']; pose_t = t
-        lvl = mouth.get(fi, 0)
-        im = tania(u['pose'], lvl)
-        pop = 1.0 + 0.045 * (1 - ease((t - pose_t) / 0.18))
-        if pop > 1.001: im = im.resize((int(im.width * pop), int(im.height * pop)), Image.BILINEAR)
-        bob = int(5 * math.sin(t * 2.4))
-        fr.alpha_composite(im, (int(1085 - im.width), int(LEDGE_Y - im.height + bob + 6)))
-        # gold ledge: she stands behind it
-        d = ImageDraw.Draw(fr)
-        d.rounded_rectangle([60, LEDGE_Y - 4, 1020, LEDGE_Y + 44], 24, fill=PAPER + (255,), outline=GOLD + (255,), width=4)
+        prev_on = (units[u['i'] - 1]['tania'] if u['i'] > 0 else u['tania'])
+        v = (1.0 if prev_on else 0.0) + ((1.0 if u['tania'] else 0.0) - (1.0 if prev_on else 0.0)) * ease(lt / 0.3)  # slide in/out between lines
+        if v > 0.01:
+            if u['pose'] != last_pose: last_pose = u['pose']; pose_t = t
+            lvl = min(mouth.get(fi, 0), MOUTH_MAX) if u['tania'] else 0  # calm mouth: never wide open by default
+            im = tania(u['pose'], lvl)
+            pop = 1.0 + 0.045 * (1 - ease((t - pose_t) / 0.18))
+            if pop > 1.001: im = im.resize((int(im.width * pop), int(im.height * pop)), Image.BILINEAR)
+            bob = int(5 * math.sin(t * 2.4)); slide = int((1 - v) * 900)
+            fr.alpha_composite(im, (int(1085 - im.width), int(LEDGE_Y - im.height + bob + 6 + slide)))
+            d = ImageDraw.Draw(fr)  # gold ledge: she stands behind it
+            d.rounded_rectangle([60, LEDGE_Y - 4 + slide, 1020, LEDGE_Y + 44 + slide], 24, fill=PAPER + (255,), outline=GOLD + (255,), width=4)
         if stills: fr.convert('RGB').resize((360, 640)).save(os.path.join(out_dir, f'still_{fi / FPS:.1f}.png')); continue
         pipe.stdin.write(fr.convert('RGB').tobytes())
     if stills: print('stills', out_dir); shutil.rmtree(tmp, ignore_errors=True); return

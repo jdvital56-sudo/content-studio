@@ -1,7 +1,8 @@
 // Content Studio: local server. Listens on 127.0.0.1 only (see CLAUDE.md).
 // Serves the wall (app/) and a small JSON API over SQLite (node:sqlite, built into Node).
 import { createServer } from 'node:http';
-import { readFile, mkdir, writeFile } from 'node:fs/promises';
+import { readFile, mkdir, writeFile, readdir, stat } from 'node:fs/promises';
+import { createWriteStream, statfsSync } from 'node:fs';
 import { spawn } from 'node:child_process';
 import { homedir } from 'node:os';
 import { DatabaseSync } from 'node:sqlite';
@@ -33,6 +34,9 @@ CREATE TABLE IF NOT EXISTS events(
 );`);
 
 try { db.exec('ALTER TABLE reels ADD COLUMN base_path TEXT'); } catch {}
+try { db.exec('ALTER TABLE reels ADD COLUMN script TEXT'); } catch {}
+const LIB = join(root, 'media', 'library');
+const BASH = 'C:\\Program Files\\Git\\bin\\bash.exe';
 // Effects that work on stock footage without a face (see app Skills page). Face-bound ones are not allowed here.
 const FX_OK = new Set(['reject-stamp', 'tap', 'countdown-flip', 'moody', 'scribble', 'rabbit-hole', 'dot-reveal', 'headline-box']);
 const FX_PY = join(homedir(), '.claude', 'skills', 'effects', '.venv', 'Scripts', 'python.exe');
@@ -40,7 +44,7 @@ const FX_SCRIPT = join(homedir(), '.claude', 'skills', 'effects', 'scripts', 'fx
 // Effects whose built-in text/author names (e.g. "Vibha", "Claude", "197K") we must replace first; not applied manually yet.
 const DENY = new Set(['comment-box','glass-widgets','pastel-word','checklist','headline-wall','liquid-glass-graph','over-the-shoulder-zoom','match-cut','tier-list','cover-star']);
 const jobs = new Map();
-const STATUSES =new Set(['draft','render','check','wait','ok','pub','bad']);
+const STATUSES = new Set(['draft','render','check','wait','ok','pub','bad','trash']);
 const log = (reel, actor, action, note = '') =>
   db.prepare('INSERT INTO events(reel_id,actor,action,note) VALUES(?,?,?,?)').run(reel, actor, action, note);
 
@@ -91,13 +95,67 @@ createServer(async (req, res) => {
       res.writeHead(206, { 'Content-Type': 'video/mp4', 'Content-Range': `bytes ${start}-${end}/${buf.length}`, 'Content-Length': end - start + 1, 'Accept-Ranges': 'bytes' });
       return res.end(buf.subarray(start, end + 1));
     }
-    const st = url.pathname.match(/^\/api\/settings\/(skills|custom|wardrobe)$/);
+    const st = url.pathname.match(/^\/api\/settings\/(skills|custom|wardrobe|scriptstyle|publish|presence)$/);
     if (st) {
       if (req.method === 'PUT') { const b = await readBody(req); db.prepare('INSERT OR REPLACE INTO settings(key,value) VALUES(?,?)').run(st[1], JSON.stringify(b)); log(null, 'owner', st[1], JSON.stringify(b).slice(0, 200)); return send(res, 200, { ok: true }); }
       const s = db.prepare('SELECT value FROM settings WHERE key=?').get(st[1]);
-      return send(res, 200, s ? JSON.parse(s.value) : (st[1] === 'skills' ? {} : []));
+      return send(res, 200, s ? JSON.parse(s.value) : (['skills', 'scriptstyle', 'publish', 'presence'].includes(st[1]) ? {} : []));
     }
     if (url.pathname === '/api/jobs') return send(res, 200, Object.fromEntries(jobs));
+    if (url.pathname === '/api/health') {
+      let free = null; try { const s = statfsSync('C:\\'); free = Math.round(s.bavail * s.bsize / 1073741824); } catch {}
+      return send(res, 200, { freeGb: free, running: [...jobs.entries()].filter(([, j]) => j.state === 'running').map(([k, j]) => ({ id: k, note: j.note })) });
+    }
+    // Streak of approvals in a row: the owner's own rule (20 approvals without a redo/reject = ready for auto-publishing).
+    if (url.pathname === '/api/stats') {
+      const ev = db.prepare("SELECT note FROM events WHERE action='status' ORDER BY id DESC LIMIT 200").all();
+      let streak = 0; for (const e of ev) { if (e.note === 'ok') streak++; else if (e.note === 'draft' || e.note === 'trash' || e.note === 'bad') break; }
+      const c = Object.fromEntries(db.prepare("SELECT status s, COUNT(*) n FROM reels GROUP BY status").all().map(r => [r.s, r.n]));
+      return send(res, 200, { streak, goal: 20, counts: c });
+    }
+    // Library of source material (the owner's / client's own footage) for cutting and hooks.
+    if (url.pathname === '/api/library' && req.method === 'GET') {
+      const out = []; try { for (const ch of await readdir(LIB)) for (const f of await readdir(join(LIB, ch))) { const s = await stat(join(LIB, ch, f)); out.push({ channel: ch, name: f, mb: Math.round(s.size / 1048576), at: s.mtime }); } } catch {}
+      return send(res, 200, out);
+    }
+    if (url.pathname === '/api/library' && req.method === 'POST') {
+      const ch = (url.searchParams.get('channel') || 'misc').replace(/[^a-z0-9_-]/gi, '');
+      const name = (url.searchParams.get('name') || 'video.mp4').replace(/[^\w.\- а-яА-ЯёЁ()]/g, '_').slice(0, 120);
+      if (!/\.(mp4|mov|m4v|webm|mkv)$/i.test(name)) return send(res, 400, { error: 'video only' });
+      await mkdir(join(LIB, ch), { recursive: true });
+      const ws = createWriteStream(join(LIB, ch, name)); let n = 0;
+      req.on('data', c => { n += c.length; if (n > 4 * 1024 ** 3) { ws.destroy(); req.destroy(); } });
+      req.pipe(ws); await new Promise(ok => ws.on('close', ok));
+      log(null, 'owner', 'upload', `${ch}/${name}`); return send(res, 201, { ok: true, mb: Math.round(n / 1048576) });
+    }
+    // Topic -> scripts: runs the Scriptwriter and the Critic (claude -p) and puts the best scripts on the wall as drafts.
+    if (url.pathname === '/api/topic' && req.method === 'POST') {
+      const b = await readBody(req); if (jobs.get('topic')?.state === 'running') return send(res, 409, { error: 'already running' });
+      const ch = ['km', 'wi', 'hi'].includes(b.channel) ? b.channel : 'km';
+      const passport = { km: 'kosta-method.md', wi: 'what-if.md', hi: 'historical.md' }[ch];
+      const out = join(root, 'trials', 'topics', String(Date.now())); await mkdir(out, { recursive: true });
+      let style = ''; try { style = JSON.parse(db.prepare('SELECT value FROM settings WHERE key=?').get('scriptstyle')?.value || '{}')[ch] || ''; } catch {}
+      jobs.set('topic', { state: 'running', note: 'Писатель и Критик работают, 3–6 минут', since: Date.now() });
+      const p = spawn(BASH, ['tools/write-scripts-v2.sh', `channels/${passport}`, 'research/trends-2026-11-18.md', out, String(Math.min(20, Math.max(4, +b.count || 10))), String(b.topic || '').slice(0, 200), String(style).slice(0, 2000)], { cwd: root });
+      p.on('close', async () => {
+        try {
+          const f = JSON.parse(await readFile(join(out, 'final.json'), 'utf8')); let n = 0;
+          for (const s of f.final || []) {
+            const r = db.prepare('INSERT INTO reels(channel,title,sub,status,script) VALUES(?,?,?,?,?)').run(ch, s.hook, (s.spoken || '').slice(0, 110), 'draft', JSON.stringify(s));
+            log(r.lastInsertRowid, 'scriptwriter', 'script', s.hook_type || ''); n++;
+          }
+          jobs.set('topic', { state: 'done', note: `Готово: ${n} сценариев на стене` });
+        } catch (e) { jobs.set('topic', { state: 'error', note: 'Сценарии не получились (проверь вход claude)' }); }
+      });
+      return send(res, 202, { started: true });
+    }
+    const dl = url.pathname.match(/^\/api\/reels\/(\d+)$/);
+    if (dl && req.method === 'DELETE') {
+      const id = +dl[1];
+      if (url.searchParams.get('hard') === '1') { db.prepare('DELETE FROM reels WHERE id=?').run(id); log(id, 'owner', 'delete', 'forever (files stay on disk)'); }
+      else { db.prepare("UPDATE reels SET status='trash', updated_at=CURRENT_TIMESTAMP WHERE id=?").run(id); log(id, 'owner', 'status', 'trash'); }
+      return send(res, 200, { ok: true });
+    }
     const fxm = url.pathname.match(/^\/api\/reels\/(\d+)\/effects$/);
     if (fxm && req.method === 'POST') {
       const id = +fxm[1], b = await readBody(req);

@@ -98,26 +98,28 @@ kbd{background:var(--panel2);border:1px solid var(--line);border-radius:4px;padd
   <button class="btn go" id="newtopic" style="padding:7px 12px">Тема → ролики</button>
   <button class="btn" id="upl" style="padding:7px 12px">Загрузить видео</button>
   <input class="search" placeholder="Поиск по хуку и теме">
-  <span class="chip">Диск C: <i>47 ГБ</i></span>
-  <span class="chip">Рендер: <i>свободен</i></span>
-  <span class="chip">Лимит Claude: <i>12%</i></span>
+  <span class="chip" id="diskchip">Диск C: <i>…</i></span>
+  <span class="chip" id="jobchip">Задачи: <i>…</i></span>
+  <span class="chip" id="streakchip">Подряд одобрено: <i>0</i> из 20</span>
 </header>
 <div class="demo">Макет для оценки внешнего вида. Ролики и цифры на стене примерные, настоящих движков здесь пока нет.</div>
 
 <nav>
   <a class="on" id="navwall">Монтажная стена</a>
-  <a>Ждёт тебя <em>5</em></a>
-  <a>Ночная очередь</a>
-  <a>Банк хуков</a>
+  <a id="navwait">Ждёт тебя <em id="waitn">0</em></a>
+  <a id="navnight">Ночная очередь</a>
+  <a id="navhooks">Банк хуков</a>
+  <a id="navpub">Публикация</a>
+  <a id="navlib">Мои видео (материал)</a>
   <a id="navsk">Навыки</a>
   <a id="navcl" style="font-size:12px">Вид клиента (демо)</a>
   <h6>Каналы</h6>
   <a id="navpp">Паспорта</a>
   <a id="newch">Новый канал +</a>
   <h6>Завод</h6>
-  <a>Агенты</a>
-  <a>Архив на Диске</a>
-  <a>Корзина (30 дней)</a>
+  <a id="navag">Агенты</a>
+  <a id="navarc">Архив на Диске</a>
+  <a id="navtrash">Корзина <em id="trashn" style="background:var(--line)">0</em></a>
   <div class="pp">Паспорт Kosta Method<div class="bar2"><span style="width:88%"></span></div>88% заполнен</div>
   <div class="pp">Паспорт What if<div class="bar2"><span style="width:92%"></span></div>92% заполнен</div>
   <div class="pp">Паспорт Исторический<div class="bar2"><span style="width:90%"></span></div>90% заполнен</div>
@@ -149,6 +151,7 @@ kbd{background:var(--panel2);border:1px solid var(--line);border-radius:4px;padd
   <div id="edbody"></div>
 </footer>
 
+<div class="modal" id="gmodal"><div class="mbox" style="width:560px;max-height:90vh;overflow:auto"><h3 id="gt"></h3><div id="gb"></div><div style="text-align:right;margin-top:10px"><button class="btn" id="gx">Закрыть</button></div></div></div>
 <div class="modal" id="chmodal"><div class="mbox" style="width:560px;max-height:92vh;overflow:auto"><h3>Свой персонаж <button class="btn" id="chx" style="float:right;padding:2px 8px">✕</button></h3><div id="chbody"></div></div></div>
 <div class="modal" id="omodal"><div class="mbox" style="width:640px;max-height:92vh;overflow:auto"><h3 id="otitle"></h3><div id="obody"></div></div></div>
 <div class="modal" id="nomodal"><div class="mbox"><h3>Новый образ</h3>
@@ -208,7 +211,7 @@ kbd{background:var(--panel2);border:1px solid var(--line);border-radius:4px;padd
 
 <script>
 const CH={km:{n:'Kosta Method',c:'km',b:'KM · СЕРИЯ'},wi:{n:'What if',c:'wi',b:'WHAT IF'},hi:{n:'Исторический',c:'hi',b:'ИМПЕРИИ'}};
-const ST={draft:['Черновик','s-draft'],render:['Рендерится','s-render'],check:['Проверка','s-check'],wait:['Ждёт тебя','s-wait'],ok:['Одобрен','s-ok'],pub:['Опубликован','s-pub'],bad:['Брак','s-bad']};
+const ST={draft:['Черновик','s-draft'],render:['Рендерится','s-render'],check:['Проверка','s-check'],wait:['Ждёт тебя','s-wait'],ok:['Одобрен','s-ok'],pub:['Опубликован','s-pub'],bad:['Брак','s-bad'],trash:['Корзина','s-bad']};
 let live=false;
 let R=[
 ['km','wait','Discipline is a decision you make once','Pick the workout time tonight, not tomorrow morning.',31,'oooo'],
@@ -229,7 +232,10 @@ const $=s=>document.querySelector(s);
 function fmt(s){return s?Math.floor(s/60)+':'+String(s%60).padStart(2,'0'):'—'}
 function tabs(){ $('#tabs').innerHTML=[['all','Все каналы'],...Object.entries(CH).map(([k,v])=>[k,v.n])].map(([k,n])=>`<button class="tab ${ch===k?'on':''}" data-k="${k}">${n}</button>`).join('')}
 function filters(){ $('#filters').innerHTML=[['all','Все'],...Object.entries(ST).map(([k,v])=>[k,v[0]])].map(([k,n])=>{const c=R.filter(r=>(ch==='all'||r.ch===ch)&&(k==='all'||r.st===k)).length;return `<button class="f ${st===k?'on':''}" data-k="${k}">${n} ${c}</button>`}).join('')}
-function list(){if(clientMode)return [];return R.filter(r=>(ch==='all'||r.ch===ch)&&(st==='all'||r.st===st)).sort((a,b)=>b.id-a.id)} // newest first
+function counters(){const w=R.filter(r=>r.st==='wait').length,t=R.filter(r=>r.st==='trash').length;if($('#waitn'))$('#waitn').textContent=w;if($('#trashn'))$('#trashn').textContent=t;
+  fetch('/api/stats').then(r=>r.json()).then(s=>{STAT=s;const c=document.querySelector('#streakchip');if(c)c.innerHTML=`Подряд одобрено: <i>${s.streak}</i> из ${s.goal}`}).catch(()=>{})}
+let STAT={streak:0,goal:20};
+function list(){if(clientMode)return [];return R.filter(r=>(ch==='all'||r.ch===ch)&&(st==='all'?r.st!=='trash':r.st===st)).sort((a,b)=>b.id-a.id)} // newest first
 const PR={3:[62,'Озвучка готова, рендер'],12:[35,'Графика карты'],7:[88,'Проверка качества']};
 function poster(r){const c=CH[r.ch],p=PR[r.id];if(r.video)return `<div class="poster" style="padding:0;background:#000"><span class="stylepill">${styleOf(r)}</span><video class="pv" src="/api/reels/${r.id}/video#t=0.8" muted loop playsinline preload="metadata" style="width:100%;height:100%;object-fit:cover"></video><button class="playbtn" data-play="${r.id}" title="Смотреть со звуком">▶</button></div>`;return `<div class="poster ${c.c}"><div class="brand">${c.b} ${r.id}</div><div class="t">${r.title}</div>${(r.st==='render'||r.st==='check')&&p?`<div class="prog">${p[1]} ${p[0]}%<div><span style="width:${p[0]}%"></span></div></div>`:''}</div>`}
 function dots(q){return `<span class="dots">${[...q].map(x=>`<span class="dot ${x==='x'?'x':x==='n'?'n':''}"></span>`).join('')}</span>`}
@@ -240,7 +246,8 @@ function det(){ const r=R.find(x=>x.id===sel); if(!r){$('#det').innerHTML='';ret
   $('#det').innerHTML=`<h4>Выбрано · ${CH[r.ch].n}</h4>${r.video?`<video src="/api/reels/${r.id}/video" controls playsinline style="width:100%;border-radius:10px;max-height:420px;background:#000"></video>`:poster(r)}<h3>${r.title}</h3><p>${r.sub}</p>
   <div class="script"><b>Хук (2 с):</b> ${r.title}<br><b>Призыв:</b> ${r.ch==='km'?'напиши слово '+(((r.sub||'').match(/DM (\w+)/)||[])[1]||'BOTTLE')+' в директ':r.ch==='wi'?'полный ролик на канале':'смотри полный фильм'}</div>
   <ul class="chk">${[...r.q].map((x,i)=>`<li><span class="${x==='o'?'o':x==='x'?'b':'p'}">${x==='o'?'✓':x==='x'?'✕':'…'}</span>${names[i]}</li>`).join('')}</ul>
-  <div class="btns"><button class="btn main ${canOk?'':'off'}">${canOk?'Одобрить (A)':'Одобрить недоступно: проверка не пройдена'}</button><button class="btn">Переделать (R)</button><button class="btn">Пакет для публикации</button>${r.video?'<button class="btn" id="fxopen" style="grid-column:1/3">Добавить эффекты в этот ролик…</button>':''}<button class="btn" id="unik" style="grid-column:1/3">Уникализатор ×3: другие хуки и нарезка для A/B</button></div>`}
+  ${r.script?`<div class="script"><b>Сценарий (${r.script.hook_type||''}):</b><br>${r.script.spoken}<br><small style="color:var(--muted)">Почему зацепит: ${r.script.why||'—'}</small></div>`:''}
+  <div class="btns"><button class="btn main ${canOk||r.st==='draft'?'':'off'}" id="bok" ${r.script&&!r.video?'disabled':''}>${r.script&&!r.video?'Сценарий готов. Сборка по сценарию: следующий шаг':canOk?'Одобрить (A)':'Одобрить недоступно: проверка не пройдена'}</button><button class="btn" id="bredo">Переделать (R)</button><button class="btn" id="bdel" style="color:var(--bad)">${r.st==='trash'?'Восстановить':'Удалить'}</button>${r.st==='trash'?'<button class="btn" id="bhard" style="grid-column:1/3;color:var(--bad)">Удалить навсегда (файл остаётся на диске)</button>':''}<button class="btn" id="bpack" style="grid-column:1/3">Пакет для ручной публикации</button>${r.video?'<button class="btn" id="fxopen" style="grid-column:1/3">Добавить эффекты в этот ролик…</button>':''}<button class="btn" id="unik" style="grid-column:1/3">Уникализатор ×3: другие хуки и нарезка для A/B</button></div>`}
 const SK=[
 ['Хуки и сценарий',[['youtube','Хуки, SEO и структура YouTube',['km','wi','hi']],['cartoon','Мультяшные ролики без слов',['km']],['science','Научные и исторические факты, без выдумок',['wi','hi']],['humanizer','Живой язык текста (без «ИИ-тона»)',['km','wi','hi']]]],
 ['Нарезка и монтаж',[['recut','Нарезка говорящей головы: паузы, дубли, субтитры',['km']],['arcads','15 стилей монтажа (кинетика, стекло, неон…)',['km']],['caps','Субтитры в стиле канала',['km','wi','hi']],['effects','51 эффект: шторка, нож, наезды',['km','hi']],['sfx','Настоящие звуки на щелчки',['km','wi']]]],
@@ -354,7 +361,7 @@ function accordionize(){
   const intro=head.filter(n=>n.tagName==='H2'||n.tagName==='P'); const rest=head.filter(n=>!intro.includes(n));
   intro.forEach(n=>out.push(n));
   if(rest.length)out.push(mk('fx','Эффекты: '+(CATALOG.length||51)+' шт., с видеопревью',rest));
-  const keys={'Другие навыки':'skills','Образы Тани':'outfits','Свой персонаж':'character'};
+  const keys={'Другие навыки':'skills','Образы Тани':'outfits','Свой персонаж':'character','Стиль сценария':'style','Присутствие героя и рот':'presence'};
   while(i<kids.length){const h=kids[i];i++;const body=[];while(i<kids.length&&kids[i].tagName!=='H3'){body.push(kids[i]);i++}
     const btn=h.querySelector('button');const title=h.textContent.replace(btn?btn.textContent:'','').trim();
     const k=Object.keys(keys).find(x=>title.startsWith(x))||title; out.push(mk(keys[k]||k,title,body,btn))}
@@ -374,6 +381,49 @@ function chRender(){const b=$('#chbody');
  if(chStep===2)b.innerHTML=`<p style="font-size:13px;color:var(--muted)">Шаг 3 из 3. Что будет дальше.</p><div class="script">1) 4 варианта персонажа на выбор ≈ <b>$0,16</b>.<br>2) Набор из 10 ключевых поз со ртом ≈ <b>$1,2</b>, полный набор из 57 поз ≈ <b>$6,8</b>.<br>3) Расходы идут с <b>твоего собственного ключа</b> сервиса картинок, платформа деньги клиента не держит.</div><p style="font-size:12px;color:var(--warn)">Генерация подключается при первом клиенте. Сейчас заявка сохраняется, и ничего не тратится.</p><div style="display:flex;justify-content:space-between;margin-top:12px"><button class="btn" data-ch="1">Назад</button><button class="btn go" data-ch="save">Сохранить заявку</button></div>`}
 function styleOf(r){const s=r.sub||'';if(s.includes('KM Editorial'))return 'KM Editorial · Таня';if(s.includes('Вариант Б'))return 'Сток + плашки';if(r.ch==='hi')return 'Анимированная карта';if(r.ch==='wi')return 'Стикмены 3D';return 'KM Editorial'}
 let clientMode=false;
+const gm=(t,h)=>{$('#gt').textContent=t;$('#gb').innerHTML=h;$('#gmodal').classList.add('on')};
+let PUB={auto:false,accounts:{}};
+function pollTopic(){const t=setInterval(async()=>{const j=(await fetch('/api/jobs').then(x=>x.json())).topic;const c=$('#jobchip');if(c&&j)c.innerHTML='Задачи: <i>'+(j.state==='running'?'пишу сценарии…':j.note)+'</i>';if(!j||j.state==='running')return;clearInterval(t);await load();if(j.state==='done'){st='draft';all()}else alert(j.note)},4000);const c=$('#jobchip');if(c)c.innerHTML='Задачи: <i>пишу сценарии…</i>'}
+function health(){fetch('/api/health').then(r=>r.json()).then(h=>{const d=$('#diskchip');if(d)d.innerHTML='Диск C: <i style="color:'+(h.freeGb<20?'var(--bad)':'var(--ok)')+'">'+h.freeGb+' ГБ</i>';const j=$('#jobchip');if(j&&!/пишу/.test(j.textContent))j.innerHTML='Задачи: <i>'+(h.running.length?h.running.map(x=>x.note).join('; '):'нет')+'</i>'}).catch(()=>{})}
+setInterval(health,15000);setTimeout(health,500);
+function navOn(id){document.querySelectorAll('nav a').forEach(a=>a.classList.toggle('on',a.id===id))}
+function showWall(id,status){view='wall';navOn(id);$('.tools').style.display='';$('#grid').style.display='';st=status||'all';all()}
+function caption(r){const s=r.script,tags={km:'#habits #consistency #workoutmotivation #womenfitness #kostamethod',wi:'#whatif #science #curiosity #didyouknow',hi:'#history #maps #empire #historytok'}[r.ch];return (s?s.hook:r.title)+'\n\n'+(s?s.spoken.split('. ').slice(0,2).join('. ')+'.':r.sub)+'\n\nFollow for more.\n\n'+tags}
+function pubView(){view='pub';navOn('navpub');$('.tools').style.display='none';$('#grid').style.display='block';
+ const q=R.filter(r=>r.st==='ok'&&r.video),n=STAT.streak,g=STAT.goal,ready=n>=g;
+ $('#grid').innerHTML=`<h2 style="margin:0 0 4px">Публикация</h2><p style="color:var(--muted);margin:0 0 12px">Сейчас публикуешь ты сам: берёшь «Пакет для ручной публикации». Автопубликация включается только когда доверие накоплено и аккаунты подключены.</p>
+ <h3>Доверие к заводу: подряд одобрено ${n} из ${g}</h3>
+ <div class="bar2" style="height:12px;margin:6px 0"><span style="width:${Math.min(100,n/g*100)}%;background:${ready?'var(--ok)':'var(--gold)'}"></span></div>
+ <p style="font-size:13px;color:var(--muted)">Правило владельца: если ты одобрил ${g} роликов подряд, не переделывая и не удаляя, значит завод настроен верно. Любое «Переделать» или «Удалить» обнуляет счётчик. ${ready?'<b style="color:var(--ok)">Порог достигнут: автопубликацию можно включать.</b>':'Осталось ещё '+(g-n)+'.'}</p>
+ <h3 style="margin-top:14px">Аккаунты</h3>
+ ${[['Instagram','@kosta_method','Meta API: заявка перед этапом 5'],['TikTok','@vkostamethod2509','TikTok Content Posting API: заявка перед этапом 5'],['YouTube Shorts','канал ещё не выбран','аудит Google, шаг 0.5 плана']].map(a=>`<div class="ag"><div style="flex:1"><b>${a[0]}</b><small>${a[1]}</small></div><span class="pill s-draft">не подключено · ${a[2]}</span></div>`).join('')}
+ <label style="display:flex;gap:8px;margin:12px 0;color:var(--text)"><input type="checkbox" id="autop" disabled> Автопубликация (включится, когда достигнут порог и подключены все аккаунты)</label>
+ <h3>Очередь к публикации (${q.length})</h3>
+ ${q.length?q.map(r=>`<div class="ag"><div style="flex:1"><b>${r.title}</b><small>${styleOf(r)} · ${fmt(r.len)}</small></div><button class="btn" data-pack="${r.id}">Пакет</button><button class="btn" data-pubd="${r.id}">Я опубликовал</button></div>`).join(''):'<p style="color:var(--muted)">Пока нет одобренных роликов. Одобри ролик на стене, и он появится здесь.</p>'}`}
+function libView(){view='lib';navOn('navlib');$('.tools').style.display='none';$('#grid').style.display='block';
+ $('#grid').innerHTML='<h2 style="margin:0 0 4px">Мои видео (материал)</h2><p style="color:var(--muted)">Загружаю…</p>';
+ fetch('/api/library').then(r=>r.json()).then(L=>{$('#grid').innerHTML=`<h2 style="margin:0 0 4px">Мои видео (материал)</h2><p style="color:var(--muted);margin:0 0 10px">Сюда загружаешь свои съёмки: тренировки Тетяны, ролики клиента, длинные записи. Из них завод будет нарезать короткие ролики и брать куски для хуков. Файлы остаются на твоём компьютере, в папке <code>media/library</code>.</p>
+  <button class="btn go" id="upl2" style="padding:8px 14px">+ Загрузить видео</button>
+  <h3 style="margin-top:14px">Загружено (${L.length})</h3>
+  ${L.length?L.map(f=>`<div class="ag"><div style="flex:1"><b>${f.name}</b><small>${CH[f.channel]?CH[f.channel].n:f.channel} · ${f.mb} МБ</small></div><span class="pill s-draft">нарезка: следующий шаг</span></div>`).join(''):'<p style="color:var(--muted)">Пока ничего не загружено.</p>'}
+  <div class="script" style="margin-top:12px"><b>Что завод будет делать с материалом (пока загрузка работает, нарезка нет):</b><br>1) расшифровать речь, 2) найти сильные моменты (резкая смена, фраза-хук, пауза после вывода), 3) нарезать на ролики по 15–45 секунд с субтитрами в стиле канала, 4) предложить 3 хука на каждый кусок, 5) положить на стену как черновики. Для роликов с человеком в кадре будут работать эффекты, которым нужно лицо.</div>`}).catch(()=>{$('#grid').innerHTML='<p>Нет связи с сервером.</p>'})}
+function hooksModal(){const H=R.filter(r=>r.script).map(r=>`<div class="ag"><div style="flex:1"><b>${r.script.hook}</b><small>${r.script.hook_type||''} · ${CH[r.ch].n}</small></div></div>`).join('');
+ const old=R.filter(r=>!r.script&&r.video).map(r=>`<div class="ag"><div style="flex:1"><b>${r.title}</b><small>${styleOf(r)}</small></div></div>`).join('');
+ gm('Банк хуков',`<p style="font-size:13px;color:var(--muted)">Сюда попадают хуки всех сценариев. Когда подключим цифры площадок, рядом появится удержание первых 3 секунд, и завод будет предлагать то, что сработало.</p>${H||''}${old}${!H&&!old?'<p>Пока пусто.</p>':''}`)}
+function styleView(){const s=SSTYLE[fxc]||'';return `<h3 style="margin-top:16px">Стиль сценария</h3><p style="color:var(--muted);margin:0 0 8px;font-size:13px">Свои правила письма для канала <b>${CH[fxc].n}</b>: манера, лексика, что любишь и чего нет. Писатель учитывает их выше своих привычек. У каждого канала и клиента свои.</p><textarea id="sstyle" rows="5" style="width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:8px;color:var(--text);font:inherit" placeholder="Например: говорим на «ты», короткие фразы до 8 слов, без восклицательных знаков, хук всегда с числом, примеры из жизни женщин 30+, никаких слов «мотивация» и «лайфхак».">${s}</textarea><div style="margin-top:6px"><button class="btn go" id="sstylesave">Сохранить стиль</button> <small id="sstylemsg" style="color:var(--ok)"></small></div>`}
+let PRES={};
+function presenceView(){const p=PRES[fxc]||{mode:'cameo',mouth:'calm'};
+ const radio=(name,val,label,hint)=>`<label class="ag" style="cursor:pointer;align-items:flex-start"><input type="radio" name="${name}" value="${val}" ${p[name==='pmode'?'mode':'mouth']===val?'checked':''}><div><b>${label}</b><small>${hint}</small></div></label>`;
+ return `<h3 style="margin-top:16px">Присутствие героя и рот</h3><p style="color:var(--muted);margin:0 0 8px;font-size:13px">Как часто героиня в кадре, для канала <b>${CH[fxc].n}</b>. Режим «2–3 раза» стоит по умолчанию: героиня появляется на хуке, в середине и в конце, остальное время место занимает сток и текст.</p>
+ ${radio('pmode','always','Всегда в кадре','Героиня стоит внизу весь ролик. Хорошо для разговорных и обучающих роликов.')}
+ ${radio('pmode','cameo','2–3 раза (рекомендую)','Хук, середина, призыв в конце. Больше места под сток и текст.')}
+ ${radio('pmode','off','Не показывать','Только сток, графика и голос. Для роликов без ведущей.')}
+ <p style="margin:10px 0 4px;font-size:13px">Рот героини</p>
+ ${radio('pmouth','calm','Спокойный (по умолчанию)','Рот открывается не шире среднего, не отвлекает от текста.')}
+ ${radio('pmouth','normal','Обычный','Рот открывается шире на ударных слогах.')}`}
+fetch('/api/settings/presence').then(r=>r.ok?r.json():{}).then(s=>{PRES=s||{}}).catch(()=>{});
+let SSTYLE={};
+fetch('/api/settings/scriptstyle').then(r=>r.ok?r.json():{}).then(s=>{SSTYLE=s||{}}).catch(()=>{});
 let CATALOG=[],fxf='all';
 function loadCat(){return fetch('/fx-catalog.json?'+Date.now()).then(r=>r.ok?r.json():[]).then(c=>{CATALOG=c;if(view==='skills')skillsView()}).catch(()=>{})}
 loadCat();
@@ -390,7 +440,7 @@ function skillsView(){
     <div class="tabs" style="margin-bottom:12px">${[['all','Все '+CATALOG.length],['stock','Подходят для стока'],['face','Нужен человек в кадре'],['img','Нужны свои картинки']].map(([k,n])=>`<button class="tab ${fxf===k?'on':''}" data-fxf="${k}">${n}</button>`).join('')}</div>
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:8px">${shown.map((f,i)=>`<div class="ag" style="align-items:flex-start"><input type="checkbox" data-fx="${f.id}" ${on.includes(f.id)?'checked':''} ${f.face?'disabled':''} style="margin-top:3px">${f.status==='ok'?`<video src="/previews/${f.id}.mp4" muted loop playsinline preload="metadata" onmouseover="this.play()" onmouseout="this.pause()" style="width:64px;height:114px;object-fit:cover;border-radius:8px;background:#000"></video>`:`<div style="width:64px;height:114px;border-radius:8px;background:var(--panel);display:grid;place-items:center;font-size:10px;color:var(--muted);text-align:center">${f.status==='fail'?'нет превью':'рендер…'}</div>`}<div><b>${f.ru}</b><small>${f.desc}</small><span class="pill ${f.face?'s-draft':'s-ok'}" style="display:inline-block;margin-top:4px">${f.face?'нужен человек в кадре':f.images?'нужны свои картинки':'работает на стоке'}</span> <span class="pill ${CST[f.status][1]}" style="display:inline-block;margin-top:4px">${CST[f.status][0]}</span></div></div>`).join('')}</div>
     <h3 style="margin-top:16px">Другие навыки <button class="btn" id="cadd" style="padding:3px 10px;margin-left:8px">+ Добавить свой</button></h3>
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px">${SKILLS2.map(s=>`<div class="ag" style="align-items:flex-start"><div><b>${s[0]}</b><small>${s[1]}</small><span class="pill ${TAG[s[2]][1]}" style="display:inline-block;margin-top:4px">${TAG[s[2]][0]}</span></div></div>`).join('')}${CUST.map(s=>`<div class="ag" style="align-items:flex-start"><div><b>${s.n}</b><small>${s.d||'без описания'}</small><span class="pill s-draft" style="display:inline-block;margin-top:4px">твой навык · ${s.c==='all'?'все каналы':CH[s.c].n} · движок пока не подключён</span></div></div>`).join('')}</div>`+outfitsView()+charView();
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px">${SKILLS2.map(s=>`<div class="ag" style="align-items:flex-start"><div><b>${s[0]}</b><small>${s[1]}</small><span class="pill ${TAG[s[2]][1]}" style="display:inline-block;margin-top:4px">${TAG[s[2]][0]}</span></div></div>`).join('')}${CUST.map(s=>`<div class="ag" style="align-items:flex-start"><div><b>${s.n}</b><small>${s.d||'без описания'}</small><span class="pill s-draft" style="display:inline-block;margin-top:4px">твой навык · ${s.c==='all'?'все каналы':CH[s.c].n} · движок пока не подключён</span></div></div>`).join('')}</div>`+outfitsView()+presenceView()+charView()+styleView();
     accordionize(); return}
   $('#grid').innerHTML=`<h2 style="margin:0 0 4px">Навыки и эффекты</h2><p style="color:var(--muted);margin:0 0 10px">Включённые эффекты Продюсер ставит в каждый новый ролик канала сам, на подходящие слова. Выбор сохраняется.</p>
   <div class="tabs" style="margin-bottom:12px">${Object.entries(CH).map(([k,v])=>`<button class="tab ${fxc===k?'on':''}" data-fxc="${k}">${v.n}</button>`).join('')}</div>
@@ -421,7 +471,7 @@ function ed(){
   const T=r.len>0?Math.min(r.len,60):30, tracks=TRACKS[r.ch];
   const ticks=Array.from({length:6},(_,i)=>`<span>${Math.round(T/6*i)}с</span>`).join('');
   const lane=a=>`<div class="lane">${a.map(s=>`<div class="seg" style="flex:${s[1]};background:${s[2]}">${s[0]}</div>`).join('')}</div>`;
-  $('#edbody').innerHTML=`<div class="tr"><span></span><div class="ruler">${ticks}</div></div>`
+  $('#edbody').innerHTML=`<div style="font-size:11px;color:var(--warn);margin:0 0 4px">Это схема структуры ролика, а не его настоящие данные. Править на ней пока нельзя. Настоящий редактор (поменять позу, кадр стока, фразу, эффект и пересобрать) появится вместе с Режиссёром.</div><div class="tr"><span></span><div class="ruler">${ticks}</div></div>`
    +tracks.map(t=>`<div class="tr"><span>${t[0]}</span>${lane(t[1])}</div>`).join('')
    +`<div class="tr"><span>Голос</span><div class="wave">${wave(120)}</div></div>`
    +`<div class="tr"><span>Субтитры</span>${lane([['Discipline',2,'#e8e8e8'],['is a',1,'#e8e8e8'],['decision',2,'#c9ab7c'],['you make',2,'#e8e8e8'],['once',2,'#c9ab7c'],['Pick the time',3,'#e8e8e8'],['tonight',2,'#c9ab7c']])}</div>`
@@ -437,7 +487,11 @@ document.addEventListener('click',e=>{
   if(e.target.closest('#newtopic')){$('#modal').classList.add('on');return}
   if(e.target.closest('#upl')){usk();$('#umodal').classList.add('on');return}
   if(e.target.closest('#ux')){$('#umodal').classList.remove('on');return}
-  if(e.target.closest('#ug')){const mo=$('#umode').value,c=$('#uch').value,nm=$('#uname').textContent||'видео клиента';const add=mo==='u'?[['вариант A: другой хук','вариант B: другая нарезка','вариант C: субтитры и музыка']]:mo==='s'?[Array.from({length:6},(_,i)=>'момент '+(i+1)+': сильный отрезок')]:[Array.from({length:3},(_,i)=>'похожий ролик '+(i+1)+' по паспорту')];add[0].forEach(t=>R.push({id:R.length+1,ch:c,st:'draft',title:t,sub:'Из файла: '+nm,len:0,q:'nnnn'}));$('#umodal').classList.remove('on');all();return}
+  if(e.target.closest('#ug')){const f=$('#ufile').files[0];if(!f){alert('Сначала выбери видеофайл.');return}
+    const ch=$('#uch').value,x=new XMLHttpRequest();x.open('POST','/api/library?channel='+ch+'&name='+encodeURIComponent(f.name));
+    $('#ug').textContent='Загружаю 0%…';x.upload.onprogress=ev=>{if(ev.lengthComputable)$('#ug').textContent='Загружаю '+Math.round(ev.loaded/ev.total*100)+'%…'};
+    x.onload=()=>{$('#ug').textContent='Запустить';$('#umodal').classList.remove('on');$('#ufile').value='';$('#uname').textContent='';if(x.status===201){view='lib';libView()}else alert('Не загрузилось: нужен видеофайл (mp4, mov, webm).')};
+    x.onerror=()=>{$('#ug').textContent='Запустить';alert('Нет связи с сервером.')};x.send(f);return}
   if(e.target.closest('#newch')){pstart();return}
   if(e.target.closest('#navpp')){pstart();pa=['Kosta Method: упражнения и привычки.','KM Editorial: бумага, одно золото, Montserrat, всё на сетке.','Графика и мультяшная Таня 1–2 раза; позже живое видео Тетяны.','','','Английский; рилсы 30 с.','Instagram @kosta_method, TikTok, YouTube Shorts.','Слово BOTTLE в директ.','«−10 кг за 30 дней», «до/после», выдуманные цифры.'];pbase=1;pstepRender();return}
   const pp=e.target.closest('[data-p]'); if(pp){const a=pp.dataset.p,t=$('#pans');if(t)pa[pi]=t.value;
@@ -449,6 +503,31 @@ document.addEventListener('click',e=>{
   if(e.target.closest('#navwall')){view='wall';document.querySelectorAll('nav a').forEach(a=>a.classList.toggle('on',a.id==='navwall'));$('.tools').style.display='';all();return}
   const pl=e.target.closest('[data-play]'); if(pl){e.stopPropagation();openPlayer(+pl.dataset.play);return}
   if(e.target.closest('#plx')||e.target.id==='player'){closePlayer();return}
+  // --- real buttons of the reel card
+  const act=(s)=>{const r=R.find(x=>x.id===sel);if(!r)return null;return r};
+  if(e.target.closest('#bok')){const r=act();if(r&&!(r.script&&!r.video)&&r.st!=='ok'){r.st='ok';save(r.id,'ok');all();counters()}return}
+  if(e.target.closest('#bredo')){const r=act();if(r){r.st='draft';save(r.id,'draft');all();counters()}return}
+  if(e.target.closest('#bdel')){const r=act();if(!r)return;
+    if(r.st==='trash'){r.st=r.video?'wait':'draft';save(r.id,r.st);all();counters();return}
+    if(!confirm('Убрать «'+r.title+'» в корзину? Её можно восстановить. Файл на диске не удаляется.'))return;
+    r.st='trash';if(live)fetch('/api/reels/'+r.id,{method:'DELETE'});sel=(list()[0]||{}).id||0;all();counters();return}
+  if(e.target.closest('#bhard')){const r=act();if(!r||!confirm('Удалить «'+r.title+'» навсегда из завода? Видеофайл на диске останется, его удаляешь ты сам.'))return;
+    if(live)fetch('/api/reels/'+r.id+'?hard=1',{method:'DELETE'});R=R.filter(x=>x.id!==r.id);sel=(list()[0]||{}).id||0;all();counters();return}
+  const pk=e.target.closest('#bpack,[data-pack]'); if(pk){const r=R.find(x=>x.id===(pk.dataset.pack?+pk.dataset.pack:sel));if(!r)return;
+    gm('Пакет для ручной публикации',`<p style="font-size:13px;color:var(--muted)">Скачай файл и вставь подпись в Instagram, TikTok или YouTube Shorts.</p>${r.video?`<p><a href="/api/reels/${r.id}/video" download="${r.title.replace(/[^\w ]/g,'')}.mp4" style="color:var(--gold)">⬇ Скачать видео</a></p>`:'<p>Ролика ещё нет: только сценарий.</p>'}<label>Подпись и хэштеги (выдели и скопируй)</label><textarea rows="9" style="width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:8px;color:var(--text);font:inherit">${caption(r)}</textarea><p style="font-size:12px;color:var(--muted)">Метка «создано ИИ»: если в ролике реалистичный сгенерированный человек, поставь её при публикации. Мультяшная Таня метки не требует, но проверь правила площадки.</p>`);return}
+  const pd=e.target.closest('[data-pubd]'); if(pd){const r=R.find(x=>x.id===+pd.dataset.pubd);if(r){r.st='pub';save(r.id,'pub');pubView();counters()}return}
+  // --- left menu
+  if(e.target.closest('#navwait')){showWall('navwait','wait');return}
+  if(e.target.closest('#navtrash')){showWall('navtrash','trash');return}
+  if(e.target.closest('#navnight')){gm('Ночная очередь','<p>Очередь задач на ночь: сценарии, озвучка и рендер, чтобы днём компьютер был свободен.</p><p style="color:var(--warn);font-size:13px">Расписание ночных запусков пока не подключено: сейчас «Тема → ролики» выполняется сразу. Включим вместе с автозапуском стены (tools\\install-autostart.cmd).</p>');return}
+  if(e.target.closest('#navhooks')){hooksModal();return}
+  if(e.target.closest('#navpub')){pubView();return}
+  if(e.target.closest('#navlib')||e.target.closest('#upl2')&&false){libView();return}
+  if(e.target.closest('#upl2')){usk();$('#umodal').classList.add('on');return}
+  if(e.target.closest('#navag')){gm('Агенты',`${[['Продюсер','распределяет задачи, держит очередь'],['Писатель','пишет сценарии по паспорту, тренду и твоему стилю (работает: «Тема → ролики»)'],['Критик','оценивает сценарии по пяти критериям и переписывает слабые (работает)'],['Упаковщик','подпись и хэштеги (простая версия работает в «Пакете»)'],['Режиссёр','по сценарию выбирает позы, сток и эффекты и собирает ролик (следующий шаг, сейчас вручную)']].map(a=>`<div class="ag"><div><b>${a[0]}</b><small>${a[1]}</small></div></div>`).join('')}`);return}
+  if(e.target.closest('#navarc')){gm('Архив на Диске','<p>Готовые ролики копируются в Google Drive через rclone (подключение проверено: запись и чтение работают). Автокопия по расписанию и правило «удалять через 60 дней» ещё не включены.</p><p style="font-size:13px;color:var(--muted)">Сейчас архив делается вручную.</p>');return}
+  if(e.target.closest('#gx')){$('#gmodal').classList.remove('on');return}
+  if(e.target.closest('#sstylesave')){SSTYLE[fxc]=$('#sstyle').value;if(live)fetch('/api/settings/scriptstyle',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(SSTYLE)});$('#sstylemsg').textContent='Сохранено';return}
   if(e.target.closest('#chnew')){chStep=0;chRender();$('#chmodal').classList.add('on');return}
   if(e.target.closest('#chx')){$('#chmodal').classList.remove('on');return}
   const chb=e.target.closest('[data-ch]'); if(chb){const v=chb.dataset.ch;
@@ -475,7 +554,11 @@ document.addEventListener('click',e=>{
   if(e.target.closest('#sx')){$('#smodal').classList.remove('on');return}
   const sk=e.target.closest('[data-sk]'); if(sk){skc=sk.dataset.sk;skills();return}
   if(e.target.closest('#mx')){$('#modal').classList.remove('on');return}
-  if(e.target.closest('#mg')){const t=$('#mt').value||'Новая тема',c=$('#mc').value,n=+$('#mn').value;for(let i=0;i<n;i++)R.push({id:R.length+1,ch:c,st:'draft',title:t+' · сценарий '+(i+1),sub:'Пишется ночью',len:0,q:'nnnn'});$('#modal').classList.remove('on');all();return}
+  if(e.target.closest('#mg')){const t=$('#mt').value.trim();if(!t){alert('Напиши тему или идею.');return}
+    if(!live){alert('Нет связи с сервером.');return}
+    fetch('/api/topic',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({topic:t,channel:$('#mc').value,count:+$('#mn').value})}).then(r=>{
+      if(r.status===409){alert('Писатель уже работает, подожди.');return}
+      $('#modal').classList.remove('on');$('#mt').value='';pollTopic()});return}
   if(e.target.closest('#unik')){const b=R.find(x=>x.id===sel);['A','B','C'].forEach((v,i)=>R.push({id:R.length+1,ch:b.ch,st:'draft',title:b.title+' · вариант '+v,sub:['другой хук','другая нарезка','другие субтитры и музыка'][i],len:0,q:'nnnn'}));all();return}
   const f=e.target.closest('#filters .f'); if(f){st=f.dataset.k;all();return}
   const s=e.target.closest('.sz .f'); if(s){document.querySelectorAll('.sz .f').forEach(x=>x.classList.remove('on'));s.classList.add('on');document.documentElement.style.setProperty('--w',s.dataset.w+'px');return}
@@ -489,12 +572,13 @@ document.addEventListener('keydown',e=>{
   if(e.key.toLowerCase()==='a'||e.key.toLowerCase()==='ф'){const r=R.find(x=>x.id===sel);if(r&&r.st==='wait'&&!r.q.includes('x')&&r.q.indexOf('n')<0){r.st='ok';save(r.id,'ok');all()}}
   if(e.key.toLowerCase()==='r'||e.key.toLowerCase()==='к'){const r=R.find(x=>x.id===sel);if(r&&r.st!=='pub'){r.st='draft';r.q='nnnn';save(r.id,'draft');all()}}
 });
-function load(){return fetch('/api/reels').then(r=>r.ok?r.json():Promise.reject()).then(rows=>{live=true;R=rows.map(x=>({id:x.id,ch:x.channel,st:x.status,title:x.title,sub:x.sub,len:x.length_s,q:x.checks,video:!!x.job_dir}));if(!R.find(x=>x.id===sel))sel=R.length?R[0].id:0;all();const d=document.querySelector('.demo');if(d)d.textContent='Подключена настоящая база (SQLite). Статусы сохраняются. Движков пока нет, ролики примерные.'}).catch(()=>{})}
+function load(){return fetch('/api/reels').then(r=>r.ok?r.json():Promise.reject()).then(rows=>{live=true;R=rows.map(x=>({id:x.id,ch:x.channel,st:x.status,title:x.title,sub:x.sub,len:x.length_s,q:x.checks,video:!!x.job_dir,script:x.script?JSON.parse(x.script):null}));counters();if(!R.find(x=>x.id===sel))sel=R.length?R[0].id:0;all();const d=document.querySelector('.demo');if(d)d.textContent='Подключена настоящая база (SQLite). Статусы сохраняются. Движков пока нет, ролики примерные.'}).catch(()=>{})}
 function save(id,status){if(!live)return;fetch('/api/reels/'+id,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({status})})}
 // New reels appear on their own: re-read the base every 8 s, unless something is open or a video is playing.
 setInterval(()=>{if(!live||view!=='wall'||document.querySelector('.modal.on'))return;if([...document.querySelectorAll('video')].some(v=>!v.paused&&!v.muted))return;fetch('/api/reels').then(r=>r.json()).then(rows=>{if(rows.length!==R.length)load()}).catch(()=>{})},8000);
 document.addEventListener('keyup',()=>{});
 document.addEventListener('change',e=>{
+  if(e.target.name==='pmode'||e.target.name==='pmouth'){const p=PRES[fxc]||(PRES[fxc]={mode:'cameo',mouth:'calm'});p[e.target.name==='pmode'?'mode':'mouth']=e.target.value;if(live)fetch('/api/settings/presence',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(PRES)});return}
   if(e.target.id==='fxall'){fxall=e.target.checked;openFx();return}
   if(e.target.id==='chf'&&e.target.files[0]){$('#chn').textContent=e.target.files[0].name}
   if(e.target.id==='ufile'&&e.target.files[0]){$('#uname').textContent=e.target.files[0].name}
